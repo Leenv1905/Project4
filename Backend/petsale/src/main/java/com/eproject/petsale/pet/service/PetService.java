@@ -32,7 +32,6 @@ public class PetService {
         User currentUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng: " + email));
 
-
         Pet pet = new Pet();
         pet.setName(request.getName());
         pet.setSpecies(request.getSpecies());
@@ -40,7 +39,6 @@ public class PetService {
         pet.setDescription(request.getDescription());
         pet.setPetCode(generatePetCode(request.getSpecies()));
         pet.setUser(currentUser);
-
 
         PetRequirement requirement = new PetRequirement();
         requirement.setPet(pet);
@@ -68,6 +66,76 @@ public class PetService {
         return mapToResponse(savedPet);
     }
 
+    public List<PetResponse> getAllPets() {
+        return petRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<PetResponse> getMyPets() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return petRepository.findByUserEmail(email).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public PetResponse getPetById(Long id) {
+        Pet pet = petRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thú cưng với ID: " + id));
+        return mapToResponse(pet);
+    }
+
+    @Transactional
+    public PetResponse updatePet(Long id, PetRequest request) {
+        Pet pet = petRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thú cưng với ID: " + id));
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!pet.getUser().getEmail().equals(email)) {
+            throw new RuntimeException("Bạn không có quyền chỉnh sửa thú cưng này.");
+        }
+
+        pet.setName(request.getName());
+        pet.setBreed(request.getBreed());
+        pet.setDescription(request.getDescription());
+        PetRequirement requirement = pet.getRequirements();
+        requirement.setMinDailyTime(request.getMinDailyTime());
+        requirement.setMinLivingSpace(request.getMinLivingSpace());
+        requirement.setMinActivityTime(request.getMinActivityTime());
+        requirement.setMinMonthlyBudget(request.getMinMonthlyBudget());
+        requirement.setMinExperienceLevel(request.getMinExperienceLevel());
+
+        if (request.getImages() != null) {
+            pet.getImages().clear();
+            List<PetImage> newImages = request.getImages().stream().map(imgDto -> {
+                PetImage img = new PetImage();
+                img.setPet(pet);
+                img.setImageUrl(imgDto.getImageUrl());
+                img.setObjectKey(imgDto.getObjectKey());
+                img.setPrimary(imgDto.isPrimary());
+                img.setDisplayOrder(imgDto.getDisplayOrder());
+                return img;
+            }).collect(Collectors.toList());
+            pet.getImages().addAll(newImages);
+        }
+
+        Pet savedPet = petRepository.save(pet);
+        return mapToResponse(savedPet);
+    }
+
+    @Transactional
+    public void deletePet(Long id) {
+        Pet pet = petRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thú cưng với ID: " + id));
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!pet.getUser().getEmail().equals(email)) {
+            throw new RuntimeException("Bạn không có quyền xóa thú cưng này.");
+        }
+
+        petRepository.delete(pet);
+    }
+
     private PetResponse mapToResponse(Pet pet) {
         PetResponse response = new PetResponse();
         response.setId(pet.getId());
@@ -86,7 +154,6 @@ public class PetService {
             response.setMinMonthlyBudget(pet.getRequirements().getMinMonthlyBudget());
             response.setMinExperienceLevel(pet.getRequirements().getMinExperienceLevel());
         }
-
 
         if (pet.getImages() != null) {
             response.setImages(pet.getImages().stream().map(img -> {
