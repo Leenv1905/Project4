@@ -33,6 +33,7 @@ public class AuthService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
     @Transactional
     public AuthResponse register(RegisterRequest request) {
 
@@ -45,13 +46,11 @@ public class AuthService {
         user.setEmail(request.getEmail());
 
         user.setPasswordHash(
-                passwordEncoder.encode(request.getPassword())
-        );
+                passwordEncoder.encode(request.getPassword()));
 
         user.setName(request.getName());
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
-
 
         // lấy role USER để set role cho user
         Role role = roleRepository.findByName("USER");
@@ -85,7 +84,6 @@ public class AuthService {
         res.setAccessToken(accessToken);
         res.setRefreshToken(refreshToken);
 
-
         res.setUserId(user.getId());
         res.setName(user.getName());
         res.setRole(user.getRole().getName());
@@ -98,11 +96,9 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        boolean checkPassword =
-                passwordEncoder.matches(
-                        request.getPassword(),
-                        user.getPasswordHash()
-                );
+        boolean checkPassword = passwordEncoder.matches(
+                request.getPassword(),
+                user.getPasswordHash());
 
         if (!checkPassword) {
             throw new RuntimeException("Password incorrect");
