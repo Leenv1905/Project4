@@ -4,6 +4,7 @@ import com.eproject.petsale.auth.dto.AuthResponse;
 import com.eproject.petsale.auth.dto.LoginRequest;
 import com.eproject.petsale.auth.dto.RegisterRequest;
 import com.eproject.petsale.auth.security.JwtUtil;
+import com.eproject.petsale.common.exception.AuthException;
 import com.eproject.petsale.personalization.entity.BuyerProfile;
 import com.eproject.petsale.personalization.repository.BuyerProfileRepository;
 import com.eproject.petsale.user.entity.Role;
@@ -94,14 +95,14 @@ public class AuthService {
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AuthException("User not found"));
 
         boolean checkPassword = passwordEncoder.matches(
                 request.getPassword(),
                 user.getPasswordHash());
 
         if (!checkPassword) {
-            throw new RuntimeException("Password incorrect");
+            throw new AuthException("Password incorrect");
         }
 
         String accessToken = jwtUtil.generateToken(user.getEmail());

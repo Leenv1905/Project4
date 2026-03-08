@@ -1,5 +1,6 @@
 package com.eproject.petsale.common.exception;
 
+import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,21 @@ public class GlobalExceptionHandler {
         return new ApiErrorResponse(
                 400,
                 "Bad Request",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(AuthException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiErrorResponse handleAuthException(
+            AuthException ex,
+            HttpServletRequest request
+    ) {
+
+        return new ApiErrorResponse(
+                401,
+                "Unauthorized",
                 ex.getMessage(),
                 request.getRequestURI()
         );
