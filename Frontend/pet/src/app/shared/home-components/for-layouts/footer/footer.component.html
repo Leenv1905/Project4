@@ -1,0 +1,64 @@
+<div id="footer" class="footer">
+  <div class="footer-grid">
+
+    <!-- Column 1 -->
+    <div class="col col-4">
+      <img
+        src="assets/logo/gupet.png"
+        alt="logo"
+        class="logo"
+      />
+<!--      <img src="/assets/logo/gupet.png">-->
+      <p class="description">
+        Global distribution system using AI and Blockchain technology.
+        Ensuring copyright for authors and publishers.
+      </p>
+
+      <app-social-links />
+    </div>
+
+    <!-- Column 2 -->
+    <div class="col col-2">
+      <app-footer-column
+        title="Quick Links"
+        [items]="[
+          { label: 'Home', link: '#' },
+          { label: 'About', link: '#' },
+          { label: 'Shop', link: '#' },
+          { label: 'Blogs', link: '#' },
+          { label: 'Contact', link: '#' }
+        ]"
+      />
+    </div>
+
+    <!-- Column 3 -->
+    <div class="col col-3">
+      <app-footer-column
+        title="Help & Info"
+        [items]="[
+          { label: 'Track Your Order', link: '#' },
+          { label: 'Returns Policies', link: '#' },
+          { label: 'Shipping + Delivery', link: '#' },
+          { label: 'Contact Us', link: '#' },
+          { label: 'FAQs', link: '#' }
+        ]"
+      />
+    </div>
+
+    <!-- Column 4 -->
+    <div class="col col-3 text-right">
+      <app-footer-column title="Contact Us">
+        <p>
+          Do you have any queries or suggestions?
+          <a href="mailto:info@bookly.com">infobookly.com</a>
+        </p>
+
+        <p>
+          If you need support? Just give us a call.
+          <a href="tel:+5511122233344">+88 111 222 333 44</a>
+        </p>
+      </app-footer-column>
+    </div>
+
+  </div>
+</div>

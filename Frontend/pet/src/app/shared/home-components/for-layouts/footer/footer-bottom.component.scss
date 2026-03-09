@@ -1,0 +1,42 @@
+.footer-bottom {
+  padding-bottom: 24px;
+  border-top: 1px solid #e0e0e0;
+  background: #fff;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.footer-bottom-grid {
+  width: 85%;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.group img {
+  height: 24px;
+}
+
+.right {
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .footer-bottom-grid {
+    width: 90%;
+  }
+
+  .right {
+    text-align: center;
+    width: 100%;
+  }
+}

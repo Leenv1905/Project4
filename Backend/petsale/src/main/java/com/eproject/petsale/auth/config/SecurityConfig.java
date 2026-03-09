@@ -2,6 +2,8 @@ package com.eproject.petsale.auth.config;
 
 import com.eproject.petsale.auth.security.CustomAccessDeniedHandler;
 import com.eproject.petsale.auth.security.CustomAuthenticationEntryPoint;
+import com.eproject.petsale.auth.security.JwtFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +14,11 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+    private final JwtFilter jwtFilter;
+
+    public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -28,7 +35,11 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/gupet/v1/auth/**").permitAll()
+                        .requestMatchers("/gupet/v1/api/users/**").authenticated()
                         .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtFilter,// gọi phương thức này để xác thực req có có token
+                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint())

@@ -1,0 +1,11 @@
+<h4>{{ title }}</h4>
+
+<ul *ngIf="items; else custom">
+  <li *ngFor="let item of items">
+    <a [href]="item.link">{{ item.label }}</a>
+  </li>
+</ul>
+
+<ng-template #custom>
+  <ng-content />
+</ng-template>

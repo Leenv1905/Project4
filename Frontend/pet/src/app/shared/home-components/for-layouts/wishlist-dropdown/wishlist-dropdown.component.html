@@ -1,0 +1,15 @@
+<button mat-icon-button [matMenuTriggerFor]="menu">
+  ❤️
+</button>
+
+<mat-menu #menu="matMenu">
+  <h3>Your Wishlist</h3>
+
+  <div *ngFor="let item of wishlist.items">
+    <strong>{{ item.name }}</strong> – ${{ item.price }}
+  </div>
+
+  <button mat-raised-button color="primary" style="width:100%;margin-top:8px">
+    Add all to cart
+  </button>
+</mat-menu>

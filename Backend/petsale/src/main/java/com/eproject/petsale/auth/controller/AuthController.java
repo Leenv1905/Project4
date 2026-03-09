@@ -5,15 +5,18 @@ import com.eproject.petsale.auth.dto.LoginRequest;
 import com.eproject.petsale.auth.dto.RegisterRequest;
 import com.eproject.petsale.auth.service.AuthService;
 import com.eproject.petsale.common.response.ApiSuccessResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/auth/user")
+@RequestMapping("gupet/v1/auth/user")
 public class AuthController {
 
     @Autowired
@@ -33,10 +36,57 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest request) {
+    public ResponseEntity<ApiSuccessResponse<AuthResponse>> login(
+            @RequestBody LoginRequest request,
+            HttpServletResponse response
+    ) {
 
-        return authService.login(request);
+        AuthResponse data = authService.login(request);
 
+        Cookie accessCookie = new Cookie("access_token", data.getAccessToken());
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(false);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(60 * 5); // 5 phút
+
+        Cookie refreshCookie = new Cookie("refresh_token", data.getRefreshToken());
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(false);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(60 * 60 * 24 * 7); // 7 ngày
+
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
+
+        data.setAccessToken(null);// không trả về token trong res
+        data.setRefreshToken(null);
+
+        ApiSuccessResponse<AuthResponse> res =
+                new ApiSuccessResponse<>(200, "Login success", data);
+
+        return ResponseEntity.ok(res);
+    }
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+
+        String refreshToken = null;
+
+        if (request.getCookies() != null) {
+            for (var cookie : request.getCookies()) {
+
+                if ("refresh_token".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                }
+            }
+        }
+
+        if (refreshToken == null) {
+            return ResponseEntity.status(401).body("Refresh token missing");
+        }
+
+        String newAccessToken = authService.refreshAccessToken(refreshToken);
+
+        return ResponseEntity.ok(newAccessToken);
     }
 
 }
