@@ -26,6 +26,9 @@ public class User {
 
     private String address;
 
+    @Column(name = "avatar_path")
+    private String avatarPath;
+
     @Column(name = "refresh_token")
     private String refreshToken;
     @ManyToOne

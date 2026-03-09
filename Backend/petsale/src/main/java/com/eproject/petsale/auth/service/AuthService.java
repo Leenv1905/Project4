@@ -16,6 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 
 @Service
 public class AuthService {
@@ -36,7 +40,7 @@ public class AuthService {
     private JwtUtil jwtUtil;
 
     @Transactional
-    public AuthResponse register(RegisterRequest request) {
+    public AuthResponse register(RegisterRequest request)  {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
@@ -53,13 +57,30 @@ public class AuthService {
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
 
-        // lấy role USER để set role cho user
+//        // upload avatar
+//        try {
+//
+//            String fileName =
+//                    UUID.randomUUID() + "_" + request.getAvatar().getOriginalFilename();
+//
+//            Path path = Paths.get("uploads/avatar/" + fileName);
+//
+//            Files.copy(request.getAvatar().getInputStream(), path);
+//
+//            user.setAvatarPath(fileName);
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException("Upload avatar failed");
+//        }
+
+        // role
         Role role = roleRepository.findByName("USER");
 
         user.setRole(role);
 
         userRepository.save(user);
 
+        // personalization
         BuyerProfile profile = new BuyerProfile();
 
         profile.setDailyTime(request.getPersonalization().getDailyTime());
@@ -91,7 +112,6 @@ public class AuthService {
 
         return res;
     }
-
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
@@ -123,5 +143,14 @@ public class AuthService {
         response.setRefreshToken(refreshToken);
 
         return response;
+    }
+
+    public String refreshAccessToken(String refreshToken) {
+
+        jwtUtil.validateToken(refreshToken);
+
+        String email = jwtUtil.extractEmail(refreshToken);
+
+        return jwtUtil.generateToken(email);
     }
 }
