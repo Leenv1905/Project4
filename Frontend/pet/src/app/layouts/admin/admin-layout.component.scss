@@ -1,0 +1,28 @@
+// admin-layout.component.scss
+.admin-container {
+  height: 100vh;
+}
+
+.admin-sidenav {
+  width: 240px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  padding: 16px;
+}
+
+.admin-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.admin-content {
+  padding: 24px;
+}
+
+.spacer {
+  flex: 1;
+}

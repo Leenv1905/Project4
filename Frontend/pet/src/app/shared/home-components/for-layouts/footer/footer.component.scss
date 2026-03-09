@@ -1,0 +1,75 @@
+.footer {
+  padding: 16px 0;
+  background-color: #fff;
+  font-family: Roboto, Arial, sans-serif;
+}
+
+.footer-grid {
+  width: 85%;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 4fr 2fr 3fr 3fr;
+  gap: 48px; // ~ spacing={6} của MUI
+}
+
+.logo {
+  width: 150px;
+  margin-bottom: 16px;
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 16px;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Footer column */
+h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 16px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
+a {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #f86d72; // giống hover bên React
+}
+
+/* Responsive giống Grid xs / sm / md */
+@media (max-width: 900px) {
+  .footer-grid {
+    width: 90%;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .text-right {
+    text-align: left;
+  }
+}

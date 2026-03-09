@@ -1,0 +1,43 @@
+<section id="billboard" class="billboard">
+
+  <swiper-container
+    slides-per-view="1"
+    loop="true"
+    autoplay-delay="3000"
+    navigation="true"
+    class="gallery-swiper"
+  >
+
+    <swiper-slide
+      *ngFor="let slide of slides(); trackBy: trackById"
+    >
+      <div class="slide">
+        <div class="content">
+
+          <!-- Text -->
+          <div class="text">
+            <h1>{{ slide.title | slice:0:30 }}</h1>
+            <p>{{ slide.description | slice:0:50 }}</p>
+
+            <a
+              mat-raised-button
+              color="primary"
+              class="cta"
+              [routerLink]="['/productdetail', slide.id]"
+            >
+              {{ slide.buttonText }}
+            </a>
+          </div>
+
+          <!-- Image -->
+          <div class="image">
+            <img [src]="slide.image" [alt]="slide.title" />
+          </div>
+
+        </div>
+      </div>
+    </swiper-slide>
+
+  </swiper-container>
+
+</section>
