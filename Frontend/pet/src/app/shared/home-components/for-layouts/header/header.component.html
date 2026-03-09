@@ -1,0 +1,57 @@
+<mat-toolbar
+  class="header"
+  [class.scrolled]="isScrolled()"
+>
+
+  <!-- Logo -->
+  <img
+    src="/assets/logo/gupet.png"
+    class="logo"
+    alt="Logo"
+  />
+
+  <!-- Desktop menu -->
+  <nav class="nav desktop-menu">
+    <a mat-button routerLink="/">Home</a>
+    <a mat-button routerLink="/about">About</a>
+    <a mat-button routerLink="/shop">Shop</a>
+    <a mat-button routerLink="/blog">Blogs</a>
+    <a mat-button routerLink="/contact">Contact</a>
+  </nav>
+
+  <span class="spacer"></span>
+
+  <!-- User items -->
+  <app-user-items />
+
+  <!-- Mobile menu icon -->
+  <button
+    mat-icon-button
+    class="mobile-menu"
+    (click)="toggleDrawer(true)"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+</mat-toolbar>
+
+<!-- Mobile drawer -->
+<mat-drawer-container>
+  <mat-drawer
+    mode="over"
+    position="start"
+    [opened]="drawerOpen()"
+    class="mobile-drawer"
+  >
+    <button mat-icon-button (click)="toggleDrawer(false)">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <div class="drawer-menu">
+      <a mat-button routerLink="/" (click)="toggleDrawer(false)">Home</a>
+      <a mat-button routerLink="/about">About</a>
+      <a mat-button routerLink="/shop">Shop</a>
+      <a mat-button routerLink="/blog">Blogs</a>
+      <a mat-button routerLink="/contact">Contact</a>
+    </div>
+  </mat-drawer>
+</mat-drawer-container>

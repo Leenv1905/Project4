@@ -1,0 +1,93 @@
+/* ===== HEADER BASE ===== */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  background-color: #fff;
+  color: #272727;
+
+  padding: 6px 24px;
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1000;
+}
+
+/* Scroll effect (giống React) */
+.header.scrolled {
+  background-color: rgba(247, 249, 249, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== LOGO ===== */
+.logo {
+  height: 50px;
+  cursor: pointer;
+}
+
+/* ===== NAV MENU ===== */
+.nav {
+  display: flex;
+  gap: 16px;
+  margin-left: 40px;
+}
+
+.nav a {
+  font-size: 18px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #272727;
+}
+
+.nav a:hover {
+  color: #f86d72;
+  background-color: transparent;
+}
+
+/* ===== SPACER ===== */
+.spacer {
+  flex: 1;
+}
+
+/* ===== MOBILE MENU ===== */
+.mobile-menu {
+  display: none;
+}
+
+/* ===== MOBILE DRAWER ===== */
+.mobile-drawer {
+  padding: 16px;
+}
+
+.drawer-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.drawer-menu a {
+  font-size: 18px;
+  text-transform: uppercase;
+  color: #272727;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 800px) {
+  .desktop-menu {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: inline-flex;
+  }
+
+  .nav {
+    margin-left: 0;
+  }
+}
