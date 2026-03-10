@@ -26,7 +26,6 @@ public class R2StorageService {
         this.s3Client = s3Client;
     }
 
-    
     public PetImageUploadResult uploadFile(MultipartFile file, Long petId) throws IOException {
         String extension = getFileExtension(file.getOriginalFilename());
         String objectKey = "pets/" + petId + "/" + UUID.randomUUID().toString() + extension;
@@ -37,14 +36,35 @@ public class R2StorageService {
                 .contentType(file.getContentType())
                 .build();
 
-        s3Client.putObject(putObjectRequest, 
+        s3Client.putObject(putObjectRequest,
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
         String completeImageUrl = publicUrl + "/" + objectKey;
         return new PetImageUploadResult(objectKey, completeImageUrl);
     }
 
-   
+    public PetImageUploadResult uploadBase64Image(String base64Data, Long petId) {
+        // Remove data URI scheme prefix if present (e.g., "data:image/png;base64,")
+        if (base64Data.contains(",")) {
+            base64Data = base64Data.split(",")[1];
+        }
+
+        byte[] imageBytes = java.util.Base64.getDecoder().decode(base64Data);
+        String objectKey = "pets/" + petId + "/" + UUID.randomUUID().toString() + ".png"; // Gemini thường trả về
+                                                                                          // png/jpeg
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .contentType("image/png")
+                .build();
+
+        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(imageBytes));
+
+        String completeImageUrl = publicUrl + "/" + objectKey;
+        return new PetImageUploadResult(objectKey, completeImageUrl);
+    }
+
     public void deleteFile(String objectKey) {
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)

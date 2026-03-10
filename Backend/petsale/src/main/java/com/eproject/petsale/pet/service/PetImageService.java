@@ -35,6 +35,23 @@ public class PetImageService {
     }
 
     @Transactional
+    public PetImage uploadBase64PetImage(Long petId, String base64Data, boolean isPrimary, int displayOrder) {
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new RuntimeException("không tìm thấy thú cưng với ID: " + petId));
+
+        R2StorageService.PetImageUploadResult result = r2StorageService.uploadBase64Image(base64Data, petId);
+
+        PetImage petImage = new PetImage();
+        petImage.setPet(pet);
+        petImage.setObjectKey(result.objectKey);
+        petImage.setImageUrl(result.imageUrl);
+        petImage.setPrimary(isPrimary);
+        petImage.setDisplayOrder(displayOrder);
+
+        return petImageRepository.save(petImage);
+    }
+
+    @Transactional
     public void deletePetImage(Long imageId) {
         PetImage petImage = petImageRepository.findById(imageId)
                 .orElseThrow(() -> new RuntimeException("không tìm thấy hình ảnh với ID: " + imageId));
