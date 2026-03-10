@@ -1,5 +1,6 @@
 package com.eproject.petsale.user.service;
 
+import com.eproject.petsale.common.mapper.UserMapper;
 import com.eproject.petsale.user.dto.UpdateProfileRequest;
 import com.eproject.petsale.user.dto.UserProfileResponse;
 import com.eproject.petsale.user.entity.User;
@@ -17,26 +18,25 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @Value("${app.avatar.base-url}")
     private String baseUrl;
 
     public UserProfileResponse getMyProfile(){
 
-        Authentication auth =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        String email = auth.getName();
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow();
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
 
-        UserProfileResponse res = new UserProfileResponse();
-
-        res.setId(user.getId());
-        res.setEmail(user.getEmail());
-        res.setName(user.getName());
-        res.setPhone(user.getPhone());
-        res.setAddress(user.getAddress());
+        UserProfileResponse res =
+                userMapper.toProfileResponse(user);
 
         if(user.getAvatarPath() != null){
             res.setAvatarUrl(baseUrl + user.getAvatarPath());
@@ -47,40 +47,26 @@ public class UserService {
 
     public UserProfileResponse updateMyProfile(UpdateProfileRequest request){
 
-        Authentication auth =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        String email = auth.getName();
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow();
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
 
-        if(request.getName() != null){
-            user.setName(request.getName());
-        }
-
-        if(request.getPhone() != null){
-            user.setPhone(request.getPhone());
-        }
-
-        if(request.getAddress() != null){
-            user.setAddress(request.getAddress());
-        }
+        userMapper.updateProfile(request, user);
 
         userRepository.save(user);
 
-        UserProfileResponse res = new UserProfileResponse();
-
-        res.setId(user.getId());
-        res.setEmail(user.getEmail());
-        res.setName(user.getName());
-        res.setPhone(user.getPhone());
-        res.setAddress(user.getAddress());
+        UserProfileResponse res =
+                userMapper.toProfileResponse(user);
 
         if(user.getAvatarPath() != null){
             res.setAvatarUrl(baseUrl + user.getAvatarPath());
         }
 
         return res;
-    }}
-
+    }
+}
