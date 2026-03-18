@@ -1,0 +1,42 @@
+.mini-card {
+  display: flex;
+  height: 150px;
+  gap: 12px;
+  cursor: pointer;
+
+  img {
+    width: 100px;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+
+  .content {
+    flex: 1;
+  }
+
+  h4 {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:hover {
+      color: #f86d72;
+    }
+  }
+
+  .shop {
+    color: #777;
+    font-size: 0.85rem;
+  }
+  .price {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .meta {
+    font-size: 0.8rem;
+    color: #999;
+  }
+}
