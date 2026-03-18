@@ -1,0 +1,60 @@
+.company-services {
+  padding: 64px 0;
+  padding-bottom: 40px;
+}
+
+.services-grid {
+  max-width: 1200px;
+  margin: auto;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.service-item {
+  display: flex;
+  align-items: flex-start;
+  max-width: 350px;
+}
+
+.icon {
+  padding-right: 24px;
+  color: #f86d72; // giống React
+  font-size: 48px;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.content {
+  h4 {
+    margin-bottom: 8px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #272727;
+    text-transform: capitalize;
+  }
+
+  p {
+    font-size: 18px;
+    color: #717171;
+    line-height: 1.5;
+  }
+}
+
+/* Responsive giống Grid MUI */
+@media (max-width: 1200px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { GalleryBookComponent } from '../../shared/home-components/for-features/gallery-book/gallery-book.component';
-// import { CompanyServicesComponent } from '../../shared/components/company-services/company-services.component';
-// import { BestSellingItemsComponent } from '../../shared/components/best-selling-items/best-selling-items.component';
+import { CompanyServicesComponent } from '../../shared/home-components/for-features/company-services/company-services.component';
+import { FeaturedProductsComponent } from '../../shared/home-components/for-features/featured-products/featured-products.component';
 // import { LimitedOfferComponent } from '../../shared/components/limited-offer/limited-offer.component';
 // import { ProductSectionComponent} from '../../shared/components/product-section/product-section.component';
 // import { CategoriesSectionComponent } from '../../shared/components/categories-section/categories-section.component';
@@ -14,8 +14,8 @@ import { GalleryBookComponent } from '../../shared/home-components/for-features/
   selector: 'app-home-page',
   imports: [
     GalleryBookComponent,
-    // CompanyServicesComponent,
-    // BestSellingItemsComponent,
+    CompanyServicesComponent,
+    FeaturedProductsComponent,
     // LimitedOfferComponent,
     // ProductSectionComponent,
     // CategoriesSectionComponent,

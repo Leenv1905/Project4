@@ -1,10 +1,21 @@
 export interface Product {
+
   id: number;
+
   name: string;
-  author?: string;
+
+  description: string;
+
   price: number;
-  salePrice?: number;
-  rating?: number;
-  discount?: string;
-  image: string;
+
+  images: string[];
+
+  video?: string;
+
+  breed: string;
+
+  dogType: string;
+
+  shopName: string;
+
 }
