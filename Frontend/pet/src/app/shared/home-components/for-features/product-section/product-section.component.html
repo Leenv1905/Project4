@@ -1,0 +1,17 @@
+<section class="product-section">
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="groups.length > 0" class="grid">
+
+    <app-product-group
+      *ngFor="let g of groups"
+      [title]="g.title"
+      [products]="g.products"
+    />
+
+  </div>
+
+</section>

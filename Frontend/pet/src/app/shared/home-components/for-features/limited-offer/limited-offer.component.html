@@ -1,0 +1,63 @@
+<section id="limited-offer" class="limited-offer">
+
+  <div class="container">
+
+    <!-- IMAGE -->
+    <div class="image">
+      <img
+        src="/assets/cho6.jpeg"
+        alt="banner"
+      />
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <h2>
+        30% Discount on all items. Hurry Up !!!
+      </h2>
+
+      <!-- COUNTDOWN -->
+      <div class="countdown">
+
+        <div class="unit">
+          <span class="value">{{ timeLeft.days }}</span>
+          <span class="label">Days</span>
+        </div>
+
+        <span class="colon">:</span>
+
+        <div class="unit">
+          <span class="value">{{ timeLeft.hours }}</span>
+          <span class="label">Hrs</span>
+        </div>
+
+        <span class="colon">:</span>
+
+        <div class="unit">
+          <span class="value">{{ timeLeft.minutes }}</span>
+          <span class="label">Min</span>
+        </div>
+
+        <span class="colon">:</span>
+
+        <div class="unit">
+          <span class="value">{{ timeLeft.seconds }}</span>
+          <span class="label">Sec</span>
+        </div>
+
+      </div>
+
+      <!-- BUTTON -->
+      <a
+        routerLink="/shop"
+        class="cta"
+      >
+        Shop Collection
+      </a>
+
+    </div>
+
+  </div>
+
+</section>

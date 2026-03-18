@@ -1,0 +1,22 @@
+<div class="post-card">
+
+  <div class="image-wrapper">
+    <img [src]="image" alt="Post image" />
+  </div>
+
+  <div class="content">
+
+    <p class="category">{{ category }}</p>
+
+    <h4 class="title" (click)="navigate()">
+      {{ title }}
+    </h4>
+
+    <p class="description">
+      {{ description }}
+      <span class="read-more" (click)="navigate()">Read More</span>
+    </p>
+
+  </div>
+
+</div>

@@ -1,0 +1,28 @@
+<section class="reviews">
+
+  <div class="inner">
+
+    <h3>Customers reviews</h3>
+
+    <swiper-container
+      slides-per-view="1"
+      loop="true"
+      speed="500"
+      navigation="true"
+      pagination="true"
+    >
+
+      <swiper-slide *ngFor="let r of reviews">
+
+        <app-review-card
+          [text]="r.text"
+          [name]="r.name"
+        />
+
+      </swiper-slide>
+
+    </swiper-container>
+
+  </div>
+
+</section>

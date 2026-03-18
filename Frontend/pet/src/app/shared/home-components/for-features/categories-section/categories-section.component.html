@@ -1,0 +1,35 @@
+<section id="categories" class="categories">
+
+  <div class="container">
+
+    <!-- Title -->
+    <div class="section-title">
+      <h3>Categories</h3>
+    </div>
+
+    <!-- Cards -->
+    <div class="grid">
+
+      <div
+        class="card"
+        *ngFor="let category of categories"
+      >
+        <a [routerLink]="category.link">
+
+          <img
+            [src]="category.image"
+            [alt]="category.title"
+          />
+
+          <div class="overlay">
+            {{ category.title }}
+          </div>
+
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
