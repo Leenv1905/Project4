@@ -1,0 +1,27 @@
+<div class="sidebar">
+
+  <div
+    class="item"
+    [class.active]="active === 'orders'"
+    (click)="changeTab.emit('orders')"
+  >
+    📦 Orders
+  </div>
+
+  <div
+    class="item"
+    [class.active]="active === 'info'"
+    (click)="changeTab.emit('info')"
+  >
+    👤 Information
+  </div>
+
+  <div
+    class="item"
+    [class.active]="active === 'payment'"
+    (click)="changeTab.emit('payment')"
+  >
+    💳 Payment
+  </div>
+
+</div>

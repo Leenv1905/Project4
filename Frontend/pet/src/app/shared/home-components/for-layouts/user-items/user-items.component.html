@@ -28,7 +28,7 @@
       Role: {{ auth.user()?.role }}
     </button>
 
-    <button mat-menu-item>
+    <button mat-menu-item (click)="goToAccount()">
       My Account
     </button>
 

@@ -30,7 +30,8 @@ export const routes: Routes = [
       { path: 'productdetail/:id', loadComponent: () => import('./features/products/product-detail/product-detail.component').then(m => m.ProductDetailComponent)},
       { path: 'checkout', loadComponent: () => import('./features/checkout/pages/checkout-page.component').then(m => m.CheckoutPageComponent), canActivate: [authGuard]},
       { path: 'success', loadComponent: () => import('./features/checkout/pages/success-page.component').then(m => m.SuccessPageComponent), canActivate: [authGuard]},
-      { path: 'cart', loadComponent: () => import('./features/cart/pages/cart-page.component').then(m => m.CartPageComponent), canActivate: [authGuard]}
+      { path: 'cart', loadComponent: () => import('./features/cart/pages/cart-page.component').then(m => m.CartPageComponent), canActivate: [authGuard]},
+      { path: 'account', loadComponent: () => import('./features/account/pages/account-page/account-page.component').then(m => m.AccountPageComponent), canActivate: [authGuard]}
 
       // { path: 'myaccount', loadComponent: () => import('./features/home/myaccount.page') .then(m => m.MyaccountPage) }
     ]
