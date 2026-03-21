@@ -1,0 +1,59 @@
+<div class="sidebar">
+
+  <!-- BREED -->
+
+  <div class="filter-group">
+    <h4>Giống chó</h4>
+
+    <ul>
+      <li
+        *ngFor="let breed of breeds"
+        (click)="selectBreed(breed)"
+        [class.active]="shopService.filters().breed === breed"
+      >
+        {{ breed }}
+      </li>
+    </ul>
+  </div>
+
+  <!-- DOG TYPE -->
+
+  <div class="filter-group">
+    <h4>Kích thước</h4>
+
+    <ul>
+      <li
+        *ngFor="let type of dogTypes"
+        (click)="selectDogType(type)"
+        [class.active]="shopService.filters().dogType === type"
+      >
+        {{ type }}
+      </li>
+    </ul>
+  </div>
+
+  <!-- PRICE -->
+
+  <div class="filter-group">
+    <h4>Giá</h4>
+
+    <ul>
+      <li
+        *ngFor="let price of priceRanges"
+        (click)="selectPrice(price.value)"
+        [class.active]="shopService.filters().priceRange === price.value"
+      >
+        {{ price.label }}
+      </li>
+    </ul>
+  </div>
+
+  <!-- CLEAR -->
+
+  <div class="clear-filter">
+    <button (click)="clearFilters()">
+      Xóa bộ lọc
+    </button>
+  </div>
+
+</div>

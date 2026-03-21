@@ -1,0 +1,18 @@
+.product-filter {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.search input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: 220px;
+}
+
+.sort select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}

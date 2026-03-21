@@ -22,7 +22,9 @@ export const routes: Routes = [
     path: '',
     component: HomeLayoutComponent,
     children: [
-      { path: '', loadComponent: () => import('./features/home/home.page') .then(m => m.HomePage) }
+      { path: '', loadComponent: () => import('./features/home/home.page') .then(m => m.HomePage) },
+      { path: 'shop', loadComponent: () => import('./features/shop/pages/shop.page') .then(m => m.ShopPage)},
+      { path: 'productdetail/:id', loadComponent: () => import('./features/products/product-detail/product-detail.component').then(m => m.ProductDetailComponent)}
       // { path: 'myaccount', loadComponent: () => import('./features/home/myaccount.page') .then(m => m.MyaccountPage) }
     ]
   },

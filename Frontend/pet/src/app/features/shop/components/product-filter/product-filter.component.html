@@ -1,0 +1,28 @@
+<div class="product-filter">
+
+  <div class="search">
+    <input
+      type="text"
+      placeholder="Find your pet..."
+      [(ngModel)]="searchQuery"
+      (input)="updateSearch()"
+    />
+
+    <button *ngIf="searchQuery" (click)="clearSearch()">✕</button>
+  </div>
+
+  <div class="sort">
+
+    <select [(ngModel)]="sort" (change)="updateSort()">
+
+      <option value="">Default</option>
+      <option value="priceAsc">Price ↑</option>
+      <option value="priceDesc">Price ↓</option>
+      <option value="nameAsc">Name A-Z</option>
+      <option value="nameDesc">Name Z-A</option>
+
+    </select>
+
+  </div>
+
+</div>
