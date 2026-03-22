@@ -1,0 +1,78 @@
+.categories {
+  padding: 12px 0 0 0;
+  width: 100%;
+}
+
+.container {
+  max-width: 1600px;
+  margin: auto;
+  padding: 0 24px;
+}
+
+.section-title {
+  margin-bottom: 32px;
+
+  h3 {
+    font-size: 39px;
+    font-weight: 600;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    border-radius: 16px;
+    max-width: 450px;
+    margin: 0 auto;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+}
+
+.overlay {
+  position: absolute;
+  bottom: 0;
+  margin: 24px;
+  padding: 8px 16px;
+  background-color: #f86d72;
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* Responsive giống MUI Grid */
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,23 @@
+.review-card {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: left;
+  box-shadow: 0 4px 10px rgba(250, 249, 249, 0.2);
+
+  .text {
+    font-style: italic;
+    margin-bottom: 24px;
+    color: #666;
+  }
+
+  .stars {
+    color: #fbc02d;
+    margin-bottom: 16px;
+    font-size: 20px;
+  }
+
+  .author {
+    font-weight: 500;
+  }
+}

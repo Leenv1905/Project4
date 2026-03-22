@@ -1,0 +1,37 @@
+<div class="cart">
+
+  <h2>Giỏ hàng</h2>
+
+  <div *ngIf="items().length === 0">
+    Giỏ hàng trống
+  </div>
+
+  <div *ngFor="let item of items()" class="item">
+
+    <img [src]="item.image" />
+
+    <div class="info">
+      <h4>{{ item.name }}</h4>
+      <p>{{ item.shopName }}</p>
+      <p>{{ item.price | number }} ₫</p>
+    </div>
+
+    <div class="quantity">
+      <button (click)="decrease(item)">-</button>
+      <span>{{ item.quantity }}</span>
+      <button (click)="increase(item)">+</button>
+    </div>
+
+    <button (click)="remove(item.productId)">X</button>
+
+  </div>
+
+  <div class="total">
+    Tổng: {{ total() | number }} ₫
+  </div>
+
+  <button (click)="checkout()">
+    Thanh toán
+  </button>
+
+</div>

@@ -1,0 +1,36 @@
+<!-- breadcrumbs -->
+<app-breadcrumbs
+  title="Shop"
+  [breadcrumbs]="[
+    { label: 'Home', href: '/' },
+    { label: 'Shop' }
+  ]">
+</app-breadcrumbs>
+
+<!--  <app-breadcrumbs-->
+<!--    title="Product Detail"-->
+<!--    [breadcrumbs]="[-->
+<!--    { label: 'Home', href: '/' },-->
+<!--    { label: 'Shop', href: '/shop' },-->
+<!--    { label: 'Product Detail' }-->
+<!--  ]">-->
+<!--  </app-breadcrumbs>-->
+
+
+<div class="shop-container">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <app-sidebar></app-sidebar>
+  </aside>
+
+  <!-- Main content -->
+  <div class="shop-content">
+
+    <app-product-filter></app-product-filter>
+
+    <app-product-list></app-product-list>
+
+  </div>
+
+</div>

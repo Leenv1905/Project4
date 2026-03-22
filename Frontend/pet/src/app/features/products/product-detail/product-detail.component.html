@@ -1,0 +1,64 @@
+<div class="product-detail" *ngIf="product() as p">
+
+  <div class="container">
+
+    <!-- LEFT: IMAGE -->
+    <div class="gallery">
+
+      <img
+        class="main-image"
+        [src]="selectedImage()"
+      />
+
+      <div class="thumbnails">
+        <img
+          *ngFor="let img of p.images"
+          [src]="img"
+          (click)="selectImage(img)"
+        />
+      </div>
+
+    </div>
+
+    <!-- RIGHT: INFO -->
+    <div class="info">
+
+      <h1>{{ p.name }}</h1>
+
+      <p class="meta">
+        {{ p.breed }} - {{ p.dogType }}
+      </p>
+
+      <div class="price">
+        {{ p.price | number:'1.0-0' }} ₫
+      </div>
+
+      <div class="shop">
+        Shop: {{ p.shopName }}
+      </div>
+
+      <!-- QUANTITY -->
+      <div class="quantity">
+        <button (click)="decreaseQty()">-</button>
+        <span>{{ quantity() }}</span>
+        <button (click)="increaseQty()">+</button>
+      </div>
+
+      <!-- ACTION -->
+      <div class="actions">
+        <button class="add" (click)="addToCart()">
+          🛒 Thêm vào giỏ
+        </button>
+      </div>
+
+      <!-- DESCRIPTION -->
+      <div class="description">
+        <h3>Mô tả</h3>
+        <p>{{ p.description }}</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

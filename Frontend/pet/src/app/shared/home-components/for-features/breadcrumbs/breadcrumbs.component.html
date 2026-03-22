@@ -1,0 +1,40 @@
+<section class="breadcrumb-section">
+
+  <div class="breadcrumb-container">
+
+    <h1 class="page-title">
+      {{ title }}
+    </h1>
+
+    <nav class="breadcrumb-nav">
+
+      <ng-container *ngFor="let item of breadcrumbs; let last = last">
+
+        <a
+          *ngIf="item.href && !last"
+          [routerLink]="item.href"
+          class="breadcrumb-link">
+
+          {{ item.label }}
+
+        </a>
+
+        <span
+          *ngIf="!item.href || last"
+          class="breadcrumb-current">
+
+          {{ item.label }}
+
+        </span>
+
+        <span *ngIf="!last" class="separator">
+          /
+        </span>
+
+      </ng-container>
+
+    </nav>
+
+  </div>
+
+</section>

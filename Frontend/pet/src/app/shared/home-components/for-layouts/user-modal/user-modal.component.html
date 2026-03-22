@@ -1,21 +1,52 @@
 <ng-container *ngIf="auth.showLoginModal()">
   <div class="modal-backdrop">
-    <div class="modal">
+
+    <div class="modal" >
+
       <mat-tab-group [(selectedIndex)]="tabIndex">
+
+        <!-- LOGIN -->
         <mat-tab label="Login">
-          <input matInput placeholder="Email" [(ngModel)]="email" />
-          <input matInput type="password" placeholder="Password" [(ngModel)]="password" />
-          <button mat-raised-button color="primary" (click)="login()">Login</button>
+          <div class="form">
+
+            <input matInput placeholder="Email" [(ngModel)]="email" />
+
+            <input
+              matInput
+              type="password"
+              placeholder="Password"
+              [(ngModel)]="password"
+              (keyup.enter)="login()"
+            />
+
+            <button mat-raised-button color="primary" (click)="login()">
+              Login
+            </button>
+
+          </div>
         </mat-tab>
 
+        <!-- REGISTER -->
         <mat-tab label="Register">
-          <input matInput placeholder="Email" />
-          <input matInput type="password" placeholder="Password" />
-          <button mat-raised-button color="primary" (click)="register()">Register</button>
+          <div class="form">
+
+            <input matInput placeholder="Email" />
+            <input matInput type="password" placeholder="Password" />
+
+            <button mat-raised-button color="primary" (click)="register()">
+              Register
+            </button>
+
+          </div>
         </mat-tab>
+
       </mat-tab-group>
 
-      <button mat-button (click)="auth.closeLogin()">Close</button>
+      <button class="close-btn" mat-button (click)="auth.closeLogin()">
+        ✕
+      </button>
+
     </div>
+
   </div>
 </ng-container>

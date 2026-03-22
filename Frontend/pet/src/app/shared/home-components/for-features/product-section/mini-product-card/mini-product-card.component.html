@@ -1,0 +1,25 @@
+<div class="mini-card">
+
+  <img
+    [src]="image"
+    [alt]="name"
+    (click)="navigate()"
+  />
+
+  <div class="content">
+
+    <h4 (click)="navigate()">{{ name }}</h4>
+
+    <p class="shop">{{ shopName }}</p>
+
+    <p class="meta">
+      {{ breed }} - {{ dogType }}
+    </p>
+
+    <div class="price">
+      {{ price | number:'1.0-0' }} ₫
+    </div>
+
+  </div>
+
+</div>

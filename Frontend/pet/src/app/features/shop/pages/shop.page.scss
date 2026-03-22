@@ -1,0 +1,54 @@
+
+.shop-container {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 40px;
+  width: 90%;
+  margin: auto;
+  padding: 40px 0;
+}
+
+/* Sidebar */
+
+.sidebar {
+  position: sticky;
+  top: 120px;
+  height: fit-content;
+  // Đoạn này để sidebar luôn hiển thị khi cuộn trang,
+  // và có khoảng cách 120px từ top của viewport.
+  // Chiều cao sẽ tự động điều chỉnh theo nội dung bên trong.
+  width: 260px;
+}
+//.sidebar{
+//  max-height: calc(100vh - 140px);
+//  overflow-y: auto;
+//}
+//Khi filter nhiều Category
+//Language
+//Price
+//Author
+//Publisher
+//Year
+//Rating
+//Thì sidebar sẽ tự scroll, còn content sẽ cố định, không bị ảnh hưởng bởi scroll của sidebar
+
+/* Content */
+
+.shop-content {
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+
+  .shop-container {
+
+    grid-template-columns: 1fr;
+
+  }
+
+  .sidebar {
+    order: 2;
+    position: static;
+  }
+
+}

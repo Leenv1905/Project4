@@ -1,0 +1,51 @@
+<div class="product-card">
+
+  <!-- Action -->
+  <div class="card-actions">
+    <button mat-icon-button (click)="addToCart()">
+      <mat-icon>shopping_cart</mat-icon>
+    </button>
+  </div>
+
+  <!-- Image -->
+  <img
+    class="product-image"
+    [src]="product.images[0]"
+    [alt]="product.name"
+    (click)="navigateDetail()"
+  />
+
+  <div class="content">
+
+    <!-- Name -->
+    <h3 class="title" (click)="navigateDetail()">
+      {{ product.name }}
+    </h3>
+
+    <!-- Shop + Breed -->
+    <div class="meta">
+      <span class="author">
+        {{ product.shopName }}
+      </span>
+
+      <span class="author">
+        {{ product.breed }} - {{ product.dogType }}
+      </span>
+    </div>
+
+    <!-- Rating (fake for now) -->
+    <div class="meta">
+      <span class="rating">
+        <mat-icon *ngFor="let _ of stars()">star</mat-icon>
+      </span>
+    </div>
+
+    <!-- Price -->
+    <div class="price">
+      <span class="original">
+        {{ product.price | number:'1.0-0' }} ₫
+      </span>
+    </div>
+
+  </div>
+</div>
