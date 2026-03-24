@@ -1,6 +1,8 @@
 package com.eproject.petsale.pet.service;
 
+import com.eproject.petsale.common.mapper.PetPublicMapper;
 import com.eproject.petsale.pet.dto.PetImageDTO;
+import com.eproject.petsale.pet.dto.PetPublicResponse;
 import com.eproject.petsale.pet.dto.PetRequest;
 import com.eproject.petsale.pet.dto.PetResponse;
 import com.eproject.petsale.pet.entity.Pet;
@@ -24,7 +26,7 @@ public class PetService {
 
     private final PetRepository petRepository;
     private final UserRepository userRepository;
-
+    private final PetPublicMapper petPublicMapper;
     @Transactional
     public PetResponse createPet(PetRequest request) {
 
@@ -173,5 +175,11 @@ public class PetService {
         String prefix = species.toUpperCase().substring(0, Math.min(species.length(), 3));
         String randomNum = String.valueOf((int) (Math.random() * 90000) + 10000);
         return prefix + "-" + randomNum;
+    }
+
+    public List<PetPublicResponse> getAllPublicPets() {
+        return petPublicMapper.toResponseList(
+                petRepository.findByIsVerifiedTrueOrderByCreatedAtDesc()
+        );
     }
 }

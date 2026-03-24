@@ -26,14 +26,7 @@ public class UserService {
 
     public UserProfileResponse getMyProfile(){
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+        User user = getCurrentUser();
 
         UserProfileResponse res =
                 userMapper.toProfileResponse(user);
@@ -47,14 +40,7 @@ public class UserService {
 
     public UserProfileResponse updateMyProfile(UpdateProfileRequest request){
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+        User user = getCurrentUser();
 
         userMapper.updateProfile(request, user);
 
@@ -68,5 +54,14 @@ public class UserService {
         }
 
         return res;
+    }
+    public User getCurrentUser() {
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

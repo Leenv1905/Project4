@@ -36,6 +36,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/gupet/v1/auth/**").permitAll()
                         .requestMatchers("/gupet/v1/api/users/**").authenticated()
+                        .requestMatchers("/gupet/api/v1/pets/public").permitAll()
+                        .requestMatchers("/gupet/api/v1/pets/**").authenticated()
+                        .requestMatchers("/gupet/api/v1/cart/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter,// gọi phương thức này để xác thực req có có token
