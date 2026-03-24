@@ -1,0 +1,38 @@
+.reviews {
+  background-image: url('/assets/banner-image-bg.jpg');
+  background-size: cover;
+  background-position: center;
+
+  height: 600px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 20px;
+}
+
+.inner {
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+}
+
+h3 {
+  font-size: 39px;
+  margin-bottom: 40px;
+}
+
+/* Customize swiper */
+swiper-container::part(button-prev),
+swiper-container::part(button-next) {
+  color: black;
+}
+
+swiper-container::part(pagination-bullet) {
+  background: #ccc;
+}
+
+swiper-container::part(pagination-bullet-active) {
+  background: #f86d72;
+}

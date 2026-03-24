@@ -1,0 +1,57 @@
+.best-selling {
+  padding: 2rem 0;
+  max-width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  padding-left: 150px;
+  padding-right: 150px;
+
+  h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  .view-all {
+    background-color: #f86d72;
+    color: #fff;
+    font-size: 0.875rem;
+    border-radius: 30px;
+    padding: 10px 24px;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      background-color: #d85a60;
+    }
+  }
+}
+
+/* Responsive giống MUI */
+@media (max-width: 900px) {
+  .header {
+    padding-left: 100px;
+    padding-right: 100px;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+.error,
+.empty {
+  text-align: center;
+  padding: 2rem;
+  color: #999;
+}

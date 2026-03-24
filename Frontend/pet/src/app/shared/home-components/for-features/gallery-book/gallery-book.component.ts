@@ -33,14 +33,14 @@ export class GalleryBookComponent implements OnInit {
         id: 1,
         title: 'The Silent Forest',
         description: 'Save 20%! Only 120.000 VNĐ',
-        image: 'assets/logo/main-logo.png',
+        image: 'assets/cho1.jpg',
         buttonText: 'Shop Now'
       },
       {
         id: 2,
         title: 'Journey to the Stars',
         description: 'Discover now!',
-        image: 'assets/logo/main-logo.png',
+        image: 'assets/cho2.jpg',
         buttonText: 'Shop Now'
       }
     ]);

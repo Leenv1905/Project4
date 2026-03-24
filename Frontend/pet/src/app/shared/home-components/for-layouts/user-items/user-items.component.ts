@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
@@ -21,5 +22,14 @@ import { UserModalComponent } from '../user-modal/user-modal.component';
   templateUrl: './user-items.component.html'
 })
 export class UserItemsComponent {
-  constructor(public auth: AuthService) {}
+
+  auth = inject(AuthService);
+  router = inject(Router);
+
+  goToAccount() {
+    this.router.navigate(['/account'], {
+      queryParams: { tab: 'orders' }
+    });
+  }
+
 }

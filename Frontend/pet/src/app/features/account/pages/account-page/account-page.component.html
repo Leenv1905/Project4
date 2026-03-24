@@ -1,0 +1,22 @@
+<div class="account">
+
+  <div class="container">
+
+    <!-- SIDEBAR -->
+    <app-account-sidebar
+      [active]="tab()"
+      (changeTab)="setTab($event)"
+    />
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <app-account-orders *ngIf="tab() === 'orders'" />
+      <app-account-info *ngIf="tab() === 'info'" />
+      <app-account-payment *ngIf="tab() === 'payment'" />
+
+    </div>
+
+  </div>
+
+</div>

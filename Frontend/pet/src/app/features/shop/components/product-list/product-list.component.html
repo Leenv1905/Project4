@@ -1,0 +1,21 @@
+<div class="product-list">
+
+  <div class="grid">
+
+    <div
+      class="product-item"
+      *ngFor="let product of products(); trackBy: trackById"
+    >
+      <app-product-card
+        [product]="product"
+      />
+    </div>
+
+  </div>
+
+  <app-pagination
+    [currentPage]="pagination().page"
+    [totalPages]="totalPages()"
+  ></app-pagination>
+
+</div>

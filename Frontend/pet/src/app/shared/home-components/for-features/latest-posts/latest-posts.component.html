@@ -1,0 +1,28 @@
+<section id="latest-posts" class="latest-posts">
+
+  <div class="header">
+    <h3>Latest Posts</h3>
+
+    <a routerLink="/shop" class="view-all">
+      View All
+    </a>
+  </div>
+
+  <div class="grid">
+
+    <div
+      class="post-wrapper"
+      *ngFor="let post of posts"
+    >
+      <app-post-card
+        [image]="post.image"
+        [category]="post.category"
+        [title]="post.title"
+        [description]="post.description"
+        [postLink]="post.postLink"
+      />
+    </div>
+
+  </div>
+
+</section>

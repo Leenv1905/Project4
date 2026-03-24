@@ -1,0 +1,31 @@
+<section id="best-selling-items" class="best-selling">
+
+  <!-- ERROR -->
+  <div class="error" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <!-- EMPTY -->
+  <div class="empty" *ngIf="!error && products.length === 0">
+    No products available.
+  </div>
+
+  <!-- CONTENT -->
+  <ng-container *ngIf="products.length > 0">
+
+    <div class="header">
+      <h3>Featured Products</h3>
+
+      <a
+        routerLink="/shop"
+        class="view-all"
+      >
+        View All
+      </a>
+    </div>
+
+    <app-product-slider [products]="products" />
+
+  </ng-container>
+
+</section>

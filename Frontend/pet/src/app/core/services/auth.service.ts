@@ -1,24 +1,35 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed, effect, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { User } from '../../shared/models/user.model';
 
-export type Role = 'ROLE_USER' | 'ROLE_ADMIN';
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
-  private _isAuthenticated = signal(false);
+
+  private _user = signal<User | null>(null);
+
+  user = this._user;
+// ===== ROLE HELPERS =====
+  // đã login
+  isAuthenticated = computed(() => !!this._user());
+
+// role hiện tại
+  role = computed(() => this._user()?.role);
+
+// quyền admin
+  canAccessAdmin = computed(() =>
+    ['admin', 'operators'].includes(this._user()?.role || '')
+  );
+
+// quyền home (thực ra tất cả role đều vào được)
+  canAccessHome = computed(() =>
+    ['user', 'shop', 'admin', 'operators'].includes(this._user()?.role || '')
+  );
+  // ===== MODAL =====
   private _showLoginModal = signal(false);
-  private _role = signal<Role>('ROLE_USER');
 
-  isAuthenticated() {
-    return this._isAuthenticated();
-  }
-
-  role() {
-    return this._role();
-  }
-
-  showLoginModal() {
-    return this._showLoginModal();
-  }
+  showLoginModal = this._showLoginModal;
 
   openLogin() {
     this._showLoginModal.set(true);
@@ -28,19 +39,85 @@ export class AuthService {
     this._showLoginModal.set(false);
   }
 
+  // ===== MOCK USERS =====
+  private mockUsers: User[] = [
+    {
+      id: 1,
+      email: 'user@gmail.com',
+      name: 'User',
+      role: 'user'
+    },
+    {
+      id: 2,
+      email: 'shop@gmail.com',
+      name: 'Shop Owner',
+      role: 'shop'
+    },
+    {
+      id: 3,
+      email: 'admin@gmail.com',
+      name: 'Admin',
+      role: 'admin'
+    },
+    {
+      id: 4,
+      email: 'op@gmail.com',
+      name: 'Operator',
+      role: 'operators'
+    }
+  ];
+
+  // ===== LOGIN =====
+
+  router = inject(Router);
   login(email: string, password: string) {
-    // MOCK LOGIN
-    this._isAuthenticated.set(true);
-    this._role.set(email.includes('admin') ? 'ROLE_ADMIN' : 'ROLE_USER');
+
+    const found = this.mockUsers.find(u => u.email === email);
+
+    if (!found) {
+      alert('Sai tài khoản');
+      return;
+    }
+
+    this._user.set(found);
     this.closeLogin();
+
+    // Redirect theo role
+    if (['admin', 'operators'].includes(found.role)) {
+      this.router.navigate(['/admin']);
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
-  register() {
-    this._isAuthenticated.set(true);
-    this.closeLogin();
-  }
-
+  // ===== LOGOUT =====
   logout() {
-    this._isAuthenticated.set(false);
+    this._user.set(null);
+    localStorage.removeItem('user');
   }
+
+  // ===== REGISTER (mock) =====
+  register() {
+    alert('Register chưa implement');
+  }
+
+  // ===== LOCAL STORAGE =====
+  constructor() {
+
+    // load user
+    const saved = localStorage.getItem('user');
+    if (saved) {
+      this._user.set(JSON.parse(saved));
+    }
+
+    // save user
+    effect(() => {
+      const user = this._user();
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+    });
+
+  }
+
 }

@@ -1,0 +1,110 @@
+.product-card {
+  position: relative;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.2s ease;
+
+  &:hover .card-actions {
+    opacity: 1;
+  }
+}
+
+.card-actions {
+  position: absolute;
+  top: 90%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+
+  button {
+    background: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+}
+
+.discount {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #f86d72;
+  color: white;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+.product-image {
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.content {
+  flex: 1;
+  padding-top: 12px;
+}
+
+.title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+
+  &:hover {
+    color: #f86d72;
+  }
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+
+  .author {
+    color: #777;
+    font-size: 0.9rem;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rating mat-icon {
+    font-size: 16px;
+    color: gold;
+  }
+}
+
+.price {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  .original {
+    font-weight: bold;
+    color: #f86d72;
+
+    &.line-through {
+      text-decoration: line-through;
+      color: #999;
+      font-size: 1rem;
+    }
+  }
+
+  .sale {
+    font-weight: bold;
+    color: #f86d72;
+  }
+}

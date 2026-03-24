@@ -1,0 +1,23 @@
+<div class="slider-container">
+
+  <swiper-container
+    slides-per-view="4"
+    space-between="10"
+    navigation="true"
+    loop="true"
+    speed="500"
+    breakpoints='{
+      "1268": { "slidesPerView": 3 },
+      "1024": { "slidesPerView": 2 },
+      "700":  { "slidesPerView": 1 },
+      "480":  { "slidesPerView": 1 }
+    }'
+  >
+    <swiper-slide *ngFor="let product of products">
+      <div class="card-wrapper">
+        <app-product-card [product]="product" />
+      </div>
+    </swiper-slide>
+  </swiper-container>
+
+</div>

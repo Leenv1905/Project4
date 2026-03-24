@@ -5,15 +5,39 @@
 </button>
 
 <mat-menu #menu="matMenu">
+
   <ng-container *ngIf="!auth.isAuthenticated(); else logged">
-    <button mat-menu-item (click)="auth.openLogin()">Login</button>
-    <button mat-menu-item (click)="auth.openLogin()">Register</button>
+
+    <button mat-menu-item (click)="auth.openLogin()">
+      Login
+    </button>
+
+    <button mat-menu-item (click)="auth.openLogin()">
+      Register
+    </button>
+
   </ng-container>
 
   <ng-template #logged>
-    <button mat-menu-item>My Account</button>
-    <button mat-menu-item (click)="auth.logout()">Logout</button>
+
+    <button mat-menu-item>
+      👋 {{ auth.user()?.name }}
+    </button>
+
+    <button mat-menu-item>
+      Role: {{ auth.user()?.role }}
+    </button>
+
+    <button mat-menu-item (click)="goToAccount()">
+      My Account
+    </button>
+
+    <button mat-menu-item (click)="auth.logout()">
+      Logout
+    </button>
+
   </ng-template>
+
 </mat-menu>
 
 <app-wishlist-dropdown />

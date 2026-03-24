@@ -1,0 +1,41 @@
+<div class="checkout">
+
+  <div class="container">
+
+    <!-- LEFT: FORM -->
+    <div class="form">
+
+      <h2>Thông tin nhận hàng</h2>
+
+      <input placeholder="Tên" [(ngModel)]="form.customerName" />
+      <input placeholder="SĐT" [(ngModel)]="form.phone" />
+      <input placeholder="Địa chỉ" [(ngModel)]="form.address" />
+      <textarea placeholder="Ghi chú" [(ngModel)]="form.note"></textarea>
+
+    </div>
+
+    <!-- RIGHT: SUMMARY -->
+    <div class="summary">
+
+      <h2>Đơn hàng</h2>
+
+      <div *ngFor="let item of items()">
+        {{ item.name }} x{{ item.quantity }}
+        <span>{{ item.price | number }} ₫</span>
+      </div>
+
+      <hr />
+
+      <div class="total">
+        Tổng: {{ total() | number }} ₫
+      </div>
+
+      <button (click)="placeOrder()">
+        Đặt hàng
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

@@ -18,7 +18,8 @@ import { AuthService } from '../../../../core/services/auth.service';
     MatButtonModule,
     FormsModule
   ],
-  templateUrl: './user-modal.component.html'
+  templateUrl: './user-modal.component.html',
+  styleUrls: ['./user-modal.component.scss']
 })
 export class UserModalComponent {
   tabIndex = 0;
