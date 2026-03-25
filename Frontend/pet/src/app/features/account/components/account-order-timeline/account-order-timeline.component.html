@@ -1,0 +1,12 @@
+<div class="timeline">
+
+  <div
+    class="step"
+    *ngFor="let s of steps"
+    [class.active]="isActive(s.key)"
+  >
+    <div class="circle"></div>
+    <div class="label">{{ s.label }}</div>
+  </div>
+
+</div>

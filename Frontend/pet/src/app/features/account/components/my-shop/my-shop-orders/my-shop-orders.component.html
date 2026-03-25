@@ -1,0 +1,77 @@
+<div class="shop-orders">
+
+  <!-- TABS -->
+  <div class="tabs">
+
+    <div
+      class="tab"
+      [class.active]="activeTab() === 'pending'"
+      (click)="activeTab.set('pending')"
+    >
+      Đơn mới ({{ count('pending') }})
+    </div>
+
+    <div
+      class="tab"
+      [class.active]="activeTab() === 'confirmed'"
+      (click)="activeTab.set('confirmed')"
+    >
+      Đã xác nhận ({{ count('confirmed') }})
+    </div>
+
+    <div
+      class="tab"
+      [class.active]="activeTab() === 'all'"
+      (click)="activeTab.set('all')"
+    >
+      Tất cả
+    </div>
+
+  </div>
+
+  <!-- LIST -->
+  <div class="order-list">
+
+    <div class="order-card" *ngFor="let order of filteredOrders()">
+
+      <div class="header">
+        <span>#{{ order.id }}</span>
+        <span>{{ order.status }}</span>
+      </div>
+
+      <div class="items">
+        <div *ngFor="let item of order.items">
+          {{ item.name }} x{{ item.quantity }}
+        </div>
+      </div>
+
+      <div class="footer">
+
+        <div class="total">
+          {{ order.totalAmount | number }} ₫
+        </div>
+
+        <div class="actions">
+
+          <!-- SHOP ACTION -->
+          <ng-container *ngIf="order.status === 'pending'">
+
+            <button class="confirm" (click)="confirmOrder(order.id)">
+              ✔ Xác nhận
+            </button>
+
+            <button class="reject" (click)="rejectOrder(order.id)">
+              ✖ Từ chối
+            </button>
+
+          </ng-container>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

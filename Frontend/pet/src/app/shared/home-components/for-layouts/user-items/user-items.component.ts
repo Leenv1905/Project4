@@ -32,4 +32,10 @@ export class UserItemsComponent {
     });
   }
 
+  goToShop() {
+    this.router.navigate(['/my-shop'], {
+      queryParams: { tab: 'dashboard' }
+    });
+  }
+
 }

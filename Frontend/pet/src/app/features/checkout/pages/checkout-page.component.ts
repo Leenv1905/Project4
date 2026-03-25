@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 
 import { CartService } from '../../../core/services/cart.service';
 import { CheckoutService } from '../services/checkout.service';
+import { OrderStatus } from '../../../shared/models/order.model';
 
 @Component({
   standalone: true,
@@ -35,9 +36,17 @@ export class CheckoutPageComponent {
   placeOrder() {
 
     const order = {
+      id: Date.now(), // mock id
       items: this.items(),
       totalAmount: this.total(),
-      ...this.form
+      status: 'pending' as const, // Trạng thái ban đầu khi mới khởi ta đơn hàng
+      // status: 'pending' as OrderStatus,
+      createdAt: new Date(),
+
+      customerName: this.form.customerName,
+      phone: this.form.phone,
+      address: this.form.address,
+      note: this.form.note
     };
 
     this.checkout.placeOrder(order);

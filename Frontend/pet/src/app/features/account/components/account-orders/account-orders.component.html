@@ -1,0 +1,108 @@
+<div class="orders">
+
+  <!-- STATUS BOX -->
+  <div class="status-tabs">
+
+    <div
+      class="tab"
+      [class.active]="activeTab() === 'pending'"
+      (click)="activeTab.set('pending')"
+    >
+      Đang chờ ({{ countByStatus('pending') }})
+    </div>
+
+    <div
+      class="tab"
+      (click)="activeTab.set('shipping')"
+      [class.active]="activeTab() === 'shipping'"
+    >
+      Đang giao ({{ countByStatus('shipping') }})
+    </div>
+
+    <div
+      class="tab"
+      (click)="activeTab.set('delivered')"
+      [class.active]="activeTab() === 'delivered'"
+    >
+      Đã nhận ({{ countByStatus('delivered') }})
+    </div>
+
+    <div
+      class="tab"
+      (click)="activeTab.set('cancelled')"
+      [class.active]="activeTab() === 'cancelled'"
+    >
+      Hủy ({{ countByStatus('cancelled') }})
+    </div>
+
+    <div
+      class="tab"
+      (click)="activeTab.set('all')"
+      [class.active]="activeTab() === 'all'"
+    >
+      Tất cả ({{ orders().length }})
+    </div>
+
+  </div>
+
+  <!-- ORDER LIST -->
+  <div class="order-list">
+
+    <div class="order-card" *ngFor="let order of filteredOrders()" (click)="goToDetail(order.id)">
+
+      <div class="header">
+        <span>#{{ order.id }}</span>
+        <span class="status">{{ order.status }}</span>
+      </div>
+
+      <!-- TIMELINE (XEM CÓ PHÙ HỢP KO) -->
+      <app-order-timeline [status]="order.status" />
+      <!-- TIMELINE (XEM CÓ PHÙ HỢP KO) -->
+
+      <!-- ITEMS -->
+      <div class="items">
+
+        <div *ngFor="let item of order.items" class="item">
+          <img [src]="item.image" />
+          <div>
+            <p>{{ item.name }}</p>
+            <p>x{{ item.quantity }}</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer">
+
+        <div class="total">
+          {{ order.totalAmount | number }} ₫
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="actions">
+
+          <!-- HỦY -->
+          <button
+            *ngIf="order.status === 'pending'"
+            (click)="cancel(order.id)"
+          >
+            Hủy
+          </button>
+
+          <!-- ĐÃ NHẬN -->
+          <button
+            *ngIf="order.status === 'shipping'"
+            (click)="confirmReceived(order.id)"
+          >
+            Đã nhận hàng
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
