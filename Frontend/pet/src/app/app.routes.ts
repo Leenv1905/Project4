@@ -4,7 +4,6 @@ import {HomeLayoutComponent} from './layouts/home/home-layout.component';
 import {authGuard} from './core/guards/auth.guard';
 import {adminGuard} from './core/guards/admin.guard';
 import {shopGuard} from './core/guards/shop.guard';
-// import {MainLayoutComponent} from './layouts/main-layout/main-layout.component';
 
 export const routes: Routes = [
 
@@ -14,11 +13,8 @@ export const routes: Routes = [
     canActivate: [adminGuard],
     // canActivateChild: [adminGuard],Nếu muốn chi tiet hơn (không chặn việc load layout - ưu điểm có thể bấm login ở đây)
     children: [
-      { path: 'dashboard', loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES)}
-
-      // { path: 'dashboard', loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES), canActivate: [adminGuard]}
-      // { path: 'dashboard', loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES), canActivate: [adminGuard]}
-
+      { path: '', loadComponent: () => import('./features/admin/dashboard/pages/dashboard.page').then(m => m.DashboardPage)},
+      { path: 'operators', loadComponent: () => import('./features/admin/operator-orders/operator-orders.component').then(m => m.OperatorOrdersComponent)},
     ]
   },
 
@@ -39,18 +35,6 @@ export const routes: Routes = [
       // { path: 'myaccount', loadComponent: () => import('./features/home/myaccount.page') .then(m => m.MyaccountPage) }
     ]
   },
-  // {
-  //   path: '',
-  //   component: HomeLayoutComponent,
-  //   children: [
-  //     { path: '', redirectTo: 'books', pathMatch: 'full' },
-  //     {
-  //       path: 'books',
-  //       loadChildren: () =>
-  //         import('./features/books/book.routes')
-  //           .then(m => m.BOOK_ROUTES)
-  //     }
-  //   ]
-  // }
+
 
 ];

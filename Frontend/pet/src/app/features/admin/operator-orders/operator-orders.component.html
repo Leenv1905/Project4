@@ -1,0 +1,77 @@
+<div class="operator-orders">
+
+  <!-- TABS -->
+  <div class="tabs">
+
+    <div
+      *ngFor="let s of statuses"
+      class="tab"
+      [class.active]="activeTab() === s"
+      (click)="activeTab.set(s)"
+    >
+      {{ s }}
+      <span *ngIf="s !== 'all'">({{ count(s) }})</span>
+    </div>
+
+  </div>
+
+  <!-- LIST -->
+  <div class="order-list">
+
+    <div class="order-card" *ngFor="let order of filteredOrders()">
+
+      <div class="header">
+        <span>#{{ order.id }}</span>
+        <span>{{ order.fulfillmentStatus }}</span>
+      </div>
+
+      <div class="items">
+        <div *ngFor="let item of order.items">
+          {{ item.name }} x{{ item.quantity }}
+        </div>
+      </div>
+
+      <div class="footer">
+
+        <div class="actions">
+
+          <!-- PENDING -->
+          <button *ngIf="order.fulfillmentStatus === 'pending'"
+                  (click)="receive(order.id)">
+            Nhận hàng
+          </button>
+
+          <!-- RECEIVED -->
+          <button *ngIf="order.fulfillmentStatus === 'received'"
+                  (click)="startDelivery(order.id)">
+            Bắt đầu giao
+          </button>
+
+          <!-- DELIVERING -->
+          <ng-container *ngIf="order.fulfillmentStatus === 'delivering'">
+
+            <button (click)="complete(order.id)">
+              Giao thành công
+            </button>
+
+            <button (click)="cancelDelivery(order.id)">
+              Hủy giao
+            </button>
+
+          </ng-container>
+
+          <!-- RETURN -->
+          <button *ngIf="order.fulfillmentStatus === 'return_pending'"
+                  (click)="confirmReturn(order.id)">
+            Xác nhận hoàn
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

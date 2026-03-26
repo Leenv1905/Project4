@@ -41,8 +41,9 @@ export class AccountOrdersComponent {
   }
 
   confirmReceived(id: number) {
-    this.orderService.updateStatus(id, 'delivered');
+    this.orderService.updateStatus(id, 'completed');
   }
+  // Phân tách với delivered của operators
 
   goToDetail(id: number) {
     this.router.navigate(['/order', id]);

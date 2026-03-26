@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, effect } from '@angular/core';
-import {Order} from '../models/order.model';
+import {FulfillmentStatus, Order, OrderStatus} from '../models/order.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,12 +23,34 @@ export class OrderService {
   }
 
   // ===== UPDATE STATUS =====
-  updateStatus(id: number, status: Order['status']) {
+  // updateStatus(id: number, status: Order['status']) {
+  //
+  //   this._orders.update(list =>
+  //     list.map(o =>
+  //       o.id === id ? { ...o, status } : o
+  //     )
+  //   );
+  //
+  // }
+  // Khi shop confirm
+  updateStatus(id: number, status: OrderStatus) {
 
     this._orders.update(list =>
-      list.map(o =>
-        o.id === id ? { ...o, status } : o
-      )
+      list.map(o => {
+
+        if (o.id !== id) return o;
+
+        if (status === 'confirmed') {
+          return {
+            ...o,
+            status,
+            fulfillmentStatus: 'pending' // Trạng thái bên operator bắt đầu từ pending
+          };
+        }
+
+        return { ...o, status };
+
+      })
     );
 
   }
@@ -39,10 +61,20 @@ export class OrderService {
       this._orders().find(o => o.id === id)
     );
   }
-  clear() {
-    this._orders.set([]);
-    localStorage.removeItem('orders');
+  // clear() {
+  //   this._orders.set([]);
+  //   localStorage.removeItem('orders');
+  // }
+
+  updateFulfillmentStatus(id: number, status: FulfillmentStatus) {
+    this._orders.update(list =>
+      list.map(o =>
+        o.id === id ? { ...o, fulfillmentStatus: status } : o
+      )
+    );
   }
+
+
   // ===== LOCAL STORAGE =====
   constructor() {
 
@@ -54,7 +86,21 @@ export class OrderService {
     effect(() => {
       localStorage.setItem('orders', JSON.stringify(this._orders()));
     });
-
   }
+
+  // AUTO FALLBACK NẾU THIẾU FIELD
+  // constructor() {
+  //   const saved = localStorage.getItem('orders');
+  //
+  //   if (saved) {
+  //     const parsed = JSON.parse(saved).map((o: any) => ({
+  //       ...o,
+  //       fulfillmentStatus: o.fulfillmentStatus || undefined
+  //     }));
+  //
+  //     this._orders.set(parsed);
+  //   }
+  //   console.log('Operator Orders:', this.orders());
+  // }
 
 }

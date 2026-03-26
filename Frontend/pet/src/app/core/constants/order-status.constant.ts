@@ -10,6 +10,6 @@ export const ORDER_STATUS_CONFIG = [
   { key: 'pending', label: 'Đang chờ', color: 'orange' },
   { key: 'confirmed', label: 'Đã xác nhận', color: 'blue' },
   { key: 'shipping', label: 'Đang giao', color: 'purple' },
-  { key: 'delivered', label: 'Đã nhận', color: 'green' },
+  { key: 'completed', label: 'HOÀN TẤT', color: 'green' }, // Hoàn tất
   { key: 'cancelled', label: 'Hủy', color: 'red' }
 ] as const;
