@@ -1,9 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, inject, computed } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-import { MOCK_ORDERS } from '../../components/account-orders/mock-orders';
 import { AccountOrderTimelineComponent } from '../../components/account-order-timeline/account-order-timeline.component';
+import { OrderService } from '../../../../core/services/order.service';
 
 @Component({
   standalone: true,
@@ -15,17 +15,24 @@ import { AccountOrderTimelineComponent } from '../../components/account-order-ti
 export class OrderDetailComponent {
 
   route = inject(ActivatedRoute);
+  router = inject(Router);
+  orderService = inject(OrderService);
 
-  order = signal<any>(null);
+  // computed trực tiếp từ route + service
+  order = computed(() => {
 
-  ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    const found = MOCK_ORDERS.find(o => o.id === id);
+    const result = this.orderService.getById(id)();
 
-    if (found) {
-      this.order.set(found);
+    // nếu không tìm thấy order → redirect
+    if (!result) {
+      this.router.navigate(['/account'], {
+        queryParams: { tab: 'orders' }
+      });
     }
-  }
+
+    return result;
+  });
 
 }

@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-import { Product } from '../../../models/product.model';
+import { Product } from '../../../../core/models/product.model';
 import { ProductSliderComponent } from '../product-slider/product-slider.component';
 
 @Component({

@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { OrderStatus } from '../../../../shared/models/order.model';
+import { OrderStatus } from '../../../../core/models/order.model';
 
 @Component({
   standalone: true,

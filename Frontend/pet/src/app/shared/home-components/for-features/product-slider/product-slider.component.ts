@@ -1,7 +1,7 @@
 import { Component, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { Product } from '../../../models/product.model';
+import { Product } from '../../../../core/models/product.model';
 import { ProductCardComponent } from '../product-card/product-card.component';
 
 @Component({

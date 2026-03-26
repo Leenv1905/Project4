@@ -1,4 +1,4 @@
-import {Order} from '../../../../shared/models/order.model';
+import {Order} from '../models/order.model';
 
 export const MOCK_ORDERS: Order[] = [
   {

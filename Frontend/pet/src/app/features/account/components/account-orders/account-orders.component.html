@@ -10,7 +10,13 @@
     >
       Đang chờ ({{ countByStatus('pending') }})
     </div>
-
+    <div
+      class="tab"
+      (click)="activeTab.set('confirmed')"
+      [class.active]="activeTab() === 'confirmed'"
+    >
+      Đã xác nhận ({{ countByStatus('confirmed') }})
+    </div>
     <div
       class="tab"
       (click)="activeTab.set('shipping')"

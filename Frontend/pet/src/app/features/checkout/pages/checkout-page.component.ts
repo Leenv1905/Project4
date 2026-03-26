@@ -5,7 +5,8 @@ import { Router } from '@angular/router';
 
 import { CartService } from '../../../core/services/cart.service';
 import { CheckoutService } from '../services/checkout.service';
-import { OrderStatus } from '../../../shared/models/order.model';
+// CÓ THỂ NGHIÊN CỨU BỎ CHECKOUT SERVICE
+import { OrderService } from '../../../core/services/order.service';
 
 @Component({
   standalone: true,
@@ -17,8 +18,9 @@ import { OrderStatus } from '../../../shared/models/order.model';
 export class CheckoutPageComponent {
 
   cart = inject(CartService);
-  checkout = inject(CheckoutService);
+  // <*/ checkout = inject(CheckoutService); /*>
   router = inject(Router);
+  orderService = inject(OrderService);
 
   items = this.cart.items;
 
@@ -49,7 +51,7 @@ export class CheckoutPageComponent {
       note: this.form.note
     };
 
-    this.checkout.placeOrder(order);
+    this.orderService.createOrder(order);
 
     this.cart.clearCart();
 

@@ -11,9 +11,9 @@
     <div *ngFor="let item of o.items" class="item">
       <img [src]="item.image" />
 
-      <div>
-        <p>{{ item.name }}</p>
-        <p>x{{ item.quantity }}</p>
+      <div class="info">
+        <p class="name">{{ item.name }}</p>
+        <p class="quantity">x{{ item.quantity }}</p>
       </div>
 
       <div class="price">
@@ -23,7 +23,7 @@
 
   </div>
 
-  <!-- SHIPPING INFO -->
+  <!-- SHIPPING -->
   <div class="shipping">
     <h3>Thông tin giao hàng</h3>
     <p>{{ o.customerName }}</p>
@@ -33,7 +33,7 @@
 
   <!-- TOTAL -->
   <div class="total">
-    Tổng: {{ o.totalAmount | number }} ₫
+    Tổng tiền: {{ o.totalAmount | number }} ₫
   </div>
 
 </div>
