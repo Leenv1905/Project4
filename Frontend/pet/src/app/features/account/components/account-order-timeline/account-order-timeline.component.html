@@ -9,4 +9,8 @@
     <div class="label">{{ s.label }}</div>
   </div>
 
+  <div *ngIf="isCancelled()" class="cancelled">
+    Đơn hàng đã bị hủy
+  </div>
+
 </div>

@@ -1,27 +1,18 @@
 <div class="shop-orders">
 
-  <!-- TABS -->
   <div class="tabs">
 
     <div
+      *ngFor="let s of statuses"
       class="tab"
-      [class.active]="activeTab() === 'pending'"
-      (click)="activeTab.set('pending')"
+      [class.active]="activeTab() === s.key"
+      (click)="activeTab.set(s.key)"
     >
-      Đơn mới ({{ count('pending') }})
+      {{ s.label }} ({{ count(s.key) }})
     </div>
 
     <div
       class="tab"
-      [class.active]="activeTab() === 'confirmed'"
-      (click)="activeTab.set('confirmed')"
-    >
-      Đã xác nhận ({{ count('confirmed') }})
-    </div>
-
-    <div
-      class="tab"
-      [class.active]="activeTab() === 'all'"
       (click)="activeTab.set('all')"
     >
       Tất cả
@@ -29,14 +20,13 @@
 
   </div>
 
-  <!-- LIST -->
   <div class="order-list">
 
     <div class="order-card" *ngFor="let order of filteredOrders()">
 
       <div class="header">
         <span>#{{ order.id }}</span>
-        <span>{{ order.status }}</span>
+        <span>{{ getStatusLabel(order.status) }}</span>
       </div>
 
       <div class="items">
@@ -53,7 +43,6 @@
 
         <div class="actions">
 
-          <!-- SHOP ACTION -->
           <ng-container *ngIf="order.status === 'pending'">
 
             <button class="confirm" (click)="confirmOrder(order.id)">

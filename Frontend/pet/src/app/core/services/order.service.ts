@@ -39,7 +39,10 @@ export class OrderService {
       this._orders().find(o => o.id === id)
     );
   }
-
+  clear() {
+    this._orders.set([]);
+    localStorage.removeItem('orders');
+  }
   // ===== LOCAL STORAGE =====
   constructor() {
 

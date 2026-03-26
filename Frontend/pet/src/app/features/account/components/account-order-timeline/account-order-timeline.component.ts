@@ -21,9 +21,13 @@ export class AccountOrderTimelineComponent {
   ];
 
   isActive(step: string) {
-    const order = ['pending', 'shipping', 'delivered'];
+    const order = ['pending', 'confirmed', 'shipping', 'delivered'];
 
     return order.indexOf(step) <= order.indexOf(this.status);
+  }
+
+  isCancelled() {
+    return this.status === 'cancelled';
   }
 
 }

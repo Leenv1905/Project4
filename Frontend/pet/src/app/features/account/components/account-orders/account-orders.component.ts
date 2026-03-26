@@ -1,10 +1,12 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MOCK_ORDERS } from '../../../../core/mock/mock-orders';
 import { Router } from '@angular/router';
-import {AccountOrderTimelineComponent} from '../account-order-timeline/account-order-timeline.component';
-import { OrderService } from '../../../../core/services/order.service';
 
+import { AccountOrderTimelineComponent } from '../account-order-timeline/account-order-timeline.component';
+import { OrderService } from '../../../../core/services/order.service';
+import { ORDER_STATUS_CONFIG } from '../../../../core/constants/order-status.constant';
+import { getStatusLabel } from '../../../../core/utils/order-status.util';
+import { OrderStatus } from '../../../../core/models/order.model';
 
 @Component({
   standalone: true,
@@ -14,40 +16,26 @@ import { OrderService } from '../../../../core/services/order.service';
   styleUrls: ['./account-orders.component.scss']
 })
 export class AccountOrdersComponent {
+
   orderService = inject(OrderService);
-  // orders = signal(MOCK_ORDERS); - BẢN CŨ DÙNG MOCK
-  orders = this.orderService.orders; // BẢN MỚI DUNG SERVICE
+  router = inject(Router);
 
+  orders = this.orderService.orders;
 
-  activeTab = signal<'all' | 'pending' | 'confirmed' | 'shipping' | 'delivered' | 'cancelled'>('all');
+  statuses = ORDER_STATUS_CONFIG;
+  getStatusLabel = getStatusLabel;
+
+  activeTab = signal<OrderStatus | 'all'>('all');
 
   filteredOrders = computed(() => {
     if (this.activeTab() === 'all') return this.orders();
-
     return this.orders().filter(o => o.status === this.activeTab());
   });
 
-  countByStatus(status: string) {
+  countByStatus(status: OrderStatus) {
     return this.orders().filter(o => o.status === status).length;
   }
-// BAẢN CŨ DÙNG MOCK
-  // cancel(id: number) {
-  //   this.orders.update(list =>
-  //     list.map(o =>
-  //       o.id === id ? { ...o, status: 'cancelled' } : o
-  //     )
-  //   );
-  // }
-  //
-  // confirmReceived(id: number) {
-  //   this.orders.update(list =>
-  //     list.map(o =>
-  //       o.id === id ? { ...o, status: 'delivered' } : o
-  //     )
-  //   );
-  // }
 
-  // BẢN MỚI DÙNG SERVICE
   cancel(id: number) {
     this.orderService.updateStatus(id, 'cancelled');
   }
@@ -56,34 +44,8 @@ export class AccountOrdersComponent {
     this.orderService.updateStatus(id, 'delivered');
   }
 
-  router = inject(Router);
   goToDetail(id: number) {
     this.router.navigate(['/order', id]);
   }
-}
 
-// import { Component } from '@angular/core';
-// import {DecimalPipe} from '@angular/common';
-//
-// @Component({
-//   standalone: true,
-//   selector: 'app-account-orders',
-//   imports: [
-//     DecimalPipe
-//   ],
-//   template: `
-//     <h2>Đơn hàng của bạn</h2>
-//
-//     <div class="order" *ngFor="let o of orders">
-//       Order #{{ o.id }} - {{ o.total | number }} ₫
-//     </div>
-//   `
-// })
-// export class AccountOrdersComponent {
-//
-//   orders = [
-//     { id: 1, total: 5000000 },
-//     { id: 2, total: 7000000 }
-//   ];
-//
-// }
+}

@@ -1,9 +1,10 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {MOCK_ORDERS} from '../../../../../core/mock/mock-orders';
-import {Order} from '../../../../../core/models/order.model';
-import {OrderService} from '../../../../../core/services/order.service';
 
+import { OrderService } from '../../../../../core/services/order.service';
+import { ORDER_STATUS_CONFIG } from '../../../../../core/constants/order-status.constant';
+import { OrderStatus } from '../../../../../core/models/order.model';
+import { getStatusLabel } from '../../../../../core/utils/order-status.util';
 
 @Component({
   standalone: true,
@@ -13,41 +14,24 @@ import {OrderService} from '../../../../../core/services/order.service';
   styleUrls: ['./my-shop-orders.component.scss']
 })
 export class MyShopOrdersComponent {
-  orderService = inject(OrderService);
-  // orders = signal<Order[]>(MOCK_ORDERS); - BẢN CŨ DÙNG MOCK
-  orders = this.orderService.orders;
 
-  activeTab = signal<'all' | 'pending' | 'confirmed'>('pending');
+  orderService = inject(OrderService);
+
+  orders = this.orderService.orders;
+  statuses = ORDER_STATUS_CONFIG;
+  getStatusLabel = getStatusLabel;
+
+  activeTab = signal<OrderStatus | 'all'>('pending');
 
   filteredOrders = computed(() => {
-
     if (this.activeTab() === 'all') return this.orders();
-
     return this.orders().filter(o => o.status === this.activeTab());
-
   });
 
-  count(status: string) {
+  count(status: OrderStatus) {
     return this.orders().filter(o => o.status === status).length;
   }
 
-  // SHOP ACTIONS BẢN CŨ DÙNG MOCK
-
-  // confirmOrder(id: number) {
-  //   this.orders.update(list =>
-  //     list.map(o =>
-  //       o.id === id ? { ...o, status: 'confirmed' } : o
-  //     )
-  //   );
-  // }
-
-  // rejectOrder(id: number) {
-  //   this.orders.update(list =>
-  //     list.map(o =>
-  //       o.id === id ? { ...o, status: 'cancelled' } : o
-  //     )
-  //   );
-  // }
   confirmOrder(id: number) {
     this.orderService.updateStatus(id, 'confirmed');
   }
@@ -55,4 +39,5 @@ export class MyShopOrdersComponent {
   rejectOrder(id: number) {
     this.orderService.updateStatus(id, 'cancelled');
   }
+
 }

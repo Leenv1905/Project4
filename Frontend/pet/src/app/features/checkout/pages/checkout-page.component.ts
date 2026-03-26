@@ -5,8 +5,6 @@ import { Router } from '@angular/router';
 
 import { CartService } from '../../../core/services/cart.service';
 import { CheckoutService } from '../services/checkout.service';
-// CÓ THỂ NGHIÊN CỨU BỎ CHECKOUT SERVICE
-import { OrderService } from '../../../core/services/order.service';
 
 @Component({
   standalone: true,
@@ -17,10 +15,9 @@ import { OrderService } from '../../../core/services/order.service';
 })
 export class CheckoutPageComponent {
 
-  cart = inject(CartService);
-  // <*/ checkout = inject(CheckoutService); /*>
-  router = inject(Router);
-  orderService = inject(OrderService);
+  private cart = inject(CartService);
+  private checkout = inject(CheckoutService);
+  private router = inject(Router);
 
   items = this.cart.items;
 
@@ -37,25 +34,20 @@ export class CheckoutPageComponent {
 
   placeOrder() {
 
-    const order = {
-      id: Date.now(), // mock id
-      items: this.items(),
-      totalAmount: this.total(),
-      status: 'pending' as const, // Trạng thái ban đầu khi mới khởi ta đơn hàng
-      // status: 'pending' as OrderStatus,
-      createdAt: new Date(),
+    const order = this.checkout.buildOrder(
+      this.form,
+      this.items(),
+      this.total()
+    );
 
-      customerName: this.form.customerName,
-      phone: this.form.phone,
-      address: this.form.address,
-      note: this.form.note
-    };
-
-    this.orderService.createOrder(order);
+    this.checkout.placeOrder(order);
 
     this.cart.clearCart();
 
-    this.router.navigate(['/success']);
+    this.router.navigate(['/success'], {
+      queryParams: { id: order.id }
+    });
+
   }
 
 }
