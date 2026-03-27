@@ -1,22 +1,36 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CheckoutService } from '../services/checkout.service';
+import { ActivatedRoute } from '@angular/router';
+
+import { OrderService } from '../../../core/services/order.service';
 
 @Component({
   standalone: true,
   selector: 'app-success-page',
   imports: [CommonModule],
   template: `
-    <div class="success">
-      <h1>🎉 Đặt hàng thành công!</h1>
-      <p *ngIf="order()">Cảm ơn {{ order()?.customerName }}</p>
+    <div *ngIf="order() as o">
+      <h2>🎉 Đặt hàng thành công!</h2>
+
+      <p>Cảm ơn {{ o.customerName }}</p>
+
+      <p>Mã đơn: #{{ o.id }}</p>
+
+      <p>Tổng tiền: {{ o.totalAmount | number }} ₫</p>
     </div>
   `
 })
 export class SuccessPageComponent {
 
-  checkout = inject(CheckoutService);
+  private route = inject(ActivatedRoute);
+  private orderService = inject(OrderService);
 
-  order = this.checkout.currentOrder;
+  order = computed(() => {
+
+    const id = Number(this.route.snapshot.queryParamMap.get('id'));
+
+    return this.orderService.getById(id)();
+
+  });
 
 }

@@ -1,0 +1,87 @@
+<div class="orders">
+
+  <!-- STATUS TABS -->
+  <div class="status-tabs">
+
+    <div
+      class="tab"
+      *ngFor="let s of statuses"
+      [class.active]="activeTab() === s.key"
+      (click)="activeTab.set(s.key)"
+    >
+      {{ s.label }} ({{ countByStatus(s.key) }})
+    </div>
+
+    <div
+      class="tab"
+      (click)="activeTab.set('all')"
+      [class.active]="activeTab() === 'all'"
+    >
+      Tất cả ({{ orders().length }})
+    </div>
+
+  </div>
+
+  <!-- ORDER LIST -->
+  <div class="order-list">
+
+    <div
+      class="order-card"
+      *ngFor="let order of filteredOrders()"
+      (click)="goToDetail(order.id)"
+    >
+
+      <!-- HEADER -->
+      <div class="header">
+        <span>#{{ order.id }}</span>
+        <span class="status">
+          {{ getStatusLabel(order.status) }}
+        </span>
+      </div>
+
+      <!-- TIMELINE -->
+      <app-order-timeline [status]="order.status" />
+
+      <!-- ITEMS -->
+      <div class="items">
+        <div *ngFor="let item of order.items" class="item">
+          <img [src]="item.image" />
+          <div>
+            <p>{{ item.name }}</p>
+            <p>x{{ item.quantity }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="footer">
+
+        <div class="total">
+          {{ order.totalAmount | number }} ₫
+        </div>
+
+        <div class="actions">
+
+          <button
+            *ngIf="order.status === 'pending'"
+            (click)="cancel(order.id); $event.stopPropagation()"
+          >
+            Hủy
+          </button>
+
+          <button
+            *ngIf="order.status === 'shipping'"
+            (click)="confirmReceived(order.id); $event.stopPropagation()"
+          >
+            Đã nhận hàng
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

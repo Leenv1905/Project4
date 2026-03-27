@@ -1,0 +1,39 @@
+<div *ngIf="order() as o" class="order-detail">
+
+  <h2>Order #{{ o.id }}</h2>
+
+  <!-- TIMELINE -->
+  <app-order-timeline [status]="o.status" />
+
+  <!-- ITEMS -->
+  <div class="items">
+
+    <div *ngFor="let item of o.items" class="item">
+      <img [src]="item.image" />
+
+      <div class="info">
+        <p class="name">{{ item.name }}</p>
+        <p class="quantity">x{{ item.quantity }}</p>
+      </div>
+
+      <div class="price">
+        {{ item.price | number }} ₫
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SHIPPING -->
+  <div class="shipping">
+    <h3>Thông tin giao hàng</h3>
+    <p>{{ o.customerName }}</p>
+    <p>{{ o.phone }}</p>
+    <p>{{ o.address }}</p>
+  </div>
+
+  <!-- TOTAL -->
+  <div class="total">
+    Tổng tiền: {{ o.totalAmount | number }} ₫
+  </div>
+
+</div>

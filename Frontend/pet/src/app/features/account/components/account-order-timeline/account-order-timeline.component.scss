@@ -1,0 +1,28 @@
+.timeline {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.step {
+  text-align: center;
+  flex: 1;
+  position: relative;
+
+  .circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ccc;
+    margin: 0 auto;
+  }
+
+  &.active .circle {
+    background: #f86d72;
+  }
+
+  .label {
+    margin-top: 6px;
+    font-size: 12px;
+  }
+}

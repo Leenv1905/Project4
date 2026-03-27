@@ -4,6 +4,8 @@ import com.eproject.petsale.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,6 +25,21 @@ public class Pet {
     private String name;
     private String species;
     private String breed;
+
+    @Column(name = "is_verified")
+    private Boolean isVerified;
+
+    @Column(name = "price")
+    private BigDecimal price;
+
+    @Column(name = "trust_score")
+    private Integer trustScore;
+
+    @Column(name = "is_health_verified")
+    private Boolean isHealthVerified;
+
+    @Column(name = "is_pedigree_verified")
+    private Boolean isPedigreeVerified;
 
     @Column(columnDefinition = "TEXT")
     private String description;

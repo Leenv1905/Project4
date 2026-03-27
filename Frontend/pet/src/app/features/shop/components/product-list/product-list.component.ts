@@ -4,7 +4,7 @@ import { Component, inject, ChangeDetectionStrategy, computed  } from '@angular/
 //   input thay đổi
 //   signal thay đổi
 import { CommonModule } from '@angular/common';
-import { Product } from '../../../../shared/models/product.model';
+import { Product } from '../../../../core/models/product.model';
 // import { ShopProduct } from '../../models/shop-product.model';
 import { ShopService } from '../../services/shop.service';
 import { ProductCardComponent } from '../../../../shared/home-components/for-features/product-card/product-card.component';

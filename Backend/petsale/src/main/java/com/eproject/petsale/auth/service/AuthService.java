@@ -5,6 +5,7 @@ import com.eproject.petsale.auth.dto.LoginRequest;
 import com.eproject.petsale.auth.dto.RegisterRequest;
 import com.eproject.petsale.auth.security.JwtUtil;
 import com.eproject.petsale.common.exception.AuthException;
+import com.eproject.petsale.common.mapper.UserMapperImpl;
 import com.eproject.petsale.personalization.entity.BuyerProfile;
 import com.eproject.petsale.personalization.repository.BuyerProfileRepository;
 import com.eproject.petsale.user.entity.Role;
@@ -15,11 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.Files;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
@@ -38,80 +39,72 @@ public class AuthService {
 
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private UserMapperImpl userMapperImpl;
 
     @Transactional
-    public AuthResponse register(RegisterRequest request)  {
+    public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
 
         User user = new User();
-
         user.setEmail(request.getEmail());
-
-        user.setPasswordHash(
-                passwordEncoder.encode(request.getPassword()));
-
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getName());
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
 
-//        // upload avatar
-//        try {
-//
-//            String fileName =
-//                    UUID.randomUUID() + "_" + request.getAvatar().getOriginalFilename();
-//
-//            Path path = Paths.get("uploads/avatar/" + fileName);
-//
-//            Files.copy(request.getAvatar().getInputStream(), path);
-//
-//            user.setAvatarPath(fileName);
-//
-//        } catch (IOException e) {
-//            throw new RuntimeException("Upload avatar failed");
-//        }
-
-        // role
+        // Cập nhật Role cho ManyToMany
         Role role = roleRepository.findByName("USER");
-
-        user.setRole(role);
+        if (role == null) {
+            // Tạo role mặc định nếu chưa có trong DB để tránh lỗi Null
+            role = new Role();
+            role.setName("USER");
+            roleRepository.save(role);
+        }
+        // Thêm role vào Set thay vì set đơn lẻ
+        user.getRoles().add(role);
 
         userRepository.save(user);
+        String currentRoles = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.joining(","));
 
-        // personalization
+        // Personalization
         BuyerProfile profile = new BuyerProfile();
-
         profile.setDailyTime(request.getPersonalization().getDailyTime());
         profile.setLivingSpace(request.getPersonalization().getLivingSpace());
         profile.setActivityTime(request.getPersonalization().getActivityTime());
         profile.setMonthlyBudget(request.getPersonalization().getMonthlyBudget());
         profile.setExperienceLevel(request.getPersonalization().getExperienceLevel());
-
         profile.setUser(user);
-
         buyerProfileRepository.save(profile);
 
-        String accessToken = jwtUtil.generateToken(user.getEmail());
 
+
+        String accessToken = jwtUtil.generateToken(user.getEmail(), currentRoles);
         String refreshToken = UUID.randomUUID().toString();
-
         user.setRefreshToken(refreshToken);
-
         userRepository.save(user);
 
         AuthResponse res = new AuthResponse();
-
         res.setAccessToken(accessToken);
         res.setRefreshToken(refreshToken);
-
         res.setUserId(user.getId());
         res.setName(user.getName());
-        res.setRole(user.getRole().getName());
+
+        // Lấy tên role đầu tiên để trả về DTO (hoặc nối chuỗi các role)
+        String roleName = user.getRoles().stream()
+                .map(Role::getName)
+                .findFirst()
+                .orElse("USER");
+        res.setRole(roleName);
 
         return res;
     }
+
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
@@ -125,20 +118,25 @@ public class AuthService {
             throw new AuthException("Password incorrect");
         }
 
-        String accessToken = jwtUtil.generateToken(user.getEmail());
+        // KIỂM TRA AN TOÀN: Tránh lỗi NullPointerException nếu user không có role
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            throw new AuthException("User has no roles assigned");
+        }
 
+        String roleNames = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.joining(","));
+
+        // Truyền roleNames vừa lấy được từ DB vào Token
+        String accessToken = jwtUtil.generateToken(user.getEmail(), roleNames);
         String refreshToken = UUID.randomUUID().toString();
-
         user.setRefreshToken(refreshToken);
-
         userRepository.save(user);
 
         AuthResponse response = new AuthResponse();
-
         response.setUserId(user.getId());
         response.setName(user.getName());
-        response.setRole(user.getRole().getName());
-
+        response.setRole(roleNames);
         response.setAccessToken(accessToken);
         response.setRefreshToken(refreshToken);
 
@@ -146,11 +144,17 @@ public class AuthService {
     }
 
     public String refreshAccessToken(String refreshToken) {
-
         jwtUtil.validateToken(refreshToken);
-
         String email = jwtUtil.extractEmail(refreshToken);
 
-        return jwtUtil.generateToken(email);
+        // --- PHẢI TÌM USER ĐỂ LẤY ROLE MỚI NHẤT ---
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthException("User not found"));
+
+        String roleNames = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.joining(","));
+
+        return jwtUtil.generateToken(email, roleNames);
     }
 }

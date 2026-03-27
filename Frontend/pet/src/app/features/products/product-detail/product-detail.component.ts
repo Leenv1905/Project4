@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 
-import { Product } from '../../../shared/models/product.model';
+import { Product } from '../../../core/models/product.model';
 import { MOCK_PRODUCTS } from '../../shop/data/mock-products'; // tạm dùng mock
 import { CartService } from '../../../core/services/cart.service';
 

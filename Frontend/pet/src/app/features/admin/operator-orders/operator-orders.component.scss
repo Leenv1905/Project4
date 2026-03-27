@@ -1,0 +1,35 @@
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+
+  .tab {
+    padding: 8px 12px;
+    background: #eee;
+    border-radius: 20px;
+    cursor: pointer;
+
+    &.active {
+      background: #f86d72;
+      color: white;
+    }
+  }
+}
+
+.order-card {
+  border: 1px solid #eee;
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+
+  button {
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+}

@@ -3,6 +3,8 @@ package com.eproject.petsale.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -31,8 +33,13 @@ public class User {
 
     @Column(name = "refresh_token")
     private String refreshToken;
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+
+    @ManyToMany(fetch = FetchType.EAGER) // EAGER giúp lấy luôn danh sách Role khi tìm User
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
 }

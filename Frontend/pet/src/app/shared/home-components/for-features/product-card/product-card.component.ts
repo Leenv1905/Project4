@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
-import { Product } from '../../../models/product.model';
+import { Product } from '../../../../core/models/product.model';
 import { CartService } from '../../../../core/services/cart.service';
 
 @Component({

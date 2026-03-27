@@ -1,0 +1,50 @@
+.order-detail {
+  padding: 24px;
+}
+
+.items {
+  margin-top: 20px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+
+  img {
+    width: 60px;
+    border-radius: 8px;
+  }
+
+  .info {
+    flex: 1;
+    margin-left: 12px;
+  }
+
+  .name {
+    font-weight: 600;
+  }
+
+  .quantity {
+    color: #777;
+    font-size: 13px;
+  }
+
+  .price {
+    font-weight: bold;
+    color: #f86d72;
+  }
+}
+
+.shipping {
+  margin-top: 20px;
+}
+
+.total {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+}

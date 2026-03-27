@@ -3,6 +3,9 @@ package com.eproject.petsale.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,4 +20,8 @@ public class Role {
     @Column(unique = true)
     private String name;
 
+    // THÊM PHẦN NÀY ĐỂ KẾT NỐI HAI CHIỀU
+    @ManyToMany(mappedBy = "roles")
+    @JsonIgnore // Ngăn chặn vòng lặp vô tận khi convert sang JSON
+    private Set<User> users = new HashSet<>();
 }

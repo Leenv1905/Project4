@@ -1,0 +1,35 @@
+<div class="sidebar">
+
+  <div
+    class="item"
+    [class.active]="active === 'dashboard'"
+    (click)="changeTab.emit('dashboard')"
+  >
+    📊 Dashboard
+  </div>
+
+  <div
+    class="item"
+    [class.active]="active === 'products'"
+    (click)="changeTab.emit('products')"
+  >
+    🐶 Products
+  </div>
+
+  <div
+    class="item"
+    [class.active]="active === 'orders'"
+    (click)="changeTab.emit('orders')"
+  >
+    📦 Orders
+  </div>
+
+  <div
+    class="item"
+    [class.active]="active === 'info'"
+    (click)="changeTab.emit('info')"
+  >
+    🏪 Shop Info
+  </div>
+
+</div>

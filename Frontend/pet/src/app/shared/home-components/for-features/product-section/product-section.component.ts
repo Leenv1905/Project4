@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Product } from '../../../models/product.model';
+import { Product } from '../../../../core/models/product.model';
 import { ProductGroupComponent } from './product-group/product-group.component';
 
 @Component({

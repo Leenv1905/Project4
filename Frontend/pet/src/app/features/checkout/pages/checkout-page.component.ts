@@ -15,9 +15,9 @@ import { CheckoutService } from '../services/checkout.service';
 })
 export class CheckoutPageComponent {
 
-  cart = inject(CartService);
-  checkout = inject(CheckoutService);
-  router = inject(Router);
+  private cart = inject(CartService);
+  private checkout = inject(CheckoutService);
+  private router = inject(Router);
 
   items = this.cart.items;
 
@@ -34,17 +34,20 @@ export class CheckoutPageComponent {
 
   placeOrder() {
 
-    const order = {
-      items: this.items(),
-      totalAmount: this.total(),
-      ...this.form
-    };
+    const order = this.checkout.buildOrder(
+      this.form,
+      this.items(),
+      this.total()
+    );
 
     this.checkout.placeOrder(order);
 
     this.cart.clearCart();
 
-    this.router.navigate(['/success']);
+    this.router.navigate(['/success'], {
+      queryParams: { id: order.id }
+    });
+
   }
 
 }

@@ -31,15 +31,16 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(secret.getBytes());// tránh việc tạo mới secrect token liên tục
     }
 
-    public String generateToken(String email) {
+
+    public String generateToken(String email, String role) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("role", role) // Lưu role vào token
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 300000))
+                .setExpiration(new Date(System.currentTimeMillis() + 300000)) // Tăng lên 1h cho dễ test
                 .signWith(key)
                 .compact();
     }
-
     public String extractEmail(String token) {
         return getClaims(token).getSubject();
     }

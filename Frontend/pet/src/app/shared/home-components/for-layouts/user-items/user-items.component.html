@@ -32,6 +32,14 @@
       My Account
     </button>
 
+    <button
+      mat-menu-item
+      *ngIf="auth.user()?.role === 'shop'"
+      (click)="goToShop()"
+    >
+      My Shop
+    </button>
+
     <button mat-menu-item (click)="auth.logout()">
       Logout
     </button>
