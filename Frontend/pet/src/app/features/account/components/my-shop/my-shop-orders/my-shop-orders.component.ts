@@ -33,11 +33,13 @@ export class MyShopOrdersComponent {
   }
 
   confirmOrder(id: number) {
-    this.orderService.updateStatus(id, 'confirmed');
+    this.orderService.performAction(id, 'shop_confirm');
   }
-
+  confirmReturn(id: number) {
+    this.orderService.performAction(id, 'shop_confirm_return');
+  }
   rejectOrder(id: number) {
-    this.orderService.updateStatus(id, 'cancelled');
+    this.orderService.performAction(id, 'shop_confirm');
   }
 
 }

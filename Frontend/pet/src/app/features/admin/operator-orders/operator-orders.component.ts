@@ -44,29 +44,24 @@ export class OperatorOrdersComponent {
   }
 
   // ===== ACTIONS =====
-
   receive(id: number) {
-    this.orderService.updateFulfillmentStatus(id, 'received');
+    this.orderService.performAction(id, 'operator_receive');
   }
 
   startDelivery(id: number) {
-    this.orderService.updateFulfillmentStatus(id, 'delivering');
-    this.orderService.updateStatus(id, 'shipping');
+    this.orderService.performAction(id, 'operator_start_delivery');
   }
 
   complete(id: number) {
-    this.orderService.updateFulfillmentStatus(id, 'delivered');
-    this.orderService.updateStatus(id, 'shipping');
+    this.orderService.performAction(id, 'operator_complete');
   }
-  // Khi operators bấm delivered thi user vẫn đang là shipping
 
-  cancelDelivery(id: number) {
-    this.orderService.updateFulfillmentStatus(id, 'return_pending');
+  cancel(id: number) {
+    this.orderService.performAction(id, 'operator_cancel_delivery');
   }
 
   confirmReturn(id: number) {
-    this.orderService.updateFulfillmentStatus(id, 'returned');
-    this.orderService.updateStatus(id, 'confirmed');
+    this.orderService.performAction(id, 'operator_confirm_return');
   }
 
 }

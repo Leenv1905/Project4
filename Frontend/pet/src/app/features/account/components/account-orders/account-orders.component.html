@@ -62,16 +62,18 @@
 
         <div class="actions">
 
-          <button
-            *ngIf="order.status === 'pending'"
-            (click)="cancel(order.id); $event.stopPropagation()"
-          >
-            Hủy
-          </button>
+<!--          <button-->
+<!--            *ngIf="order.status === 'pending'"-->
+<!--            (click)="cancel(order.id); $event.stopPropagation()"-->
+<!--          >-->
+<!--            Hủy-->
+<!--          </button>-->
 
           <button
-            *ngIf="order.status === 'shipping'"
-            (click)="confirmReceived(order.id); $event.stopPropagation()"
+            *ngIf="
+    order.status === 'shipping' &&
+    order.fulfillmentStatus === 'delivered'
+  "
           >
             Đã nhận hàng
           </button>

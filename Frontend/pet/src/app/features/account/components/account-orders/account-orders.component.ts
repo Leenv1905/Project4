@@ -35,13 +35,13 @@ export class AccountOrdersComponent {
   countByStatus(status: OrderStatus) {
     return this.orders().filter(o => o.status === status).length;
   }
-
-  cancel(id: number) {
-    this.orderService.updateStatus(id, 'cancelled');
-  }
+  //
+  // cancel(id: number) {
+  //   this.orderService.updateStatus(id, 'cancelled');
+  // }
 
   confirmReceived(id: number) {
-    this.orderService.updateStatus(id, 'completed');
+    this.orderService.performAction(id, 'user_confirm_received');
   }
   // Phân tách với delivered của operators
 
