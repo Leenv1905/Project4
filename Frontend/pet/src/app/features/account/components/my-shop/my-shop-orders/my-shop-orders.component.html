@@ -53,6 +53,12 @@
               ✖ Từ chối
             </button>
 
+            <button
+              *ngIf="order.fulfillmentStatus === 'return_pending'"
+              (click)="confirmReturn(order.id)"
+            >
+              Đã nhận hàng hoàn
+            </button>
           </ng-container>
 
         </div>
