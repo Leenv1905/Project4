@@ -124,19 +124,26 @@
         <p>Thanh toán khi nhận hàng (COD)</p>
       </div>
 
-      <!-- VERIFICATION + CONFIRM (CHỈ HIỂN THỊ KHI ĐANG GIAO) -->
-      <div class="card actions-card" *ngIf="order.status === 'shipping'">
-
+      <!-- VERIFICATION + CONFIRM -->
+      <div class="card actions-card" *ngIf="order()?.status === 'shipping'">
         <h3>Xác minh mã định danh Pet</h3>
-        <p class="help-text">Nhập mã pet (chip / QR / NFT) để xác nhận bạn đã nhận hàng</p>
+        <p class="help-text">Nhập mã pet để xác nhận bạn đã nhận hàng</p>
 
         <button class="confirm-btn" (click)="openVerificationModal()">
           ✅ Xác nhận đã nhận hàng
         </button>
       </div>
+
+        <!-- Nút QR / NFT (sau này bạn mở rộng) -->
+        <!-- <button class="qr-btn" (click)="onScanQR()">📱 Quét QR</button> -->
+        <!-- <button class="nft-btn" (click)="onConnectNFT()">🔗 Kết nối NFT</button> -->
     </div>
   </div>
 </div>
+
+<ng-template #notFound>
+  <p>Không tìm thấy đơn hàng hoặc ID không hợp lệ.</p>
+</ng-template>
 
 <!-- Modal chung -->
 <app-verification-modal
@@ -146,10 +153,6 @@
   (confirm)="onVerificationConfirm($event)"
   (close)="closeModal()">
 </app-verification-modal>
-
-<ng-template #notFound>
-  <p>Không tìm thấy đơn hàng hoặc ID không hợp lệ.</p>
-</ng-template>
 
 <!--<div *ngIf="order() as o" class="order-detail">-->
 

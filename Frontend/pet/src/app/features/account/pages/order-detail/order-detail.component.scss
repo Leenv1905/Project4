@@ -1,50 +1,386 @@
 .order-detail {
   padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.items {
-  margin-top: 20px;
-}
-
-.item {
+/* HEADER */
+.header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 16px;
 
-  border-bottom: 1px solid #eee;
-  padding: 12px 0;
-
-  img {
-    width: 60px;
-    border-radius: 8px;
+  h2 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    color: #1f2937;
   }
 
-  .info {
-    flex: 1;
-    margin-left: 12px;
+  .date {
+    margin: 4px 0 0 0;
+    color: #6b7280;
+    font-size: 15px;
+  }
+}
+
+.status {
+  margin-top: 6px;
+}
+
+.badge {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+/* Status colors - đồng bộ với MyShop */
+.pending    { background: #fff7ed; color: #c2410c; }
+.confirmed  { background: #eef2ff; color: #4338ca; }
+.shipping   { background: #f3e8ff; color: #7e22ce; }
+.completed  { background: #e8f7ec; color: #15803d; }
+.cancelled  { background: #fdeaea; color: #b91c1c; }
+
+.back-btn {
+  padding: 10px 18px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+  }
+}
+
+/* LAYOUT */
+.layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* CARD */
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  h3 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    color: #1f2937;
+    font-weight: 600;
+  }
+}
+
+/* TABLE - ORDER ITEMS */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 14px 12px;
+  text-align: left;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+th {
+  background: #f9fafb;
+  font-weight: 500;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
   }
 
   .name {
-    font-weight: 600;
+    font-weight: 500;
+    color: #1f2937;
   }
 
-  .quantity {
-    color: #777;
+  .breed {
     font-size: 13px;
-  }
-
-  .price {
-    font-weight: bold;
-    color: #f86d72;
+    color: #6b7280;
   }
 }
 
-.shipping {
+/* SUMMARY */
+.summary {
   margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 15px;
+    color: #4b5563;
+  }
+
+  .total {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 2px solid #e5e7eb;
+    font-weight: 700;
+    font-size: 18px;
+    color: #1f2937;
+  }
 }
 
-.total {
-  margin-top: 20px;
-  font-size: 18px;
-  font-weight: bold;
+/* TIMELINE */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
+
+.event {
+  display: flex;
+  gap: 16px;
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 4.5px;
+    top: 24px;
+    bottom: -20px;
+    width: 2px;
+    background: #e5e7eb;
+  }
+
+  .dot {
+    width: 11px;
+    height: 11px;
+    background: #6366f1;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+    border: 2px solid white;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  }
+
+  .active .dot {
+    background: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #1f2937;
+  }
+
+  p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+  }
+}
+
+/* RIGHT COLUMN */
+.customer {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+
+  img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  strong {
+    font-size: 16px;
+    color: #1f2937;
+  }
+
+  p {
+    margin: 4px 0 0 0;
+    color: #6b7280;
+  }
+}
+
+/* ACTION BUTTON */
+.actions-card {
+  .confirm-btn {
+    width: 100%;
+    padding: 14px;
+    background: #15803d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #166534;
+    }
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .order-detail {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .layout {
+    gap: 16px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+}
+
+.verification-input {
+  width: 90%;
+  padding: 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  margin: 12px 0 16px 0;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+  }
+}
+
+.help-text {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.warning {
+  display: block;
+  color: #c2410c;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+/* Nút QR / NFT (sau này) */
+.qr-btn, .nft-btn {
+  padding: 10px 16px;
+  margin-right: 8px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Confirm button */
+.confirm-btn {
+  width: 100%;
+  padding: 14px;
+  background: #15803d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
+
+  &:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    background: #166534;
+  }
+}
+
+//.order-detail {
+//  padding: 24px;
+//}
+//
+//.items {
+//  margin-top: 20px;
+//}
+//
+//.item {
+//  display: flex;
+//  align-items: center;
+//  justify-content: space-between;
+//
+//  border-bottom: 1px solid #eee;
+//  padding: 12px 0;
+//
+//  img {
+//    width: 60px;
+//    border-radius: 8px;
+//  }
+//
+//  .info {
+//    flex: 1;
+//    margin-left: 12px;
+//  }
+//
+//  .name {
+//    font-weight: 600;
+//  }
+//
+//  .quantity {
+//    color: #777;
+//    font-size: 13px;
+//  }
+//
+//  .price {
+//    font-weight: bold;
+//    color: #f86d72;
+//  }
+//}
+//
+//.shipping {
+//  margin-top: 20px;
+//}
+//
+//.total {
+//  margin-top: 20px;
+//  font-size: 18px;
+//  font-weight: bold;
+//}

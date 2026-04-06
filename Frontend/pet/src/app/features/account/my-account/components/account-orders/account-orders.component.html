@@ -1,89 +1,220 @@
 <div class="orders">
 
-  <!-- STATUS TABS -->
-  <div class="status-tabs">
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div
+      class="status-item"
+      [class.active]="activeTab() === 'all'"
+      (click)="activeTab.set('all')">
+      <span class="count">{{ orders().length }}</span>
+      <span class="label">Tất cả</span>
+    </div>
 
     <div
-      class="tab"
+      class="status-item"
       *ngFor="let s of statuses"
       [class.active]="activeTab() === s.key"
-      (click)="activeTab.set(s.key)"
-    >
-      {{ s.label }} ({{ countByStatus(s.key) }})
+      (click)="activeTab.set(s.key)">
+      <span class="count">{{ countByStatus(s.key) }}</span>
+      <span class="label">{{ s.label }}</span>
     </div>
-
-    <div
-      class="tab"
-      (click)="activeTab.set('all')"
-      [class.active]="activeTab() === 'all'"
-    >
-      Tất cả ({{ orders().length }})
-    </div>
-
   </div>
 
-  <!-- ORDER LIST -->
-  <div class="order-list">
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <input
+      class="search"
+      placeholder="Tìm kiếm đơn hàng"
+      disabled />
 
-    <div
-      class="order-card"
-      *ngFor="let order of filteredOrders()"
-      (click)="goToDetail(order.id)"
-    >
+    <button class="export">Xuất Excel</button>
+  </div>
 
-      <!-- HEADER -->
-      <div class="header">
-        <span>#{{ order.id }}</span>
-        <span class="status">
-          {{ getStatusLabel(order.status) }}
-        </span>
-      </div>
+  <!-- TABLE -->
+  <div class="table-card">
+    <table>
+      <thead>
+      <tr>
+        <th style="width: 40px;"></th>
+        <th>MÃ ĐƠN</th>
+        <th>NGÀY ĐẶT</th>
+        <th>KHÁCH HÀNG</th>
+        <th>SẢN PHẨM</th>
+        <th>TRẠNG THÁI</th>
+        <th>TỔNG TIỀN</th>
+        <th>THAO TÁC</th>
+      </tr>
+      </thead>
 
-      <!-- TIMELINE -->
-      <app-order-timeline [status]="order.status" />
+      <tbody>
+      <tr *ngFor="let order of paginatedOrders()">
+        <td><input type="checkbox"></td>
+        <td class="order-id">#{{ order.id }}</td>
+        <td>{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
 
-      <!-- ITEMS -->
-      <div class="items">
-        <div *ngFor="let item of order.items" class="item">
-          <img [src]="item.image" />
-          <div>
-            <p>{{ item.name }}</p>
-            <p>x{{ item.quantity }}</p>
+        <td>
+          <div class="customer">
+            <img src="https://i.pravatar.cc/40" alt="">
+            <div>
+              <div class="name">{{ order.customerName || 'Khách hàng' }}</div>
+              <div class="email">{{ order.phone || '---' }}</div>
+            </div>
           </div>
-        </div>
+        </td>
+
+        <td class="items-preview">
+            <span *ngFor="let item of order.items.slice(0, 2); let last = last">
+              {{ item.name }} (x{{ item.quantity }}){{ !last ? ', ' : '' }}
+            </span>
+          <span *ngIf="order.items.length > 2"> +{{ order.items.length - 2 }} khác</span>
+        </td>
+
+        <td>
+            <span class="status-badge" [ngClass]="getStatusClass(order.status)">
+              {{ getStatusLabel(order.status) }}
+            </span>
+        </td>
+
+        <td class="amount">{{ order.totalAmount | number }} ₫</td>
+
+        <td>
+          <div class="actions">
+            <button
+              *ngIf="order.status === 'shipping'"
+              class="confirm-received"
+              (click)="openVerificationModal(order.id)">
+              Đã nhận được hàng
+            </button>
+
+            <button
+              class="view-detail"
+              (click)="goToDetail(order.id)">
+              Chi tiết
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+      <div class="rows">
+        <span>Số dòng:</span>
+        <select (change)="changePageSize(+$any($event.target).value)">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+        </select>
       </div>
 
-      <!-- FOOTER -->
-      <div class="footer">
+      <div class="info">
+        {{ (page()-1)*pageSize()+1 }} – {{ Math.min(page()*pageSize(), total()) }} của {{ total() }}
+      </div>
 
-        <div class="total">
-          {{ order.totalAmount | number }} ₫
-        </div>
+      <div class="nav">
+        <button (click)="prevPage()" [disabled]="page() === 1">‹</button>
+        <button (click)="nextPage()" [disabled]="page() === totalPages()">›</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-        <div class="actions">
+<!-- VERIFICATION MODAL -->
+<app-verification-modal
+  *ngIf="showVerificationModal()"
+  [orderId]="selectedOrderId()!"
+  title="Xác minh nhận hàng"
+  (confirm)="onVerificationConfirm($event)"
+  (close)="closeModal()">
+</app-verification-modal>
+
+<!--<div class="orders">-->
+
+<!--  &lt;!&ndash; STATUS TABS &ndash;&gt;-->
+<!--  <div class="status-tabs">-->
+
+<!--    <div-->
+<!--      class="tab"-->
+<!--      *ngFor="let s of statuses"-->
+<!--      [class.active]="activeTab() === s.key"-->
+<!--      (click)="activeTab.set(s.key)"-->
+<!--    >-->
+<!--      {{ s.label }} ({{ countByStatus(s.key) }})-->
+<!--    </div>-->
+
+<!--    <div-->
+<!--      class="tab"-->
+<!--      (click)="activeTab.set('all')"-->
+<!--      [class.active]="activeTab() === 'all'"-->
+<!--    >-->
+<!--      Tất cả ({{ orders().length }})-->
+<!--    </div>-->
+
+<!--  </div>-->
+
+<!--  &lt;!&ndash; ORDER LIST &ndash;&gt;-->
+<!--  <div class="order-list">-->
+
+<!--    <div-->
+<!--      class="order-card"-->
+<!--      *ngFor="let order of filteredOrders()"-->
+<!--      (click)="goToDetail(order.id)"-->
+<!--    >-->
+
+<!--      &lt;!&ndash; HEADER &ndash;&gt;-->
+<!--      <div class="header">-->
+<!--        <span>#{{ order.id }}</span>-->
+<!--        <span class="status">-->
+<!--          {{ getStatusLabel(order.status) }}-->
+<!--        </span>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; TIMELINE &ndash;&gt;-->
+<!--      <app-order-timeline [status]="order.status" />-->
+
+<!--      &lt;!&ndash; ITEMS &ndash;&gt;-->
+<!--      <div class="items">-->
+<!--        <div *ngFor="let item of order.items" class="item">-->
+<!--          <img [src]="item.image" />-->
+<!--          <div>-->
+<!--            <p>{{ item.name }}</p>-->
+<!--            <p>x{{ item.quantity }}</p>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; FOOTER &ndash;&gt;-->
+<!--      <div class="footer">-->
+
+<!--        <div class="total">-->
+<!--          {{ order.totalAmount | number }} ₫-->
+<!--        </div>-->
+
+<!--        <div class="actions">-->
+
+<!--&lt;!&ndash;          <button&ndash;&gt;-->
+<!--&lt;!&ndash;            *ngIf="order.status === 'pending'"&ndash;&gt;-->
+<!--&lt;!&ndash;            (click)="cancel(order.id); $event.stopPropagation()"&ndash;&gt;-->
+<!--&lt;!&ndash;          >&ndash;&gt;-->
+<!--&lt;!&ndash;            Hủy&ndash;&gt;-->
+<!--&lt;!&ndash;          </button>&ndash;&gt;-->
 
 <!--          <button-->
-<!--            *ngIf="order.status === 'pending'"-->
-<!--            (click)="cancel(order.id); $event.stopPropagation()"-->
+<!--            *ngIf="-->
+<!--    order.status === 'shipping' &&-->
+<!--    order.fulfillmentStatus === 'delivered'-->
+<!--  "-->
 <!--          >-->
-<!--            Hủy-->
+<!--            Đã nhận hàng-->
 <!--          </button>-->
 
-          <button
-            *ngIf="
-    order.status === 'shipping' &&
-    order.fulfillmentStatus === 'delivered'
-  "
-          >
-            Đã nhận hàng
-          </button>
+<!--        </div>-->
 
-        </div>
+<!--      </div>-->
 
-      </div>
+<!--    </div>-->
 
-    </div>
+<!--  </div>-->
 
-  </div>
-
-</div>
+<!--</div>-->

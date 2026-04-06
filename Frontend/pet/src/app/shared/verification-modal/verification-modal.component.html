@@ -1,0 +1,57 @@
+<div class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>{{ title }}</h3>
+      <button class="close-btn" (click)="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <p><strong>Nhập mã định danh Pet</strong></p>
+
+      <input
+        type="text"
+        class="verification-input"
+        placeholder="PET-A123"
+        [value]="verificationCode()"
+        (input)="verificationCode.set($any($event.target).value.toUpperCase()); checkCode()"
+        maxlength="20"
+        autofocus>
+
+      <!-- Pet Info -->
+      <div class="pet-info" *ngIf="petInfo()">
+        <h4 [class.wrong-pet]="isWrongPet()">
+          {{ isWrongPet() ? 'Thông tin Pet không đúng' : 'Thông tin Pet đã xác thực' }}
+        </h4>
+        <div class="pet-detail" [class.wrong-pet]="isWrongPet()">
+          <p><strong>Tên:</strong> {{ petInfo().name }}</p>
+          <p><strong>Loài:</strong> {{ petInfo().species }}</p>
+          <p><strong>Giống:</strong> {{ petInfo().breed }}</p>
+          <p><strong>Chủng loại:</strong> {{ petInfo().variety }}</p>
+          <p><strong>Tiêm chủng:</strong> {{ petInfo().vaccination }}</p>
+          <p><strong>Sức khỏe:</strong> {{ petInfo().healthStatus }}</p>
+          <p class="chip-id"><strong>Mã chip:</strong> {{ petInfo().chipId }}</p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="cancel-btn" (click)="closeModal()">Hủy</button>
+
+        <button
+          class="confirm-final-btn"
+          *ngIf="isCodeValid()"
+          (click)="onConfirm()">
+          ✅ Xác nhận đã nhận hàng
+        </button>
+
+        <button
+          class="reject-btn"
+          *ngIf="isWrongPet()"
+          (click)="closeModal()">
+          Không nhận - Sai Pet
+        </button>
+      </div>
+
+      <small class="note">Mã này dùng để xác thực chip / NFT sau này</small>
+    </div>
+  </div>
+</div>
