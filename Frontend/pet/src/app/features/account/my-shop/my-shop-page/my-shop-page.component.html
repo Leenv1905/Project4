@@ -11,11 +11,14 @@
 
       <app-my-shop-dashboard *ngIf="tab() === 'dashboard'" />
 
-<!--      <app-my-shop-products *ngIf="tab() === 'products'" />-->
+      <app-my-shop-products *ngIf="tab() === 'products'" />
 
       <app-my-shop-orders *ngIf="tab() === 'orders'" />
 
 <!--      <app-my-shop-info *ngIf="tab() === 'info'" />-->
+      <app-add-product *ngIf="tab() === 'add-product'" />
+      <app-edit-product *ngIf="tab() === 'edit-product'" />
+      <app-my-shop-order-detail *ngIf="tab() === 'order-detail'"/>
 
     </div>
 

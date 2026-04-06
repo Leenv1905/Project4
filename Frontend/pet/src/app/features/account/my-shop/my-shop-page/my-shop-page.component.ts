@@ -1,11 +1,14 @@
 import { Component, signal, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import {MyShopOrdersComponent} from '../components/my-shop-orders/my-shop-orders.component';
+import {MyShopSidebarComponent} from '../components/my-shop-sidebar/my-shop-sidebar.component';
+import {MyShopDashboardComponent} from '../components/my-shop-dashboard/my-shop-dashboard.component';
+import {MyShopProductsComponent} from '../components/my-shop-products/my-shop-products.component';
+import {AddProductComponent} from '../components/add-product/add-product.component';
+import {EditProductComponent} from '../components/edit-product/edit-product.component';
+import {MyShopOrderDetailComponent} from '../components/my-shop-order-detail/my-shop-order-detail.component';
 
-import { MyShopSidebarComponent } from '../../components/my-shop/my-shop-sidebar/my-shop-sidebar.component';
-import { MyShopDashboardComponent } from '../../components/my-shop/my-shop-dashboard/my-shop-dashboard.component';
-import {MyShopOrdersComponent} from '../../components/my-shop/my-shop-orders/my-shop-orders.component';
-// import { MyShopProductsComponent } from '../components/my-shop/my-shop-products.component';
 // import { MyShopInfoComponent } from '../components/my-shop/my-shop-info.component';
 
 @Component({
@@ -15,9 +18,12 @@ import {MyShopOrdersComponent} from '../../components/my-shop/my-shop-orders/my-
     CommonModule,
     MyShopSidebarComponent,
     MyShopDashboardComponent,
-    // MyShopProductsComponent,
+    MyShopProductsComponent,
     MyShopOrdersComponent,
-    // MyShopInfoComponent
+    // MyShopInfoComponent,
+    AddProductComponent,
+    EditProductComponent,
+    MyShopOrderDetailComponent
   ],
   templateUrl: './my-shop-page.component.html',
   styleUrls: ['./my-shop-page.component.scss']
@@ -27,7 +33,7 @@ export class MyShopPageComponent {
   route = inject(ActivatedRoute);
   router = inject(Router);
 
-  tab = signal<'dashboard' | 'products' | 'orders' | 'info'>('dashboard');
+  tab = signal<'dashboard' | 'products' | 'orders' | 'info' | 'add-product' | 'edit-product' | 'order-detail'>('dashboard');
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {

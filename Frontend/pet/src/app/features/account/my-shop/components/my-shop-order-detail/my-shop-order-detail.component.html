@@ -1,0 +1,252 @@
+<div class="order-detail" *ngIf="order() as order">
+
+  <!-- HEADER -->
+
+  <div class="header">
+
+    <div>
+
+      <h2>
+        Order #{{order.id}}
+      </h2>
+
+      <div class="status">
+
+<span class="badge status">
+{{getStatusLabel(order.status)}}
+</span>
+
+      </div>
+
+      <p class="date">
+        {{order.createdAt | date:'medium'}}
+      </p>
+
+    </div>
+
+    <button class="back" (click)="back()">
+      Back
+    </button>
+
+  </div>
+
+
+  <div class="layout">
+
+    <!-- LEFT COLUMN -->
+
+    <div class="left">
+
+      <!-- ORDER ITEMS -->
+
+      <div class="card">
+
+        <h3>Pet Order Details</h3>
+
+        <table>
+
+          <thead>
+          <tr>
+            <th>Pet</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Total</th>
+          </tr>
+          </thead>
+
+          <tbody>
+
+          <tr *ngFor="let item of order.items">
+
+            <td class="product">
+
+              <img [src]="item.image">
+
+              <div>
+
+                <div class="name">
+                  {{item.name}}
+                </div>
+
+                <div class="breed">
+                  Pet
+                </div>
+
+              </div>
+
+            </td>
+
+            <td>
+              {{item.price | number}} ₫
+            </td>
+
+            <td>
+              {{item.quantity}}
+            </td>
+
+            <td>
+              {{item.price * item.quantity | number}} ₫
+            </td>
+
+          </tr>
+
+          </tbody>
+
+        </table>
+
+
+        <div class="summary">
+
+          <div>
+            <span>Subtotal</span>
+            <span>{{order.totalAmount | number}} ₫</span>
+          </div>
+
+          <div>
+            <span>Shipping</span>
+            <span>30,000 ₫</span>
+          </div>
+
+          <div>
+            <span>Tax</span>
+            <span>0 ₫</span>
+          </div>
+
+          <div class="total">
+            <span>Total</span>
+            <span>{{order.totalAmount | number}} ₫</span>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- SHIPPING ACTIVITY -->
+
+      <div class="card">
+
+        <h3>Shipping Activity</h3>
+
+        <div class="timeline">
+
+          <div class="event">
+
+            <div class="dot"></div>
+
+            <div>
+
+              <strong>Order Placed</strong>
+
+              <p>Customer placed the order</p>
+
+            </div>
+
+          </div>
+
+          <div class="event">
+
+            <div class="dot"></div>
+
+            <div>
+
+              <strong>Shop Confirmed</strong>
+
+              <p>Shop confirmed the order</p>
+
+            </div>
+
+          </div>
+
+          <div class="event">
+
+            <div class="dot"></div>
+
+            <div>
+
+              <strong>Shipping</strong>
+
+              <p>Courier is delivering the pet</p>
+
+            </div>
+
+          </div>
+
+          <div class="event">
+
+            <div class="dot"></div>
+
+            <div>
+
+              <strong>Delivered</strong>
+
+              <p>Customer received the pet</p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- RIGHT COLUMN -->
+
+    <div class="right">
+
+      <!-- CUSTOMER -->
+
+      <div class="card">
+
+        <h3>Customer Details</h3>
+
+        <div class="customer">
+
+          <img src="https://i.pravatar.cc/60">
+
+          <div>
+
+            <strong>{{order.customerName || 'Customer'}}</strong>
+
+            <p>{{order.phone}}</p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- SHIPPING -->
+
+      <div class="card">
+
+        <h3>Shipping Address</h3>
+
+        <p>
+
+          {{order.address}}
+
+        </p>
+
+      </div>
+
+
+      <!-- PAYMENT -->
+
+      <div class="card">
+
+        <h3>Payment</h3>
+
+        <p>Cash on Delivery</p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

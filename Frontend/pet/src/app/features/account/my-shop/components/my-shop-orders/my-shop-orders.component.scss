@@ -1,0 +1,298 @@
+.orders{
+  padding:24px;
+}
+
+/* STATUS BAR */
+
+.status-bar{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.status-item{
+  display:flex;
+  flex-direction:column;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:10px;
+
+  border-radius:8px;
+
+  border:1px solid #eee;
+
+  background:white;
+
+  cursor:pointer;
+
+  transition:all .2s;
+}
+
+.status-item:hover{
+  background:#f5f6fa;
+}
+
+.status-item.active{
+
+  background:#eef2ff;
+  border-color:#6366f1;
+  color:#6366f1;
+
+}
+
+.count{
+  font-weight:600;
+  font-size: 16px;
+}
+
+.label{
+  color:#666;
+  font-size:14px;
+}
+
+/* TOOLBAR */
+
+.toolbar{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:16px;
+}
+
+.search{
+  width:240px;
+  padding:10px;
+  border:1px solid #ddd;
+  border-radius:6px;
+}
+
+.export{
+  padding:8px 14px;
+  border:1px solid #ddd;
+  background:white;
+  border-radius:6px;
+}
+
+
+/* TABLE */
+
+.table-card{
+  background:white;
+  border:1px solid #eee;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+thead{
+  background:#f8f9fb;
+}
+
+th{
+  padding:14px;
+  font-size:13px;
+  color:#666;
+  text-align:left;
+}
+
+td{
+  padding:16px;
+  border-top:1px solid #eee;
+}
+
+
+/* CUSTOMER */
+
+.customer{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.customer img{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+}
+
+.name{
+  font-weight:600;
+}
+
+.email{
+  font-size:12px;
+  color:#777;
+}
+
+
+/* STATUS */
+
+.status{
+  background:#eef3ff;
+  padding:4px 10px;
+  border-radius:12px;
+  font-size:12px;
+}
+
+
+/* ACTIONS */
+
+.actions{
+  display:flex;
+  gap:6px;
+}
+
+.actions button{
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid #ddd;
+  background:white;
+  cursor:pointer;
+}
+
+.confirm{
+  background:#e8f7ec;
+  color:#2e9d45;
+}
+
+.reject{
+  background:#fdeaea;
+  color:#c83d3d;
+}
+// STATUS BADGE COLORS
+.status-badge{
+
+  padding:4px 10px;
+
+  border-radius:12px;
+
+  font-size:12px;
+
+  font-weight:500;
+
+}
+
+/* pending */
+
+.pending{
+  background:#fff7ed;
+  color:#c2410c;
+}
+
+/* confirmed */
+
+.confirmed{
+  background:#eef2ff;
+  color:#4338ca;
+}
+
+/* shipping */
+
+.shipping{
+  background:#f3e8ff;
+  color:#7e22ce;
+}
+
+/* delivered */
+
+.completed{
+  background:#e8f7ec;
+  color:#15803d;
+}
+
+/* cancelled */
+
+.cancelled{
+  background:#fdeaea;
+  color:#b91c1c;
+}
+
+/* PAGINATION */
+.pagination{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:flex-end;
+
+  gap:20px;
+
+  padding:14px 16px;
+
+  border-top:1px solid #eee;
+
+  font-size:13px;
+
+  color:#555;
+
+}
+
+/* rows */
+
+.rows{
+
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+}
+
+.rows select{
+
+  border:1px solid #ddd;
+
+  border-radius:6px;
+
+  padding:4px 8px;
+
+  background:white;
+
+}
+
+/* info */
+
+.info{
+
+  min-width:110px;
+
+  text-align:center;
+
+}
+
+/* nav */
+
+.nav{
+
+  display:flex;
+  gap:6px;
+
+}
+
+.nav button{
+
+  border:1px solid #ddd;
+
+  background:white;
+
+  padding:4px 10px;
+
+  border-radius:6px;
+
+  cursor:pointer;
+
+}
+
+.nav button:disabled{
+
+  opacity:.4;
+  cursor:not-allowed;
+
+}
+

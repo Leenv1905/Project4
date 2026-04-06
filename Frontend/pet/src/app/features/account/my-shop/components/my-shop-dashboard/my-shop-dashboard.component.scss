@@ -1,0 +1,112 @@
+.dashboard{
+  display:flex;
+  flex-direction:column;
+  gap:30px;
+}
+
+.title{
+  font-size:22px;
+  font-weight:600;
+}
+
+/* STATS */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+}
+
+.card{
+  border:1px solid #eee;
+  border-radius:12px;
+  padding:20px;
+  background:white;
+}
+
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  color:#666;
+}
+
+.card-value{
+  font-size:28px;
+  font-weight:700;
+  margin-top:10px;
+}
+
+.card-sub{
+  font-size:12px;
+  color:#888;
+  margin-top:6px;
+}
+
+.badge{
+  padding:4px 8px;
+  border-radius:12px;
+  font-size:12px;
+}
+
+.badge.up{
+  background:#e6f6ea;
+  color:#2e9d45;
+}
+
+.badge.down{
+  background:#fdecea;
+  color:#d93025;
+}
+
+/* CHARTS */
+
+.charts{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:20px;
+}
+
+.chart-card{
+  border:1px solid #eee;
+  border-radius:12px;
+  padding:20px;
+  background:white;
+}
+
+.fake-chart{
+  height:200px;
+  margin-top:20px;
+  background:linear-gradient(
+      to top,
+      #eaf1ff,
+      #ffffff
+  );
+  border-radius:8px;
+}
+
+/* TABLE */
+
+.table-card{
+  border:1px solid #eee;
+  border-radius:12px;
+  padding:20px;
+  background:white;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th{
+  text-align:left;
+  font-size:13px;
+  color:#888;
+  padding:10px 0;
+}
+
+td{
+  padding:12px 0;
+  border-top:1px solid #f0f0f0;
+}

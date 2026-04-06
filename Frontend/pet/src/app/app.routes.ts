@@ -28,10 +28,11 @@ export const routes: Routes = [
       { path: 'checkout', loadComponent: () => import('./features/checkout/pages/checkout-page.component').then(m => m.CheckoutPageComponent), canActivate: [authGuard]},
       { path: 'success', loadComponent: () => import('./features/checkout/pages/success-page.component').then(m => m.SuccessPageComponent), canActivate: [authGuard]},
       { path: 'cart', loadComponent: () => import('./features/cart/pages/cart-page.component').then(m => m.CartPageComponent), canActivate: [authGuard]},
-      { path: 'account', loadComponent: () => import('./features/account/pages/account-page/account-page.component').then(m => m.AccountPageComponent), canActivate: [authGuard]},
-      { path: 'my-shop', loadComponent: () => import('./features/account/pages/my-shop-page/my-shop-page.component').then(m => m.MyShopPageComponent), canActivate: [shopGuard]},
-      { path: 'order/:id', loadComponent: () => import('./features/account/pages/order-detail/order-detail.component').then(m => m.OrderDetailComponent), canActivate: [authGuard]}
-
+      { path: 'account', loadComponent: () => import('./features/account/my-account/my-account-page/account-page.component').then(m => m.AccountPageComponent), canActivate: [authGuard]},
+      { path: 'my-shop', loadComponent: () => import('./features/account/my-shop/my-shop-page/my-shop-page.component').then(m => m.MyShopPageComponent), canActivate: [shopGuard]},
+      { path: 'order/:id', loadComponent: () => import('./features/account/pages/order-detail/order-detail.component').then(m => m.OrderDetailComponent), canActivate: [authGuard]},
+      // { path:'my-shop/add-product', loadComponent: () => import('./features/account/pages/my-shop/add-product.component').then(m => m.AddProductComponent)},
+      // { path:'my-shop/edit-product/:id', loadComponent: () => import('./features/account/pages/my-shop/edit-product.component').then(m => m.EditProductComponent)}
       // { path: 'myaccount', loadComponent: () => import('./features/home/myaccount.page') .then(m => m.MyaccountPage) }
     ]
   },

@@ -2,7 +2,7 @@ import { Component, inject, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-import { AccountOrderTimelineComponent } from '../../components/account-order-timeline/account-order-timeline.component';
+import { AccountOrderTimelineComponent } from '../../my-account/components/account-order-timeline/account-order-timeline.component';
 import { OrderService } from '../../../../core/services/order.service';
 
 @Component({

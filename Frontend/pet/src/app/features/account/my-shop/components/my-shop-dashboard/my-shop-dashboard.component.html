@@ -1,0 +1,85 @@
+<div class="dashboard">
+
+  <h2 class="title">Shop Overview</h2>
+
+  <!-- STATS -->
+  <div class="stats">
+
+    <div class="card" *ngFor="let s of stats">
+
+      <div class="card-header">
+        <span>{{s.title}}</span>
+        <span
+          class="badge"
+          [class.up]="s.trend === 'up'"
+          [class.down]="s.trend === 'down'"
+        >
+          {{s.change}}
+        </span>
+      </div>
+
+      <div class="card-value">
+        {{s.value}}
+      </div>
+
+      <div class="card-sub">
+        Last 30 days
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- CHART AREA -->
+  <div class="charts">
+
+    <div class="chart-card">
+
+      <h3>Sales Overview</h3>
+
+      <div class="fake-chart"></div>
+
+    </div>
+
+    <div class="chart-card">
+
+      <h3>Views Trend</h3>
+
+      <div class="fake-chart"></div>
+
+    </div>
+
+  </div>
+
+  <!-- TOP PRODUCTS -->
+  <div class="table-card">
+
+    <h3>Top Products</h3>
+
+    <table>
+
+      <thead>
+      <tr>
+        <th>Product</th>
+        <th>Sales</th>
+        <th>Revenue</th>
+      </tr>
+      </thead>
+
+      <tbody>
+
+      <tr *ngFor="let p of topProducts">
+
+        <td>{{p.name}}</td>
+        <td>{{p.sales}}</td>
+        <td>{{p.revenue}}</td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

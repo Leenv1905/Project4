@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { AccountOrderTimelineComponent } from '../account-order-timeline/account-order-timeline.component';
-import { OrderService } from '../../../../core/services/order.service';
-import { ORDER_STATUS_CONFIG } from '../../../../core/constants/order-status.constant';
-import { getStatusLabel } from '../../../../core/utils/order-status.util';
-import { OrderStatus } from '../../../../core/models/order.model';
+import { OrderService } from '../../../../../core/services/order.service';
+import { ORDER_STATUS_CONFIG } from '../../../../../core/constants/order-status.constant';
+import { getStatusLabel } from '../../../../../core/utils/order-status.util';
+import { OrderStatus } from '../../../../../core/models/order.model';
 
 @Component({
   standalone: true,

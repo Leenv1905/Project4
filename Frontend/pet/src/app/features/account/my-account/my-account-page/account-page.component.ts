@@ -2,10 +2,10 @@ import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { AccountSidebarComponent } from '../../components/account-sidebar/account-sidebar.component';
-import { AccountOrdersComponent } from '../../components/account-orders/account-orders.component';
-import { AccountInfoComponent } from '../../components/account-info/account-info.component';
-import { AccountPaymentComponent } from '../../components/account-payment/account-payment.component';
+import { AccountSidebarComponent } from '../components/account-sidebar/account-sidebar.component';
+import { AccountOrdersComponent } from '../components/account-orders/account-orders.component';
+import { AccountInfoComponent } from '../components/account-info/account-info.component';
+import { AccountPaymentComponent } from '../components/account-payment/account-payment.component';
 
 @Component({
   standalone: true,
