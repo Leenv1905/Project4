@@ -1,0 +1,126 @@
+.order-detail{
+  padding:24px;
+}
+
+/* header */
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.status{
+  margin-top:6px;
+}
+
+.badge{
+  background:#e8f7ec;
+  color:#15803d;
+  padding:4px 10px;
+  border-radius:12px;
+  font-size:12px;
+}
+
+.back{
+  border:1px solid #ddd;
+  padding:6px 12px;
+  border-radius:6px;
+  background:white;
+  cursor:pointer;
+}
+
+/* layout */
+
+.layout{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:20px;
+}
+
+/* card */
+
+.card{
+  background:white;
+  border-radius:10px;
+  padding:20px;
+  border:1px solid #eee;
+  margin-bottom:20px;
+}
+
+/* table */
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+}
+
+.product{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.product img{
+  width:40px;
+  height:40px;
+  border-radius:6px;
+}
+
+/* summary */
+
+.summary{
+  margin-top:20px;
+}
+
+.summary div{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
+
+.total{
+  font-weight:600;
+}
+
+/* timeline */
+
+.timeline{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.event{
+  display:flex;
+  gap:12px;
+}
+
+.dot{
+  width:10px;
+  height:10px;
+  background:#7c3aed;
+  border-radius:50%;
+  margin-top:6px;
+}
+
+/* customer */
+
+.customer{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+.customer img{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+}

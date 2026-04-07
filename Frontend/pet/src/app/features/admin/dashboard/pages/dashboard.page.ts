@@ -8,8 +8,8 @@ import { MatCardModule } from '@angular/material/card';
     <h2>Dashboard</h2>
 
     <div class="grid">
-      <mat-card>Total Books: 120</mat-card>
-      <mat-card>Total Authors: 25</mat-card>
+      <mat-card>Total: 120</mat-card>
+      <mat-card>Total Order: 25</mat-card>
       <mat-card>Active Users: 340</mat-card>
     </div>
   `,

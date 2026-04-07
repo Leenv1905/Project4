@@ -1,0 +1,148 @@
+<div class="operator-order-detail" *ngIf="order() as order; else notFound">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h2>Đơn hàng #{{ order.id }}</h2>
+      <span class="status-badge" [ngClass]="getFulfillmentClass(order.fulfillmentStatus)">
+        {{ order.fulfillmentStatus }}
+      </span>
+    </div>
+    <button class="back-btn" (click)="back()">← Quay lại danh sách</button>
+  </div>
+
+  <div class="layout">
+
+    <!-- LEFT COLUMN -->
+    <div class="left">
+
+      <!-- ORDER ITEMS -->
+      <div class="card">
+        <h3>Chi tiết Pet</h3>
+        <table>
+          <thead>
+          <tr>
+            <th>Pet</th>
+            <th>Đơn giá</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of order.items">
+            <td class="product">
+              <img [src]="item.image" alt="">
+              <div>
+                <div class="name">{{ item.name }}</div>
+              </div>
+            </td>
+            <td>{{ item.price | number }} ₫</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ (item.price * item.quantity) | number }} ₫</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- OPERATOR TIMELINE -->
+      <div class="card">
+        <h3>Tiến trình vận chuyển</h3>
+        <div class="timeline">
+          <div class="event" [class.active]="order.fulfillmentStatus !== 'pending'">
+            <div class="dot"></div>
+            <div>
+              <strong>Shop đã xác nhận</strong>
+              <p>Đơn hàng sẵn sàng giao cho Operator</p>
+            </div>
+          </div>
+          <div class="event" [class.active]="['received','delivering','delivered'].includes(order.fulfillmentStatus || '')">
+            <div class="dot"></div>
+            <div>
+              <strong>Operator đã nhận hàng</strong>
+              <p>Đang chuẩn bị giao</p>
+            </div>
+          </div>
+          <div class="event" [class.active]="['delivering','delivered'].includes(order.fulfillmentStatus || '')">
+            <div class="dot"></div>
+            <div>
+              <strong>Đang giao hàng</strong>
+              <p>Đang trên đường giao đến khách</p>
+            </div>
+          </div>
+          <div class="event" [class.active]="order.fulfillmentStatus === 'delivered'">
+            <div class="dot"></div>
+            <div>
+              <strong>Giao hàng thành công</strong>
+              <p>Khách hàng đã nhận pet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right">
+
+      <!-- CUSTOMER INFO -->
+      <div class="card">
+        <h3>Thông tin khách hàng</h3>
+        <div class="customer">
+          <img src="https://i.pravatar.cc/60" alt="">
+          <div>
+            <strong>{{ order.customerName || 'Khách hàng' }}</strong>
+            <p>{{ order.phone }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHIPPING ADDRESS -->
+      <div class="card">
+        <h3>Địa chỉ giao hàng</h3>
+        <p>{{ order.address }}</p>
+      </div>
+
+      <!-- OPERATOR ACTIONS -->
+      <div class="card actions-card">
+        <h3>Hành động của Operator</h3>
+
+        <button *ngIf="order.fulfillmentStatus === 'pending'"
+                class="action-btn primary" (click)="receiveOrder()">
+          Nhận hàng từ Shop
+        </button>
+
+        <button *ngIf="order.fulfillmentStatus === 'received'"
+                class="action-btn primary" (click)="startDelivery()">
+          Bắt đầu giao hàng
+        </button>
+
+        <button *ngIf="order.fulfillmentStatus === 'delivering'"
+                class="action-btn success" (click)="completeDelivery()">
+          Giao hàng thành công
+        </button>
+
+        <button *ngIf="order.fulfillmentStatus === 'delivering'"
+                class="action-btn danger" (click)="cancelDelivery()">
+          Hủy giao hàng
+        </button>
+
+        <button *ngIf="order.fulfillmentStatus === 'return_pending'"
+                class="action-btn" (click)="confirmReturn()">
+          Xác nhận hoàn hàng
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Verification Modal -->
+<app-verification-modal
+  *ngIf="showVerificationModal()"
+  [orderId]="orderId()!"
+  title="Xác minh nhận hàng từ Shop"
+  (confirm)="onVerificationConfirm($event)"
+  (close)="closeModal()">
+</app-verification-modal>
+
+<ng-template #notFound>
+  <p>Không tìm thấy đơn hàng.</p>
+</ng-template>

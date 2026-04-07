@@ -115,7 +115,19 @@ td {
   font-size: 12px;
   color: #777;
 }
+// hiệu ứng cho từng hàng khi di chuột tới ID
+.order-id {
+  transition: background-color 0.2s;
 
+  &:hover {
+    background-color: #f8fafc;
+    cursor: pointer;
+  }
+
+  &:active {
+    background-color: #f1f5f9;
+  }
+}
 /* ITEMS PREVIEW */
 .items-preview {
   font-size: 14px;
@@ -177,19 +189,7 @@ td {
   font-size: 13px;
   color: #555;
 }
-// hiệu ứng cho từng hàng khi di chuột tới đơn hàng
-.order-row {
-  cursor: pointer;
-  transition: background-color 0.2s ease;
 
-  &:hover {
-    background-color: #f8fafc;
-  }
-
-  &:active {
-    background-color: #f1f5f9;
-  }
-}
 .rows {
   display: flex;
   align-items: center;
@@ -246,52 +246,6 @@ td {
   overflow: hidden;
 }
 
-.code-inputs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin: 16px 0;
-
-  label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 500;
-    color: #374151;
-  }
-}
-
-.pet-info {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 16px;
-  margin: 20px 0;
-
-  h4 {
-    margin: 0 0 12px 0;
-    color: #15803d;
-  }
-
-  .pet-detail p {
-    margin: 6px 0;
-    font-size: 14px;
-  }
-
-  .chip-id {
-    color: #6366f1;
-    font-weight: 600;
-  }
-}
-
-.error-message {
-  color: #c2410c;
-  background: #fee2e2;
-  padding: 12px;
-  border-radius: 8px;
-  margin: 16px 0;
-  font-size: 14px;
-}
-
 .modal-header {
   padding: 20px 24px;
   border-bottom: 1px solid #eee;
@@ -334,8 +288,8 @@ td {
 
 .modal-actions {
   display: flex;
+  flex-direction: column;
   gap: 12px;
-  margin-top: 20px;
 }
 
 .qr-btn {
@@ -345,15 +299,7 @@ td {
   border-radius: 8px;
   cursor: pointer;
 }
-.cancel-btn {
-  flex: 1;
-  padding: 14px;
-  background: #f1f5f9;
-  color: #334155;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
+
 .confirm-final-btn {
   padding: 14px;
   background: #15803d;
@@ -367,86 +313,18 @@ td {
     background: #9ca3af;
     cursor: not-allowed;
   }
+
 }
 
-.pet-info {
-  margin: 20px 0;
-  padding: 16px;
-  border-radius: 10px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-}
-
-.pet-info h4 {
-  margin: 0 0 12px 0;
-  font-size: 16px;
-}
-
-.wrong-pet {
-  color: #c2410c !important;
-  background: #fee2e2 !important;
-  border-color: #fecaca !important;
-}
-
-.pet-detail p {
-  margin: 8px 0;
-  font-size: 14.5px;
-}
-
-.chip-id {
-  color: #6366f1;
-  font-weight: 600;
-}
-
-.reject-btn {
-  flex: 1;
-  padding: 14px;
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.status-badge {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-/* Fulfillment Status Colors */
-.pending       { background: #fff7ed; color: #c2410c; }
-.received      { background: #fef3c7; color: #d97706; }
-.delivering    { background: #dbeafe; color: #1e40af; }
-.delivered     { background: #e8f7ec; color: #15803d; }
-.return_pending{ background: #fee2e2; color: #b91c1c; }
-.returned      { background: #f3e8ff; color: #6b21a8; }
-
-/* Buttons */
-.receive-btn       { background: #3b82f6; color: white; }
-.start-delivery-btn{ background: #8b5cf6; color: white; }
-.complete-btn      { background: #15803d; color: white; }
-.cancel-btn        { background: #ef4444; color: white; }
-.confirm-return-btn{ background: #7c3aed; color: white; }
-
-/* Modal styles - giống modal ở account-orders */
-.modal-overlay, .modal-content, .modal-header, .modal-body,
-.verification-input, .confirm-final-btn, .qr-btn, .note {
-  /* Dùng chung style với modal bạn đã có ở account-orders */
-}
-
-
-//.tabs {
+//.status-tabs {
 //  display: flex;
 //  gap: 10px;
-//  margin-bottom: 16px;
+//  margin-bottom: 20px;
 //
 //  .tab {
-//    padding: 8px 12px;
-//    background: #eee;
+//    padding: 8px 16px;
 //    border-radius: 20px;
+//    background: #f5f5f5;
 //    cursor: pointer;
 //
 //    &.active {
@@ -458,18 +336,32 @@ td {
 //
 //.order-card {
 //  border: 1px solid #eee;
+//  border-radius: 12px;
 //  padding: 16px;
-//  border-radius: 10px;
-//  margin-bottom: 12px;
+//  margin-bottom: 15px;
 //}
 //
-//.actions {
+//.item {
 //  display: flex;
-//  gap: 8px;
+//  gap: 10px;
+//  margin-top: 10px;
 //
-//  button {
-//    padding: 6px 10px;
-//    border-radius: 6px;
-//    cursor: pointer;
+//  img {
+//    width: 60px;
+//    border-radius: 8px;
 //  }
+//}
+//
+//.footer {
+//  display: flex;
+//  justify-content: space-between;
+//  align-items: center;
+//  margin-top: 10px;
+//}
+//
+//.actions button {
+//  background: #f86d72;
+//  color: white;
+//  border-radius: 6px;
+//  padding: 6px 12px;
 //}

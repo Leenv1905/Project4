@@ -1,0 +1,251 @@
+<div class="products">
+
+  <!-- FILTERS -->
+
+  <div class="filters">
+
+    <select>
+      <option>Status</option>
+      <option>Publish</option>
+      <option>Inactive</option>
+    </select>
+
+    <select>
+      <option>Category</option>
+      <option>Dog</option>
+      <option>Food</option>
+      <option>Accessory</option>
+    </select>
+
+    <select>
+      <option>Stock</option>
+      <option>In stock</option>
+      <option>Out of stock</option>
+    </select>
+
+  </div>
+
+
+  <!-- TOOLBAR -->
+
+  <div class="toolbar">
+
+    <input
+      type="text"
+      placeholder="Search Product"
+    />
+
+    <button class="add-btn" (click)="addProduct()">
+      + Add Product
+    </button>
+
+  </div>
+
+
+  <!-- TABLE -->
+
+  <table>
+
+    <thead>
+
+    <tr>
+      <th></th>
+      <th>Product</th>
+      <th>Category</th>
+      <th>Stock</th>
+      <th>SKU</th>
+      <th>Price</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+
+    </thead>
+
+
+    <tbody>
+
+    <tr *ngFor="let p of paginatedProducts">
+
+      <td>
+        <input type="checkbox">
+      </td>
+
+      <td class="product">
+
+        <img [src]="p.image">
+
+        <div>
+
+          <div class="name">
+            {{p.name}}
+          </div>
+
+          <div class="desc">
+            {{p.description}}
+          </div>
+
+        </div>
+
+      </td>
+
+      <td>{{p.category}}</td>
+
+      <td>{{p.stock}}</td>
+
+      <td>{{p.sku}}</td>
+
+      <td>${{p.price}}</td>
+
+      <td>
+
+<span
+  class="badge"
+  [class.publish]="p.status==='publish'"
+  [class.inactive]="p.status==='inactive'"
+>
+
+{{p.status}}
+
+</span>
+
+      </td>
+
+      <td class="actions">
+
+        <div class="action-wrapper">
+
+          <button
+            class="dots"
+            (click)="toggleMenu(p.id)"
+          >
+            ⋮
+          </button>
+
+          <div
+            class="dropdown"
+            *ngIf="openMenu === p.id"
+          >
+
+            <div (click)="editProduct(p.id)">
+              Edit
+            </div>
+
+            <div (click)="openDelete(p)">
+              Delete
+            </div>
+
+            <div (click)="openView(p)">
+              View
+            </div>
+
+          </div>
+
+        </div>
+
+      </td>
+
+    </tr>
+
+    </tbody>
+
+  </table>
+  <div class="pagination">
+
+    <div class="page-size">
+
+      <span>Rows per page:</span>
+
+      <select
+        (change)="changePageSize($any($event.target).value)"
+      >
+
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="20">20</option>
+
+      </select>
+
+    </div>
+
+    <div class="page-info">
+
+      {{ (page-1)*pageSize + 1 }}
+      -
+      {{ Math.min(page*pageSize,total) }}
+      of
+      {{ total }}
+
+    </div>
+
+    <div class="page-controls">
+
+      <button
+        (click)="prevPage()"
+        [disabled]="page===1"
+      >
+        ‹
+      </button>
+
+      <button
+        (click)="nextPage()"
+        [disabled]="page===totalPages"
+      >
+        ›
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- VIEW MODAL -->
+
+<div class="modal" *ngIf="selectedProduct">
+
+  <div class="modal-content">
+
+    <h3>{{selectedProduct.name}}</h3>
+
+    <img [src]="selectedProduct.image">
+
+    <p>{{selectedProduct.description}}</p>
+
+    <p>Price: ${{selectedProduct.price}}</p>
+
+    <button (click)="closeView()">
+      Close
+    </button>
+
+  </div>
+
+
+</div>
+
+
+<!-- DELETE MODAL -->
+
+<div class="modal" *ngIf="deleteProduct">
+
+  <div class="modal-content">
+
+    <h3>Delete Product</h3>
+
+    <p>Are you sure you want to delete this product?</p>
+
+    <div class="modal-actions">
+
+      <button (click)="confirmDelete()">
+        Delete
+      </button>
+
+      <button (click)="closeDelete()">
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

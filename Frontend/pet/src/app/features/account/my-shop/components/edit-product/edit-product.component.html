@@ -1,0 +1,176 @@
+<div class="add-product">
+
+  <!-- HEADER -->
+
+  <div class="header">
+
+    <div class="title">
+
+      <button class="back" (click)="backToProducts()">
+        ← Back to products
+      </button>
+
+      <h2>Edit Pet</h2>
+
+      <p class="subtitle">
+        Update pet information
+      </p>
+
+    </div>
+
+    <div class="actions">
+
+      <button class="discard" (click)="backToProducts()">
+        Cancel
+      </button>
+
+      <button class="publish" (click)="updateProduct()">
+        Update Product
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- CONTENT -->
+
+  <div class="layout">
+
+    <!-- LEFT -->
+
+    <div class="left">
+
+      <div class="card">
+
+        <h3>Pet Information</h3>
+
+        <input
+          placeholder="Pet Name"
+          [(ngModel)]="product.name"
+        />
+
+        <div class="row">
+
+          <input
+            placeholder="Breed"
+            [(ngModel)]="product.breed"
+          />
+
+          <input
+            placeholder="Age (months)"
+            [(ngModel)]="product.age"
+          />
+
+        </div>
+
+        <input
+          placeholder="SKU / Pet ID"
+          [(ngModel)]="product.sku"
+        />
+
+        <label>Description</label>
+
+        <textarea
+          rows="6"
+          [(ngModel)]="product.description"
+        ></textarea>
+
+
+        <!-- IMAGE UPLOAD -->
+
+        <div class="image-upload">
+
+          <label>Pet Images</label>
+
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            (change)="uploadImages($event)"
+          />
+
+        </div>
+
+        <div class="image-preview">
+
+          <div
+            class="image-card"
+            *ngFor="let img of images; let i=index"
+          >
+
+            <img [src]="img">
+
+            <button
+              class="remove"
+              (click)="removeImage(i)"
+            >
+              ✕
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- RIGHT -->
+
+    <div class="right">
+
+      <div class="card">
+
+        <h3>Pricing</h3>
+
+        <input
+          placeholder="Price"
+          [(ngModel)]="product.price"
+        />
+
+        <input
+          placeholder="Discount Price"
+          [(ngModel)]="product.discountPrice"
+        />
+
+        <label class="toggle">
+
+          <span>Available</span>
+
+          <input
+            type="checkbox"
+            [(ngModel)]="product.inStock"
+          />
+
+        </label>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>Organize</h3>
+
+        <select [(ngModel)]="product.category">
+
+          <option>Dog</option>
+          <option>Cat</option>
+          <option>Bird</option>
+
+        </select>
+
+        <select [(ngModel)]="product.vendor">
+
+          <option>Happy Puppy Shop</option>
+          <option>Pet Paradise</option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
