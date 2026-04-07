@@ -15,12 +15,12 @@
     <div
       class="status-item"
       *ngFor="let s of statuses | slice:0:-1"
-    [class.active]="activeTab() === s"
-    (click)="activeTab.set(s)">
-    <span class="count">{{ count(s) }}</span>
-    <span class="label">{{ s | titlecase }}</span>
+      [class.active]="activeTab() === s"
+      (click)="activeTab.set(s)">
+      <span class="count">{{ count(s) }}</span>
+      <span class="label">{{ s | titlecase }}</span>
+    </div>
   </div>
-</div>
 
   <!-- TOOLBAR -->
   <div class="toolbar">
@@ -46,8 +46,12 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let order of paginatedOrders()">
-        <td><input type="checkbox"></td>
+      <tr
+        *ngFor="let order of paginatedOrders()"
+        class="order-row"
+        (click)="goToOrderDetail(order.id)">
+
+        <td><input type="checkbox" (click)="$event.stopPropagation()"></td>
         <td class="order-id">#{{ order.id }}</td>
         <td>{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
 
@@ -75,8 +79,8 @@
         </td>
 
         <td>
-          <div class="actions">
-            <!-- Pending -->
+          <div class="actions" (click)="$event.stopPropagation()">
+            <!-- Pending - Nhận hàng -->
             <button
               *ngIf="order.fulfillmentStatus === 'pending'"
               class="receive-btn"
@@ -134,66 +138,203 @@
   </div>
 </div>
 
-<!-- VERIFICATION MODAL -->
-<!-- MODAL XÁC NHẬN NHẬN HÀNG -->
-<div class="modal-overlay" *ngIf="showVerificationModal()">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Xác minh nhận hàng từ Shop</h3>
-      <button class="close-btn" (click)="closeVerificationModal()">✕</button>
-    </div>
+<!--<div class="orders">-->
 
-    <div class="modal-body">
-      <p><strong>Nhập mã định danh Pet</strong></p>
+<!--  &lt;!&ndash; STATUS BAR &ndash;&gt;-->
+<!--  <div class="status-bar">-->
+<!--    &lt;!&ndash; Tab "Tất cả" &ndash;&gt;-->
+<!--    <div-->
+<!--      class="status-item"-->
+<!--      [class.active]="activeTab() === 'all'"-->
+<!--      (click)="activeTab.set('all')">-->
+<!--      <span class="count">{{ orders().length }}</span>-->
+<!--      <span class="label">Tất cả</span>-->
+<!--    </div>-->
 
-      <input
-        type="text"
-        class="verification-input"
-        placeholder="Nhập mã pet (ví dụ: PET-A123)"
-        [value]="verificationCode()"
-        (input)="verificationCode.set($any($event.target).value.toUpperCase()); checkVerificationCode()"
-        maxlength="20"
-        autofocus>
+<!--    &lt;!&ndash; Các tab trạng thái khác &ndash;&gt;-->
+<!--    <div-->
+<!--      class="status-item"-->
+<!--      *ngFor="let s of statuses | slice:0:-1"-->
+<!--    [class.active]="activeTab() === s"-->
+<!--    (click)="activeTab.set(s)">-->
+<!--    <span class="count">{{ count(s) }}</span>-->
+<!--    <span class="label">{{ s | titlecase }}</span>-->
+<!--  </div>-->
+<!--</div>-->
 
-      <!-- THÔNG TIN PET -->
-      <div class="pet-info" *ngIf="petInfo()">
-        <h4 [class.wrong-pet]="isWrongPet()">
-          {{ isWrongPet() ? 'Thông tin Pet không đúng' : 'Thông tin Pet đã xác thực' }}
-        </h4>
+<!--  &lt;!&ndash; TOOLBAR &ndash;&gt;-->
+<!--  <div class="toolbar">-->
+<!--    <input-->
+<!--      class="search"-->
+<!--      placeholder="Tìm kiếm đơn hàng..."-->
+<!--      disabled />-->
+<!--    <button class="export">Xuất Excel</button>-->
+<!--  </div>-->
 
-        <div class="pet-detail" [class.wrong-pet]="isWrongPet()">
-          <p><strong>Tên:</strong> {{ petInfo().name }}</p>
-          <p><strong>Loài:</strong> {{ petInfo().species }}</p>
-          <p><strong>Giống:</strong> {{ petInfo().breed }}</p>
-          <p><strong>Chủng loại:</strong> {{ petInfo().variety }}</p>
-          <p><strong>Tiêm chủng:</strong> {{ petInfo().vaccination }}</p>
-          <p><strong>Sức khỏe:</strong> {{ petInfo().healthStatus }}</p>
-          <p class="chip-id"><strong>Mã chip:</strong> {{ petInfo().chipId }}</p>
-        </div>
-      </div>
+<!--  &lt;!&ndash; TABLE &ndash;&gt;-->
+<!--  <div class="table-card">-->
+<!--    <table>-->
+<!--      <thead>-->
+<!--      <tr>-->
+<!--        <th style="width:40px;"></th>-->
+<!--        <th>MÃ ĐƠN</th>-->
+<!--        <th>NGÀY ĐẶT</th>-->
+<!--        <th>KHÁCH HÀNG</th>-->
+<!--        <th>SẢN PHẨM</th>-->
+<!--        <th>TRẠNG THÁI</th>-->
+<!--        <th>THAO TÁC</th>-->
+<!--      </tr>-->
+<!--      </thead>-->
+<!--      <tbody>-->
+<!--      <tr *ngFor="let order of paginatedOrders()" class="order-row" (click)="goToOrderDetail(order.id)">-->
+<!--        <td><input type="checkbox"></td>-->
+<!--        <td class="order-id" >#{{ order.id }}</td>-->
+<!--        <td>{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>-->
 
-      <div class="modal-actions">
-        <button class="cancel-btn" (click)="closeVerificationModal()">Hủy</button>
+<!--        <td>-->
+<!--          <div class="customer">-->
+<!--            <img src="https://i.pravatar.cc/40" alt="">-->
+<!--            <div>-->
+<!--              <div class="name">{{ order.customerName || 'Khách hàng' }}</div>-->
+<!--              <div class="email">{{ order.phone || '-&#45;&#45;' }}</div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </td>-->
 
-        <button
-          class="confirm-final-btn"
-          *ngIf="isCodeValid()"
-          (click)="confirmReceiveFromModal()">
-          ✅ Xác nhận đã nhận hàng
-        </button>
+<!--        <td class="items-preview">-->
+<!--            <span *ngFor="let item of order.items.slice(0, 2); let last = last">-->
+<!--              {{ item.name }} (x{{ item.quantity }}){{ !last ? ', ' : '' }}-->
+<!--            </span>-->
+<!--          <span *ngIf="order.items.length > 2"> +{{ order.items.length - 2 }} khác</span>-->
+<!--        </td>-->
 
-        <button
-          class="reject-btn"
-          *ngIf="isWrongPet()"
-          (click)="closeVerificationModal()">
-          Không nhận - Sai Pet
-        </button>
-      </div>
+<!--        <td>-->
+<!--            <span class="status-badge" [ngClass]="getFulfillmentClass(order.fulfillmentStatus || '')">-->
+<!--              {{ order.fulfillmentStatus }}-->
+<!--            </span>-->
+<!--        </td>-->
 
-      <small class="note">Sau này sẽ tích hợp quét QR / NFC trực tiếp</small>
-    </div>
-  </div>
-</div>
+<!--        <td>-->
+<!--          <div class="actions">-->
+<!--            &lt;!&ndash; Pending &ndash;&gt;-->
+<!--            <button-->
+<!--              *ngIf="order.fulfillmentStatus === 'pending'"-->
+<!--              class="receive-btn"-->
+<!--              (click)="openReceiveModal(order.id); $event.stopPropagation()">-->
+<!--              Nhận hàng-->
+<!--            </button>-->
+<!--&lt;!&ndash;              // CẦN THÊM ; $event.stopPropagation() ĐỂ TRÁNH&ndash;&gt;-->
+<!--&lt;!&ndash;              // KHI CLICK VÀO VẪN ĐIỀU HƯỚNG THEO goToOrderDetail PHÍA TRÊN&ndash;&gt;-->
+<!--            &lt;!&ndash; Received &ndash;&gt;-->
+<!--            <button-->
+<!--              *ngIf="order.fulfillmentStatus === 'received'"-->
+<!--              class="start-delivery-btn"-->
+<!--              (click)="startDelivery(order.id); $event.stopPropagation()">-->
+<!--              Bắt đầu giao-->
+<!--            </button>-->
+
+<!--            &lt;!&ndash; Delivering &ndash;&gt;-->
+<!--            <ng-container *ngIf="order.fulfillmentStatus === 'delivering'">-->
+<!--              <button class="complete-btn" (click)="complete(order.id); $event.stopPropagation()">Giao thành công</button>-->
+<!--              <button class="cancel-btn" (click)="cancel(order.id); $event.stopPropagation()">Hủy giao</button>-->
+<!--            </ng-container>-->
+
+<!--            &lt;!&ndash; Return Pending &ndash;&gt;-->
+<!--            <button-->
+<!--              *ngIf="order.fulfillmentStatus === 'return_pending'"-->
+<!--              class="confirm-return-btn"-->
+<!--              (click)="confirmReturn(order.id); $event.stopPropagation()">-->
+<!--              Xác nhận hoàn hàng-->
+<!--            </button>-->
+<!--          </div>-->
+<!--        </td>-->
+<!--      </tr>-->
+<!--      </tbody>-->
+<!--    </table>-->
+
+<!--    &lt;!&ndash; PAGINATION &ndash;&gt;-->
+<!--    <div class="pagination">-->
+<!--      <div class="rows">-->
+<!--        <span>Số dòng:</span>-->
+<!--        <select (change)="changePageSize(+$any($event.target).value)">-->
+<!--          <option value="5">5</option>-->
+<!--          <option value="10" selected>10</option>-->
+<!--          <option value="20">20</option>-->
+<!--        </select>-->
+<!--      </div>-->
+
+<!--      <div class="info">-->
+<!--        {{ (page()-1)*pageSize()+1 }} – {{ Math.min(page()*pageSize(), total()) }} của {{ total() }}-->
+<!--      </div>-->
+
+<!--      <div class="nav">-->
+<!--        <button (click)="prevPage()" [disabled]="page() === 1">‹</button>-->
+<!--        <button (click)="nextPage()" [disabled]="page() === totalPages()">›</button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; VERIFICATION MODAL &ndash;&gt;-->
+<!--&lt;!&ndash; MODAL XÁC NHẬN NHẬN HÀNG &ndash;&gt;-->
+<!--<div class="modal-overlay" *ngIf="showVerificationModal()">-->
+<!--  <div class="modal-content">-->
+<!--    <div class="modal-header">-->
+<!--      <h3>Xác minh nhận hàng từ Shop</h3>-->
+<!--      <button class="close-btn" (click)="closeVerificationModal()">✕</button>-->
+<!--    </div>-->
+
+<!--    <div class="modal-body">-->
+<!--      <p><strong>Nhập mã định danh Pet</strong></p>-->
+
+<!--      <input-->
+<!--        type="text"-->
+<!--        class="verification-input"-->
+<!--        placeholder="Nhập mã pet (ví dụ: PET-A123)"-->
+<!--        [value]="verificationCode()"-->
+<!--        (input)="verificationCode.set($any($event.target).value.toUpperCase()); checkVerificationCode()"-->
+<!--        maxlength="20"-->
+<!--        autofocus>-->
+
+<!--      &lt;!&ndash; THÔNG TIN PET &ndash;&gt;-->
+<!--      <div class="pet-info" *ngIf="petInfo()">-->
+<!--        <h4 [class.wrong-pet]="isWrongPet()">-->
+<!--          {{ isWrongPet() ? 'Thông tin Pet không đúng' : 'Thông tin Pet đã xác thực' }}-->
+<!--        </h4>-->
+
+<!--        <div class="pet-detail" [class.wrong-pet]="isWrongPet()">-->
+<!--          <p><strong>Tên:</strong> {{ petInfo().name }}</p>-->
+<!--          <p><strong>Loài:</strong> {{ petInfo().species }}</p>-->
+<!--          <p><strong>Giống:</strong> {{ petInfo().breed }}</p>-->
+<!--          <p><strong>Chủng loại:</strong> {{ petInfo().variety }}</p>-->
+<!--          <p><strong>Tiêm chủng:</strong> {{ petInfo().vaccination }}</p>-->
+<!--          <p><strong>Sức khỏe:</strong> {{ petInfo().healthStatus }}</p>-->
+<!--          <p class="chip-id"><strong>Mã chip:</strong> {{ petInfo().chipId }}</p>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="modal-actions">-->
+<!--        <button class="cancel-btn" (click)="closeVerificationModal()">Hủy</button>-->
+
+<!--        <button-->
+<!--          class="confirm-final-btn"-->
+<!--          *ngIf="isCodeValid()"-->
+<!--          (click)="confirmReceiveFromModal()">-->
+<!--          ✅ Xác nhận đã nhận hàng-->
+<!--        </button>-->
+
+<!--        <button-->
+<!--          class="reject-btn"-->
+<!--          *ngIf="isWrongPet()"-->
+<!--          (click)="closeVerificationModal()">-->
+<!--          Không nhận - Sai Pet-->
+<!--        </button>-->
+<!--      </div>-->
+
+<!--      <small class="note">Sau này sẽ tích hợp quét QR / NFC trực tiếp</small>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
 
 <!--<div class="operator-orders">-->
 

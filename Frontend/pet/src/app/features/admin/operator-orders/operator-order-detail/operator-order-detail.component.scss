@@ -1,0 +1,258 @@
+.operator-order-detail {
+  padding: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  h2 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    color: #1f2937;
+  }
+}
+
+.status-badge {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Status colors cho Fulfillment */
+.pending       { background: #fff7ed; color: #c2410c; }
+.received      { background: #fef3c7; color: #d97706; }
+.delivering    { background: #dbeafe; color: #1e40af; }
+.delivered     { background: #e8f7ec; color: #15803d; }
+.return_pending{ background: #fee2e2; color: #b91c1c; }
+.returned      { background: #f3e8ff; color: #6b21a8; }
+
+.back-btn {
+  padding: 10px 20px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+  }
+}
+
+/* LAYOUT */
+.layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 28px;
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* CARD */
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  h3 {
+    margin: 0 0 20px 0;
+    font-size: 19px;
+    color: #1f2937;
+    font-weight: 600;
+  }
+}
+
+/* TABLE - ORDER ITEMS */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 14px 12px;
+  text-align: left;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+th {
+  background: #f9fafb;
+  font-weight: 500;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  img {
+    width: 52px;
+    height: 52px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .name {
+    font-weight: 500;
+    color: #1f2937;
+  }
+}
+
+/* TIMELINE */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.event {
+  display: flex;
+  gap: 16px;
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 5.5px;
+    top: 28px;
+    bottom: -20px;
+    width: 3px;
+    background: #e5e7eb;
+  }
+
+  .dot {
+    width: 13px;
+    height: 13px;
+    background: #6366f1;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+    border: 3px solid white;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+  }
+
+  .active .dot {
+    background: #22c55e;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #1f2937;
+    font-size: 15.5px;
+  }
+
+  p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+  }
+}
+
+/* RIGHT COLUMN */
+.customer {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+
+  img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  strong {
+    font-size: 16px;
+    color: #1f2937;
+  }
+
+  p {
+    margin: 4px 0 0 0;
+    color: #6b7280;
+  }
+}
+
+/* ACTION BUTTONS */
+.actions-card {
+  .action-btn {
+    width: 100%;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .primary {
+    background: #3b82f6;
+    color: white;
+
+    &:hover {
+      background: #2563eb;
+    }
+  }
+
+  .success {
+    background: #15803d;
+    color: white;
+
+    &:hover {
+      background: #166534;
+    }
+  }
+
+  .danger {
+    background: #ef4444;
+    color: white;
+
+    &:hover {
+      background: #dc2626;
+    }
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .operator-order-detail {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .layout {
+    gap: 20px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+}

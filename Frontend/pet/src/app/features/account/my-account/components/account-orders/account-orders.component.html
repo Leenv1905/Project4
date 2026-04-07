@@ -47,9 +47,9 @@
       </thead>
 
       <tbody>
-      <tr *ngFor="let order of paginatedOrders()">
+      <tr *ngFor="let order of paginatedOrders()" >
         <td><input type="checkbox"></td>
-        <td class="order-id">#{{ order.id }}</td>
+        <td class="order-id" (click)="goToOrderDetail(order.id)">#{{ order.id }}</td>
         <td>{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
 
         <td>

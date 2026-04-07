@@ -4,6 +4,9 @@ import {HomeLayoutComponent} from './layouts/home/home-layout.component';
 import {authGuard} from './core/guards/auth.guard';
 import {adminGuard} from './core/guards/admin.guard';
 import {shopGuard} from './core/guards/shop.guard';
+import {
+  OperatorOrderDetailComponent
+} from './features/admin/operator-orders/operator-order-detail/operator-order-detail.component';
 
 export const routes: Routes = [
 
@@ -15,6 +18,7 @@ export const routes: Routes = [
     children: [
       { path: '', loadComponent: () => import('./features/admin/dashboard/pages/dashboard.page').then(m => m.DashboardPage)},
       { path: 'operators', loadComponent: () => import('./features/admin/operator-orders/operator-orders.component').then(m => m.OperatorOrdersComponent)},
+      { path: 'operators/order/:id', loadComponent: () => import('./features/admin/operator-orders/operator-order-detail/operator-order-detail.component').then(m => m.OperatorOrderDetailComponent)},
     ]
   },
 

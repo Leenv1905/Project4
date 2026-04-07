@@ -177,7 +177,19 @@ td {
   font-size: 13px;
   color: #555;
 }
+// hiệu ứng cho từng hàng khi di chuột tới đơn hàng
+.order-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 
+  &:hover {
+    background-color: #f8fafc;
+  }
+
+  &:active {
+    background-color: #f1f5f9;
+  }
+}
 .rows {
   display: flex;
   align-items: center;

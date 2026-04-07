@@ -115,7 +115,19 @@ td {
   font-size: 12px;
   color: #777;
 }
+// hiệu ứng cho từng hàng khi di chuột tới ID
+.order-id {
+  transition: background-color 0.2s;
 
+  &:hover {
+    background-color: #f8fafc;
+    cursor: pointer;
+  }
+
+  &:active {
+    background-color: #f1f5f9;
+  }
+}
 /* ITEMS PREVIEW */
 .items-preview {
   font-size: 14px;
@@ -301,6 +313,7 @@ td {
     background: #9ca3af;
     cursor: not-allowed;
   }
+
 }
 
 //.status-tabs {

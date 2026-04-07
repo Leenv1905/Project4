@@ -1,0 +1,129 @@
+<h2 mat-dialog-title>Kiểm tra & Nhận Pet từ Shop - Đơn #{{ orderId }}</h2>
+
+<div mat-dialog-content>
+  <div class="check-grid">
+
+    <!-- Cột 1: Ngoại quan -->
+    <div class="check-column">
+      <h3>1. Kiểm tra ngoại quan</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Màu lông</mat-label>
+        <input matInput [(ngModel)]="visualCheck().furColor" placeholder="Vàng óng, đen...">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Cân nặng (kg)</mat-label>
+        <input matInput type="number" [(ngModel)]="visualCheck().weight">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Giống / Chủng loại</mat-label>
+        <input matInput [(ngModel)]="visualCheck().breed">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Giới tính</mat-label>
+        <mat-select [(ngModel)]="visualCheck().gender">
+          <mat-option value="male">Đực</mat-option>
+          <mat-option value="female">Cái</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Tình trạng tổng quát</mat-label>
+        <mat-select [(ngModel)]="visualCheck().condition">
+          <mat-option value="good">Tốt</mat-option>
+          <mat-option value="average">Trung bình</mat-option>
+          <mat-option value="bad">Kém</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Cột 2: Y tế -->
+    <div class="check-column">
+      <h3>2. Kiểm tra y tế</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Sức khỏe tổng quát</mat-label>
+        <mat-select [(ngModel)]="healthCheck().generalHealth">
+          <mat-option value="good">Tốt</mat-option>
+          <mat-option value="average">Trung bình</mat-option>
+          <mat-option value="bad">Kém</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="checkbox-group">
+        <mat-checkbox [(ngModel)]="healthCheck().skinIssue">Có vấn đề da / lông</mat-checkbox>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Khả năng vận động</mat-label>
+        <mat-select [(ngModel)]="healthCheck().mobility">
+          <mat-option value="good">Tốt</mat-option>
+          <mat-option value="average">Trung bình</mat-option>
+          <mat-option value="bad">Kém</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="checkbox-group">
+        <mat-checkbox [(ngModel)]="healthCheck().vaccination">Đã tiêm vaccine đầy đủ</mat-checkbox>
+      </div>
+    </div>
+
+    <!-- Cột 3: Xác minh mã định danh -->
+    <div class="check-column">
+      <h3>3. Xác minh mã định danh</h3>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mã pet</mat-label>
+        <input matInput
+               [(ngModel)]="verificationCode"
+               (input)="checkCode()"
+               maxlength="20"
+               style="text-transform: uppercase;">
+      </mat-form-field>
+
+      <!-- Hiển thị thông tin pet khi có nhập mã -->
+      <div class="pet-info" *ngIf="petInfo()">
+        <h4 [class.valid]="isCodeValid()" [class.invalid]="isWrongPet() || (!isCodeValid() && !isWrongPet())">
+          {{ isCodeValid() ? '✓ Mã hợp lệ - Pet đúng' :
+          isWrongPet() ? '✗ Mã không khớp - Sai pet' :
+            '⚠ Không nhận dạng được pet' }}
+        </h4>
+
+        <div class="pet-detail" [class.invalid]="!isCodeValid()">
+          <p><strong>Tên:</strong> {{ petInfo().name }}</p>
+          <p><strong>Loài:</strong> {{ petInfo().species }}</p>
+          <p><strong>Giống:</strong> {{ petInfo().breed }}</p>
+          <p><strong>Chủng loại:</strong> {{ petInfo().variety }}</p>
+          <p><strong>Tiêm chủng:</strong> {{ petInfo().vaccination }}</p>
+          <p><strong>Sức khỏe:</strong> {{ petInfo().healthStatus }}</p>
+          <p class="chip-id"><strong>Mã chip:</strong> {{ petInfo().chipId }}</p>
+        </div>
+      </div>
+    </div>
+<!--    &lt;!&ndash; Cột 3: Mã xác minh &ndash;&gt;-->
+<!--    <div class="check-column">-->
+<!--      <h3>3. Xác minh mã định danh</h3>-->
+<!--      <mat-form-field appearance="outline" class="full-width">-->
+<!--        <mat-label>Mã pet (PET-A123)</mat-label>-->
+<!--        <input matInput-->
+<!--               [(ngModel)]="verificationCode"-->
+<!--               (input)="checkCode()"-->
+<!--               maxlength="20"-->
+<!--               style="text-transform: uppercase;">-->
+<!--      </mat-form-field>-->
+
+<!--      <div class="code-status" *ngIf="isCodeValid() || isWrongPet()">-->
+<!--        <span [class.valid]="isCodeValid()" [class.invalid]="isWrongPet()">-->
+<!--          {{ isCodeValid() ? '✓ Mã hợp lệ' : '✗ Mã không khớp - Sai pet' }}-->
+<!--        </span>-->
+<!--      </div>-->
+<!--    </div>-->
+  </div>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Hủy</button>
+  <button mat-button (click)="onSaveOnly()">Lưu kiểm tra</button>
+  <button mat-button color="warn" (click)="onReject()">Từ chối nhận hàng</button>
+  <button mat-raised-button color="primary"
+          [disabled]="!canReceive()"
+          (click)="onReceive()">
+    ✅ Nhận hàng
+  </button>
+</div>

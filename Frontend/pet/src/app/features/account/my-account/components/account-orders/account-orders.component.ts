@@ -45,6 +45,10 @@ export class AccountOrdersComponent {
   goToDetail(id: number) {
     this.router.navigate(['/order', id]);
   }
+  // BÂM VÀO ĐÂU TRONG ĐƠN CŨNG RA DETAIL
+  goToOrderDetail(id: number) {
+    this.router.navigate(['/order', id]);
+  }
 
   // Pagination
   paginatedOrders = computed(() => {
