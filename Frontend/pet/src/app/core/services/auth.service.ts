@@ -94,6 +94,7 @@ export class AuthService {
   logout() {
     this._user.set(null);
     localStorage.removeItem('user');
+      this.router.navigate(['/']);
   }
 
   // ===== REGISTER (mock) =====

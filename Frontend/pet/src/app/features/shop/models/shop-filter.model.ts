@@ -1,14 +1,15 @@
 export interface ShopFilter {
-
-  sort?: 'priceAsc' | 'priceDesc' | 'nameAsc' | 'nameDesc';
-
-  breed?: string;        // Poodle, Corgi...
-  dogType?: string;      // Tiny, Mini, Standard
-
-  priceRange?: 'low' | 'medium' | 'high';
-
   searchQuery?: string;
 
-  shopName?: string;     // filter theo shop (optional)
+  species?: 'Chó' | 'Mèo' | 'Khác';
+  breed?: string;
+  color?: string;
+  gender?: 'male' | 'female';
+  weightRange?: 'light' | 'medium' | 'heavy';
 
+  priceRange?: 'low' | 'medium' | 'high';
+  sort?: 'priceAsc' | 'priceDesc' | 'nameAsc' | 'nameDesc' | 'newest';
+
+  shopName?: string;
+  status?: 'available' | 'sold' | 'reserved' | 'not_for_sale';
 }

@@ -1,0 +1,19 @@
+/* Wishlist Button */
+button[mat-icon-button] {
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  border: none;          /* Bỏ viền */
+  outline: none;         /* Bỏ outline khi focus */
+  border-radius: 8px;    /* Bo góc nhẹ cho đẹp */
+  background: transparent;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+button[mat-icon-button]:hover {
+  background: rgba(0, 0, 0, 0.06); /* Hiệu ứng hover nhẹ */
+}
+
+button[mat-icon-button]:active {
+  transform: scale(0.92); /* Nhấn xuống mượt hơn */
+}

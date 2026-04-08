@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
   standalone: true,
   selector: 'app-cart-dropdown',
   imports: [MatIconModule, MatBadgeModule],
+  styleUrls: ['./cart-dropdown.component.scss'],
   template: `
     <button mat-icon-button (click)="goToCart()">
 

@@ -15,7 +15,7 @@ export class MiniProductCardComponent {
   @Input() name!: string;
   @Input() shopName!: string;
   @Input() breed!: string;
-  @Input() dogType!: string;
+  @Input() weight!: string;
   @Input() price!: number;
 
   constructor(private router: Router) {}

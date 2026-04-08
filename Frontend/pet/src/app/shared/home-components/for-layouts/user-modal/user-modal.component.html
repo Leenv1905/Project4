@@ -1,52 +1,112 @@
-<ng-container *ngIf="auth.showLoginModal()">
-  <div class="modal-backdrop">
+<div class="modal-backdrop" *ngIf="auth.showLoginModal()">
+  <div class="modal">
 
-    <div class="modal" >
-
-      <mat-tab-group [(selectedIndex)]="tabIndex">
-
-        <!-- LOGIN -->
-        <mat-tab label="Login">
-          <div class="form">
-
-            <input matInput placeholder="Email" [(ngModel)]="email" />
-
-            <input
-              matInput
-              type="password"
-              placeholder="Password"
-              [(ngModel)]="password"
-              (keyup.enter)="login()"
-            />
-
-            <button mat-raised-button color="primary" (click)="login()">
-              Login
-            </button>
-
-          </div>
-        </mat-tab>
-
-        <!-- REGISTER -->
-        <mat-tab label="Register">
-          <div class="form">
-
-            <input matInput placeholder="Email" />
-            <input matInput type="password" placeholder="Password" />
-
-            <button mat-raised-button color="primary" (click)="register()">
-              Register
-            </button>
-
-          </div>
-        </mat-tab>
-
-      </mat-tab-group>
-
-      <button class="close-btn" mat-button (click)="auth.closeLogin()">
-        ✕
-      </button>
-
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>Chào mừng đến với Pet Shop</h2>
+      <button class="close-btn" (click)="auth.closeLogin()">✕</button>
     </div>
 
+    <mat-tab-group [(selectedIndex)]="tabIndex" animationDuration="300ms">
+
+      <!-- TAB LOGIN -->
+      <mat-tab label="Đăng nhập">
+        <div class="tab-content">
+
+          <!-- Form Login -->
+          <div class="form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" [(ngModel)]="email" placeholder="example@email.com">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Mật khẩu</mat-label>
+              <input matInput type="password" [(ngModel)]="password" (keyup.enter)="login()">
+            </mat-form-field>
+
+            <div class="remember-row">
+              <mat-checkbox [(ngModel)]="rememberMe">Nhớ đăng nhập</mat-checkbox>
+              <a href="#" class="forgot-link" (click)="forgotPassword($event)">Quên mật khẩu?</a>
+            </div>
+
+            <button mat-raised-button color="primary" class="login-btn" (click)="login()">
+              Đăng nhập
+            </button>
+          </div>
+
+          <div class="divider">
+            <span>hoặc</span>
+          </div>
+
+          <!-- Social Login -->
+          <div class="social-login">
+            <button class="social-btn google" (click)="loginWithGoogle()">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png" alt="Google">
+              <span>Tiếp tục với Google</span>
+            </button>
+            <button class="social-btn facebook" (click)="loginWithFacebook()">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/2048px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook">
+              <span>Tiếp tục với Facebook</span>
+            </button>
+          </div>
+
+        </div>
+      </mat-tab>
+
+      <!-- TAB REGISTER -->
+      <mat-tab label="Đăng ký">
+        <div class="tab-content">
+
+          <!-- Form Register -->
+          <div class="form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Họ và tên</mat-label>
+              <input matInput [(ngModel)]="name">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" [(ngModel)]="email">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Mật khẩu</mat-label>
+              <input matInput type="password" [(ngModel)]="password">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Giới tính</mat-label>
+              <mat-select [(ngModel)]="gender">
+                <mat-option value="male">Nam</mat-option>
+                <mat-option value="female">Nữ</mat-option>
+                <mat-option value="other">Khác</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" class="register-btn" (click)="register()">
+              Tạo tài khoản
+            </button>
+          </div>
+
+          <div class="divider">
+            <span>hoặc</span>
+          </div>
+          <!-- Social Login -->
+          <div class="social-login">
+            <button class="social-btn google" (click)="registerWithGoogle()">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png" alt="Google">
+              <span>Tiếp tục với Google</span>
+            </button>
+            <button class="social-btn facebook" (click)="registerWithFacebook()">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/2048px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook">
+              <span>Tiếp tục với Facebook</span>
+            </button>
+          </div>
+
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
   </div>
-</ng-container>
+</div>

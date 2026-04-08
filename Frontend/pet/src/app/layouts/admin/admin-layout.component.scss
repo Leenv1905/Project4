@@ -26,3 +26,30 @@
 .spacer {
   flex: 1;
 }
+/* Menu nhóm */
+.menu-group {
+  margin: 4px 8px 4px 8px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.menu-group .mat-expansion-panel-header {
+  padding: 12px 16px;
+}
+
+.submenu-icon {
+  margin-left: 12px;
+  opacity: 0.85;
+}
+
+/* Active link */
+.active-link {
+  background-color: #e0e7ff !important;
+  color: #3b82f6 !important;
+  font-weight: 500;
+}
+
+/* Hover */
+.mat-mdc-list-item:hover {
+  background-color: #f1f5f9;
+}
