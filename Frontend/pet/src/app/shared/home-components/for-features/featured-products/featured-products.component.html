@@ -5,26 +5,18 @@
     {{ error }}
   </div>
 
-  <!-- EMPTY -->
-  <div class="empty" *ngIf="!error && products.length === 0">
-    No products available.
-  </div>
-
   <!-- CONTENT -->
-  <ng-container *ngIf="products.length > 0">
+  <ng-container *ngIf="featuredProducts.length > 0">
 
     <div class="header">
-      <h3>Featured Products</h3>
+      <h3>Sản phẩm nổi bật</h3>
 
-      <a
-        routerLink="/shop"
-        class="view-all"
-      >
-        View All
+      <a routerLink="/shop" class="view-all">
+        Xem tất cả
       </a>
     </div>
 
-    <app-product-slider [products]="products" />
+    <app-product-slider [products]="featuredProducts" />
 
   </ng-container>
 

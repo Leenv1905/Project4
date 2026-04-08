@@ -2,63 +2,171 @@
 
   <div class="container">
 
-    <!-- LEFT: IMAGE -->
-    <div class="gallery">
+    <!-- LEFT: IMAGE GALLERY -->
+    <div class="image-section">
 
-      <img
-        class="main-image"
-        [src]="selectedImage()"
-      />
+      <div class="main-image-wrapper">
+        <img
+          class="main-image"
+          [src]="currentImage"
+          [alt]="p.name"
+        >
 
+        <!-- Status -->
+        <div class="status-badge" [class.sold]="p.status !== 'available'">
+          {{ getStatusLabel(p.status) }}
+        </div>
+      </div>
+
+      <!-- Thumbnails -->
       <div class="thumbnails">
         <img
-          *ngFor="let img of p.images"
+          *ngFor="let img of p.images; let i = index"
           [src]="img"
-          (click)="selectImage(img)"
-        />
+          [class.active]="i === selectedImageIndex()"
+          (click)="selectImage(i)"
+          alt="thumbnail"
+        >
       </div>
-
     </div>
 
-    <!-- RIGHT: INFO -->
-    <div class="info">
+    <!-- RIGHT: INFORMATION -->
+    <div class="info-section">
 
-      <h1>{{ p.name }}</h1>
+      <div class="header">
+        <h1>{{ p.name }}</h1>
+        <p class="shop">Từ: {{ p.shopName }}</p>
+      </div>
 
-      <p class="meta">
-        {{ p.breed }} - {{ p.dogType }}
-      </p>
-
+      <!-- Price -->
       <div class="price">
-        {{ p.price | number:'1.0-0' }} ₫
+        <span class="current">{{ p.price | number:'1.0-0' }} ₫</span>
+<!--        <span class="original" *ngIf="p.originalPrice">-->
+<!--          {{ p.originalPrice | number:'1.0-0' }} ₫-->
+<!--        </span>-->
       </div>
 
-      <div class="shop">
-        Shop: {{ p.shopName }}
+      <!-- Meta Info -->
+      <div class="meta">
+        <div class="meta-row">
+          <span class="label">Loài</span>
+          <span class="value">{{ p.species }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="label">Giống</span>
+          <span class="value">{{ p.breed }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="label">Màu lông</span>
+          <span class="value">{{ p.color }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="label">Giới tính</span>
+          <span class="value">{{ p.gender === 'male' ? 'Đực' : 'Cái' }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="label">Cân nặng</span>
+          <span class="value">{{ p.weight }} kg</span>
+        </div>
+        <div class="meta-row">
+          <span class="label">Tuổi</span>
+          <span class="value">{{ p.age }} tháng</span>
+        </div>
       </div>
 
-      <!-- QUANTITY -->
-      <div class="quantity">
-        <button (click)="decreaseQty()">-</button>
-        <span>{{ quantity() }}</span>
-        <button (click)="increaseQty()">+</button>
-      </div>
-
-      <!-- ACTION -->
-      <div class="actions">
-        <button class="add" (click)="addToCart()">
-          🛒 Thêm vào giỏ
-        </button>
-      </div>
-
-      <!-- DESCRIPTION -->
+      <!-- Description -->
       <div class="description">
         <h3>Mô tả</h3>
         <p>{{ p.description }}</p>
       </div>
 
+      <!-- Actions -->
+      <div class="actions">
+        <button
+          class="btn btn-primary"
+          (click)="addToCart()"
+          [disabled]="p.status !== 'available'">
+          Thêm vào giỏ hàng
+        </button>
+
+        <button
+          class="btn btn-outline"
+          (click)="addToCart()"
+          *ngIf="p.status === 'available'">
+          Mua ngay
+        </button>
+      </div>
+
+      <!-- Shipping Info -->
+      <div class="shipping-info">
+        <p><strong>Giao hàng:</strong> 2-4 ngày làm việc</p>
+        <p><strong>Bảo hành:</strong> Sức khỏe 30 ngày</p>
+      </div>
     </div>
-
   </div>
-
 </div>
+
+<!--<div class="product-detail" *ngIf="product() as p">-->
+
+<!--  <div class="container">-->
+
+<!--    &lt;!&ndash; LEFT: IMAGE &ndash;&gt;-->
+<!--    <div class="gallery">-->
+
+<!--      <img-->
+<!--        class="main-image"-->
+<!--        [src]="selectedImage()"-->
+<!--      />-->
+
+<!--      <div class="thumbnails">-->
+<!--        <img-->
+<!--          *ngFor="let img of p.images"-->
+<!--          [src]="img"-->
+<!--          (click)="selectImage(img)"-->
+<!--        />-->
+<!--      </div>-->
+
+<!--    </div>-->
+
+<!--    &lt;!&ndash; RIGHT: INFO &ndash;&gt;-->
+<!--    <div class="info">-->
+
+<!--      <h1>{{ p.name }}</h1>-->
+
+<!--      <p class="meta">-->
+<!--        {{ p.breed }} - {{ p.dogType }}-->
+<!--      </p>-->
+
+<!--      <div class="price">-->
+<!--        {{ p.price | number:'1.0-0' }} ₫-->
+<!--      </div>-->
+
+<!--      <div class="shop">-->
+<!--        Shop: {{ p.shopName }}-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; QUANTITY &ndash;&gt;-->
+<!--      <div class="quantity">-->
+<!--        <button (click)="decreaseQty()">-</button>-->
+<!--        <span>{{ quantity() }}</span>-->
+<!--        <button (click)="increaseQty()">+</button>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; ACTION &ndash;&gt;-->
+<!--      <div class="actions">-->
+<!--        <button class="add" (click)="addToCart()">-->
+<!--          🛒 Thêm vào giỏ-->
+<!--        </button>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; DESCRIPTION &ndash;&gt;-->
+<!--      <div class="description">-->
+<!--        <h3>Mô tả</h3>-->
+<!--        <p>{{ p.description }}</p>-->
+<!--      </div>-->
+
+<!--    </div>-->
+
+<!--  </div>-->
+
+<!--</div>-->

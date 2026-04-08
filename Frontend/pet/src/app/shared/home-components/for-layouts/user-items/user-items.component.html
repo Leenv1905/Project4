@@ -1,53 +1,73 @@
+<!-- Search Icon -->
 <mat-icon>search</mat-icon>
 
-<button mat-icon-button [matMenuTriggerFor]="menu">
+<!-- User Menu -->
+<button mat-icon-button [matMenuTriggerFor]="userMenu">
   <mat-icon>account_circle</mat-icon>
 </button>
 
-<mat-menu #menu="matMenu">
+<mat-menu #userMenu="matMenu">
 
-  <ng-container *ngIf="!auth.isAuthenticated(); else logged">
-
-    <button mat-menu-item (click)="auth.openLogin()">
-      Login
+  <!-- Chưa đăng nhập -->
+  <ng-container *ngIf="!isAuthenticated(); else loggedIn">
+    <button mat-menu-item (click)="login()">
+      <mat-icon>login</mat-icon>
+      <span>Đăng nhập</span>
     </button>
-
-    <button mat-menu-item (click)="auth.openLogin()">
-      Register
+    <button mat-menu-item (click)="login()">
+      <mat-icon>person_add</mat-icon>
+      <span>Đăng ký</span>
     </button>
-
   </ng-container>
 
-  <ng-template #logged>
-
-    <button mat-menu-item>
-      👋 {{ auth.user()?.name }}
+  <!-- Đã đăng nhập -->
+  <ng-template #loggedIn>
+    <button mat-menu-item disabled>
+      <span>👋 {{ auth.user()?.name || 'Người dùng' }}</span>
+    </button>
+    <button mat-menu-item disabled>
+      <span>Role: <strong>{{ userRole() | titlecase }}</strong></span>
     </button>
 
-    <button mat-menu-item>
-      Role: {{ auth.user()?.role }}
+    <mat-divider></mat-divider>
+
+    <!-- User & Shop -->
+    <button mat-menu-item
+            *ngIf="userRole() === 'user' || userRole() === 'shop'"
+            (click)="goToAccount()">
+      <mat-icon>person</mat-icon>
+      <span>My Account</span>
     </button>
 
-    <button mat-menu-item (click)="goToAccount()">
-      My Account
+    <button mat-menu-item
+            *ngIf="userRole() === 'shop'"
+            (click)="goToShop()">
+      <mat-icon>store</mat-icon>
+      <span>My Shop</span>
     </button>
 
-    <button
-      mat-menu-item
-      *ngIf="auth.user()?.role === 'shop'"
-      (click)="goToShop()"
-    >
-      My Shop
+    <!-- Operator & Admin -->
+    <button mat-menu-item
+            *ngIf="userRole() === 'admin' || userRole() === 'operators'"
+            (click)="goToAdmin()">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <span>Trang quản trị</span>
     </button>
+
+    <mat-divider></mat-divider>
 
     <button mat-menu-item (click)="auth.logout()">
-      Logout
+      <mat-icon>logout</mat-icon>
+      <span>Đăng xuất</span>
     </button>
-
   </ng-template>
-
 </mat-menu>
 
-<app-wishlist-dropdown />
-<app-cart-dropdown />
+<!-- Cart & Wishlist chỉ hiển thị khi là user hoặc shop -->
+<ng-container *ngIf="showCartAndWishlist()">
+  <app-wishlist-dropdown />
+  <app-cart-dropdown />
+</ng-container>
+
+<!-- User Modal (Login/Register) -->
 <app-user-modal />

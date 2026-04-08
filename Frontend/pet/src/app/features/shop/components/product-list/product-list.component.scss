@@ -4,27 +4,62 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  //rows đang phụ thuộc vào pages size trong service
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
 }
+//.grid {
+//  display: grid;
+//  grid-template-columns: repeat(4, 1fr);
+//  //rows đang phụ thuộc vào pages size trong service
+//  gap: 20px;
+//}
 
 /* Responsive */
-
 @media (max-width: 1200px) {
   .grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   }
 }
 
 @media (max-width: 900px) {
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
   .grid {
     grid-template-columns: 1fr;
   }
 }
+
+//.product-list {
+//  width: 100%;
+//}
+//
+//.grid {
+//  display: grid;
+//  grid-template-columns: repeat(4, 1fr);
+//  //rows đang phụ thuộc vào pages size trong service
+//  gap: 20px;
+//}
+//
+///* Responsive */
+//
+//@media (max-width: 1200px) {
+//  .grid {
+//    grid-template-columns: repeat(3, 1fr);
+//  }
+//}
+//
+//@media (max-width: 900px) {
+//  .grid {
+//    grid-template-columns: repeat(2, 1fr);
+//  }
+//}
+//
+//@media (max-width: 500px) {
+//  .grid {
+//    grid-template-columns: 1fr;
+//  }
+//}

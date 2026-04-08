@@ -1,58 +1,87 @@
 <div class="sidebar">
 
-  <!-- BREED -->
-
+  <!-- Loài -->
   <div class="filter-group">
-    <h4>Giống chó</h4>
+    <h4>Loài</h4>
+    <ul>
+      <li
+        *ngFor="let species of speciesList"
+        (click)="selectSpecies(species)"
+        [class.active]="shopService.filters().species === species">
+        {{ species }}
+      </li>
+    </ul>
+  </div>
 
+  <!-- Giống -->
+  <div class="filter-group">
+    <h4>Giống</h4>
     <ul>
       <li
         *ngFor="let breed of breeds"
         (click)="selectBreed(breed)"
-        [class.active]="shopService.filters().breed === breed"
-      >
+        [class.active]="shopService.filters().breed === breed">
         {{ breed }}
       </li>
     </ul>
   </div>
 
-  <!-- DOG TYPE -->
-
+  <!-- Màu lông -->
   <div class="filter-group">
-    <h4>Kích thước</h4>
-
+    <h4>Màu lông</h4>
     <ul>
       <li
-        *ngFor="let type of dogTypes"
-        (click)="selectDogType(type)"
-        [class.active]="shopService.filters().dogType === type"
-      >
-        {{ type }}
+        *ngFor="let color of colors"
+        (click)="selectColor(color)"
+        [class.active]="shopService.filters().color === color">
+        {{ color }}
       </li>
     </ul>
   </div>
 
-  <!-- PRICE -->
+  <!-- Giới tính -->
+  <div class="filter-group">
+    <h4>Giới tính</h4>
+    <ul>
+      <li
+        *ngFor="let g of genders"
+        (click)="selectGender(g.value)"
+        [class.active]="shopService.filters().gender === g.value">
+        {{ g.label }}
+      </li>
+    </ul>
+  </div>
 
+  <!-- Cân nặng -->
+  <div class="filter-group">
+    <h4>Cân nặng</h4>
+    <ul>
+      <li
+        *ngFor="let range of weightRanges"
+        (click)="selectWeightRange(range.value)"
+        [class.active]="shopService.filters().weightRange === range.value">
+        {{ range.label }}
+      </li>
+    </ul>
+  </div>
+
+  <!-- Giá -->
   <div class="filter-group">
     <h4>Giá</h4>
-
     <ul>
       <li
         *ngFor="let price of priceRanges"
-        (click)="selectPrice(price.value)"
-        [class.active]="shopService.filters().priceRange === price.value"
-      >
+        (click)="selectPriceRange(price.value)"
+        [class.active]="shopService.filters().priceRange === price.value">
         {{ price.label }}
       </li>
     </ul>
   </div>
 
-  <!-- CLEAR -->
-
+  <!-- Xóa bộ lọc -->
   <div class="clear-filter">
     <button (click)="clearFilters()">
-      Xóa bộ lọc
+      Xóa tất cả bộ lọc
     </button>
   </div>
 

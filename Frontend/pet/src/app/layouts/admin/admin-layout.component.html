@@ -2,45 +2,120 @@
 
   <!-- SIDEBAR -->
   <mat-sidenav mode="side" opened class="admin-sidenav">
+
     <div class="logo">
-      📚 Admin
+      <span class="logo-icon">🐾</span>
+      <span class="logo-text">Pet Admin</span>
     </div>
 
     <mat-nav-list>
-      <a mat-list-item routerLink="/admin/">
-        <mat-icon>dashboard</mat-icon>
-        <span>Dashboard</span>
-      </a>
+      <ng-container *ngFor="let item of visibleNavItems">
 
-      <a mat-list-item routerLink="/admin/operators">
-        <mat-icon>menu_book</mat-icon>
-        <span>ĐƠN HÀNG</span>
-      </a>
+        <!-- Menu có submenu -->
+        <mat-expansion-panel *ngIf="item.children" class="menu-group">
+          <mat-expansion-panel-header>
+            <mat-icon>{{ item.icon }}</mat-icon>
+            <span>{{ item.label }}</span>
+          </mat-expansion-panel-header>
 
-      <a mat-list-item routerLink="/admin/authors">
-        <mat-icon>person</mat-icon>
-        <span>Users</span>
-      </a>
+          <mat-nav-list>
+            <a mat-list-item
+               *ngFor="let child of item.children"
+               routerLinkActive="active-link"
+               [routerLink]="child.route">
+              <mat-icon class="submenu-icon">{{ child.icon }}</mat-icon>
+              <span>{{ child.label }}</span>
+            </a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+        <!-- Menu không có submenu -->
+        <a mat-list-item
+           *ngIf="!item.children"
+           routerLinkActive="active-link"
+           [routerLink]="item.route">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </a>
+
+      </ng-container>
     </mat-nav-list>
   </mat-sidenav>
 
-  <!-- MAIN -->
+  <!-- MAIN CONTENT -->
   <mat-sidenav-content>
 
-    <!-- HEADER -->
+    <!-- TOOLBAR -->
     <mat-toolbar color="primary" class="admin-toolbar">
-      <span>Admin Panel</span>
+      <button mat-icon-button (click)="toggleSidenav()" class="menu-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <span class="toolbar-title">Pet Admin Panel</span>
+
       <span class="spacer"></span>
 
       <button mat-icon-button>
-        <mat-icon>account_circle</mat-icon>
+        <mat-icon>notifications</mat-icon>
       </button>
+      <!-- Phần User Items - Tái sử dụng từ Home -->
+      <app-user-items></app-user-items>
+
+<!--      <button mat-icon-button>-->
+<!--        <mat-icon>account_circle</mat-icon>-->
+<!--      </button>-->
     </mat-toolbar>
 
-    <!-- CONTENT -->
+    <!-- CONTENT AREA -->
     <main class="admin-content">
       <router-outlet></router-outlet>
     </main>
-
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+<!--<mat-sidenav-container class="admin-container">-->
+
+<!--  &lt;!&ndash; SIDEBAR &ndash;&gt;-->
+<!--  <mat-sidenav mode="side" opened class="admin-sidenav">-->
+<!--    <div class="logo">-->
+<!--      📚 Admin-->
+<!--    </div>-->
+
+<!--    <mat-nav-list>-->
+<!--      <a mat-list-item routerLink="/admin/">-->
+<!--        <mat-icon>dashboard</mat-icon>-->
+<!--        <span>Dashboard</span>-->
+<!--      </a>-->
+
+<!--      <a mat-list-item routerLink="/admin/operators">-->
+<!--        <mat-icon>menu_book</mat-icon>-->
+<!--        <span>ĐƠN HÀNG</span>-->
+<!--      </a>-->
+
+<!--      <a mat-list-item routerLink="/admin/authors">-->
+<!--        <mat-icon>person</mat-icon>-->
+<!--        <span>Users</span>-->
+<!--      </a>-->
+<!--    </mat-nav-list>-->
+<!--  </mat-sidenav>-->
+
+<!--  &lt;!&ndash; MAIN &ndash;&gt;-->
+<!--  <mat-sidenav-content>-->
+
+<!--    &lt;!&ndash; HEADER &ndash;&gt;-->
+<!--    <mat-toolbar color="primary" class="admin-toolbar">-->
+<!--      <span>Admin Panel</span>-->
+<!--      <span class="spacer"></span>-->
+
+<!--      <button mat-icon-button>-->
+<!--        <mat-icon>account_circle</mat-icon>-->
+<!--      </button>-->
+<!--    </mat-toolbar>-->
+
+<!--    &lt;!&ndash; CONTENT &ndash;&gt;-->
+<!--    <main class="admin-content">-->
+<!--      <router-outlet></router-outlet>-->
+<!--    </main>-->
+
+<!--  </mat-sidenav-content>-->
+<!--</mat-sidenav-container>-->
