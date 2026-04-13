@@ -65,4 +65,57 @@ public class CartService {
             cartItemRepository.save(item);
         }
     }
+
+    @Transactional(readOnly = true)
+    public com.eproject.petsale.cart.dto.CartResponse getCart(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId).orElse(null);
+        if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
+            return new com.eproject.petsale.cart.dto.CartResponse();
+        }
+
+        com.eproject.petsale.cart.dto.CartResponse response = new com.eproject.petsale.cart.dto.CartResponse();
+        response.setId(cart.getId());
+        response.setUserId(userId);
+
+        java.math.BigDecimal totalAmount = java.math.BigDecimal.ZERO;
+        java.util.List<com.eproject.petsale.cart.dto.CartItemResponse> itemResponses = new java.util.ArrayList<>();
+
+        for (CartItem item : cart.getItems()) {
+            com.eproject.petsale.cart.dto.CartItemResponse itemResponse = new com.eproject.petsale.cart.dto.CartItemResponse();
+            itemResponse.setId(item.getId());
+            itemResponse.setPetId(item.getPet().getId());
+            itemResponse.setPetName(item.getPet().getName());
+            itemResponse.setPrice(item.getPet().getPrice());
+            itemResponse.setQuantity(item.getQuantity());
+
+            if (item.getPet().getImages() != null && !item.getPet().getImages().isEmpty()) {
+                itemResponse.setPetImage(item.getPet().getImages().get(0).getImageUrl());
+            }
+
+            itemResponses.add(itemResponse);
+
+            if (item.getPet().getPrice() != null) {
+                totalAmount = totalAmount.add(item.getPet().getPrice().multiply(java.math.BigDecimal.valueOf(item.getQuantity())));
+            }
+        }
+
+        response.setItems(itemResponses);
+        response.setTotalAmount(totalAmount);
+        return response;
+    }
+
+    @Transactional
+    public void removeCartItem(Long userId, Long cartItemId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        CartItem item = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+
+        if (!item.getCart().getId().equals(cart.getId())) {
+            throw new RuntimeException("Item does not belong to user's cart");
+        }
+
+        cartItemRepository.delete(item);
+    }
 }
