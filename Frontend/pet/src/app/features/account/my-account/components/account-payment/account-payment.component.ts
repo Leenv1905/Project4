@@ -5,7 +5,7 @@ import {Component} from '@angular/core';
   selector: 'app-account-payment',
   template: `
     <h2>Phương thức thanh toán</h2>
-    <p>Chưa có dữ liệu</p>
+    <p>Chưc năng đang được phát triển</p>
   `
 })
 export class AccountPaymentComponent {}

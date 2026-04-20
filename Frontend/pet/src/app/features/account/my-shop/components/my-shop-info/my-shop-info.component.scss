@@ -1,0 +1,118 @@
+.shop-info {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.07);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+
+  h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .edit-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+      background: #2563eb;
+    }
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 50px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Avatar Card */
+.shop-avatar-card {
+  text-align: center;
+  background: #f8fafc;
+  padding: 40px 24px;
+  border-radius: 20px;
+  height: fit-content;
+
+  .avatar-wrapper {
+    margin-bottom: 24px;
+
+    .shop-avatar {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 8px solid white;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+    }
+  }
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    color: #1f2937;
+  }
+
+  .shop-owner {
+    color: #64748b;
+    font-size: 15px;
+  }
+}
+
+/* Details */
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  .info-block {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 16px;
+
+    .label {
+      display: block;
+      font-size: 13.5px;
+      color: #64748b;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .value {
+      font-size: 16.5px;
+      font-weight: 600;
+      color: #1f2937;
+      line-height: 1.5;
+    }
+
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .description {
+      color: #475569;
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+}

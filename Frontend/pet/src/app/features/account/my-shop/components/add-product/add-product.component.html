@@ -1,181 +1,102 @@
 <div class="add-product">
 
-  <!-- HEADER -->
-
   <div class="header">
-
     <div class="title">
-
-      <button class="back" (click)="backToProducts()">
-        ← Back to products
+      <button class="back-btn" (click)="backToProducts()">
+        ← Quay lại danh sách
       </button>
-
-      <h2>Add New Pet</h2>
-
-      <p class="subtitle">
-        Create a new pet listing for your shop
-      </p>
-
+      <h2>Thêm thú cưng mới</h2>
+      <p class="subtitle">Điền thông tin chi tiết cho pet</p>
     </div>
 
     <div class="actions">
-
-      <button class="discard" (click)="discard()">Discard</button>
-
-      <button class="draft" (click)="saveDraft()">Save Draft</button>
-
-      <button class="publish" (click)="publish()">Publish Pet</button>
-
+      <button class="discard-btn" (click)="discard()">Hủy bỏ</button>
+      <button class="draft-btn" (click)="saveDraft()">Lưu nháp</button>
+      <button class="publish-btn" (click)="publish()">Đăng bán</button>
     </div>
-
   </div>
-
-  <!-- CONTENT -->
 
   <div class="layout">
 
-    <!-- LEFT -->
-
+    <!-- LEFT: Thông tin chính -->
     <div class="left">
 
       <div class="card">
+        <h3>Thông tin cơ bản</h3>
 
-        <h3>Pet Information</h3>
-
-        <input
-          placeholder="Pet Name"
-          [(ngModel)]="product.name"
-        />
+        <input placeholder="Tên thú cưng *" [(ngModel)]="product.name" />
 
         <div class="row">
-
-          <input
-            placeholder="Breed"
-            [(ngModel)]="product.breed"
-          />
-
-          <input
-            placeholder="Age (months)"
-            [(ngModel)]="product.age"
-          />
-
-        </div>
-
-        <input
-          placeholder="SKU / Pet ID"
-          [(ngModel)]="product.sku"
-        />
-
-        <label>Description</label>
-
-        <textarea
-          rows="6"
-          placeholder="Describe personality, health condition..."
-          [(ngModel)]="product.description"
-        ></textarea>
-
-        <!-- IMAGE UPLOAD -->
-
-        <div class="image-upload">
-
-          <label>Pet Images</label>
-
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            (change)="uploadImages($event)"
-          />
-
-        </div>
-
-        <!-- PREVIEW -->
-
-        <div class="image-preview">
-
-          <div
-            class="image-card"
-            *ngFor="let img of images; let i=index"
-          >
-
-            <img [src]="img">
-
-            <button
-              class="remove"
-              (click)="removeImage(i)"
-            >
-              ✕
-            </button>
-
+          <div class="form-group">
+            <label>Loài</label>
+            <select [(ngModel)]="product.species">
+              <option value="Chó">Chó</option>
+              <option value="Mèo">Mèo</option>
+              <option value="Khác">Khác</option>
+            </select>
           </div>
 
+          <div class="form-group">
+            <label>Giống</label>
+            <input placeholder="Ví dụ: Poodle, Corgi..." [(ngModel)]="product.breed" />
+          </div>
         </div>
 
+        <div class="row">
+          <div class="form-group">
+            <label>Màu lông</label>
+            <input placeholder="Màu lông" [(ngModel)]="product.color" />
+          </div>
+
+          <div class="form-group">
+            <label>Giới tính</label>
+            <select [(ngModel)]="product.gender">
+              <option value="male">Đực</option>
+              <option value="female">Cái</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Cân nặng (kg)</label>
+            <input type="number" step="0.1" [(ngModel)]="product.weight" />
+          </div>
+
+          <div class="form-group">
+            <label>Ngày sinh</label>
+            <input type="date" value="2022-12-20" disabled />
+            <small style="color:#888; font-size:13px;">(Tạm fix - sẽ mở sau)</small>
+          </div>
+        </div>
+
+        <label>Mô tả</label>
+        <textarea rows="5" placeholder="Mô tả tính cách, sức khỏe, đặc điểm..." [(ngModel)]="product.description"></textarea>
       </div>
 
     </div>
 
-
-    <!-- RIGHT -->
-
+    <!-- RIGHT: Giá & Hình ảnh -->
     <div class="right">
 
       <div class="card">
-
-        <h3>Pricing</h3>
-
-        <input
-          placeholder="Price ($)"
-          [(ngModel)]="product.price"
-        />
-
-        <input
-          placeholder="Discount Price"
-          [(ngModel)]="product.discountPrice"
-        />
-
-        <label class="toggle">
-
-          <span>Available</span>
-
-          <input
-            type="checkbox"
-            [(ngModel)]="product.inStock"
-          />
-
-        </label>
-
+        <h3>Giá bán</h3>
+        <input type="number" placeholder="Giá bán (VNĐ) *" [(ngModel)]="product.price" />
       </div>
 
-
       <div class="card">
+        <h3>Hình ảnh thú cưng</h3>
+        <input type="file" multiple accept="image/*" (change)="uploadImages($event)" />
 
-        <h3>Organize</h3>
-
-        <select [(ngModel)]="product.category">
-
-          <option>Select Category</option>
-
-          <option>Dog</option>
-          <option>Cat</option>
-          <option>Bird</option>
-          <option>Fish</option>
-
-        </select>
-
-        <select [(ngModel)]="product.vendor">
-
-          <option>Select Shop</option>
-
-          <option>Happy Puppy Shop</option>
-          <option>Pet Paradise</option>
-
-        </select>
-
+        <div class="image-preview">
+          <div class="image-card" *ngFor="let img of images; let i = index">
+            <img [src]="img" alt="preview">
+            <button class="remove-btn" (click)="removeImage(i)">×</button>
+          </div>
+        </div>
       </div>
 
     </div>
 
   </div>
-
 </div>

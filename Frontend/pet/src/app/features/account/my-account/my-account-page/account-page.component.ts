@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -6,6 +6,9 @@ import { AccountSidebarComponent } from '../components/account-sidebar/account-s
 import { AccountOrdersComponent } from '../components/account-orders/account-orders.component';
 import { AccountInfoComponent } from '../components/account-info/account-info.component';
 import { AccountPaymentComponent } from '../components/account-payment/account-payment.component';
+import {AccountEditComponent} from '../components/account-info/edit-info/account-edit.component';
+
+type TabType = 'orders' | 'info' | 'payment' | 'wallet' | 'edit';
 
 @Component({
   standalone: true,
@@ -15,38 +18,40 @@ import { AccountPaymentComponent } from '../components/account-payment/account-p
     AccountSidebarComponent,
     AccountOrdersComponent,
     AccountInfoComponent,
-    AccountPaymentComponent
+    AccountPaymentComponent,
+    AccountEditComponent
   ],
   templateUrl: './account-page.component.html',
   styleUrls: ['./account-page.component.scss']
 })
-export class AccountPageComponent {
+export class AccountPageComponent implements OnInit {
 
   route = inject(ActivatedRoute);
   router = inject(Router);
-
-  tab = signal<'orders' | 'info' | 'payment'>('orders');
+// tab hiện tại, mặc định là 'orders'
+  tab = signal<TabType>('orders');
 
   ngOnInit() {
-    // Lấy tab từ url khi component được khởi tạo
     this.route.queryParams.subscribe(params => {
-      const tab = params['tab'] || 'orders';
-      // Default tab khi chưa có query là về orders
-      this.tab.set(tab);
+      const tabParam = params['tab'] as TabType | undefined;
+
+      const validTabs: TabType[] = ['orders', 'info', 'payment', 'wallet', 'edit'];
+      this.tab.set(validTabs.includes(tabParam!) ? tabParam! : 'orders');
     });
   }
 
-  setTab(tab: 'orders' | 'info' | 'payment') {
+  // Chấp nhận string rồi convert sang TabType
+  setTab(tab: string) {
+    const validTabs: TabType[] = ['orders', 'info', 'payment', 'wallet', 'edit'];
 
-    this.tab.set(tab);
+    if (validTabs.includes(tab as TabType)) {
+      this.tab.set(tab as TabType);
 
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { tab }
-    });
-
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { tab },
+        queryParamsHandling: 'merge'
+      });
+    }
   }
-
-
-
 }

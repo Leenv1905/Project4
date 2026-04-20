@@ -1,0 +1,68 @@
+<div class="reconciliation-page">
+
+  <div class="header">
+    <h2>Đối soát thu chi</h2>
+    <div class="filter">
+      <select>
+        <option value="this-month">Tháng này (04/2026)</option>
+        <option value="last-7-days">7 ngày qua</option>
+        <option value="last-30-days">30 ngày qua</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Thống kê tổng quan -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <span class="label">Tổng doanh thu đơn hàng</span>
+      <span class="value">{{ stats().totalOrder | number }} ₫</span>
+    </div>
+    <div class="stat-card received">
+      <span class="label">Tổng đã nhận (bill)</span>
+      <span class="value">{{ stats().totalBill | number }} ₫</span>
+    </div>
+    <div class="stat-card diff" [class.positive]="stats().difference >= 0">
+      <span class="label">Chênh lệch</span>
+      <span class="value">{{ stats().difference | number }} ₫</span>
+    </div>
+    <div class="stat-card matched">
+      <span class="label">Đã đối soát thành công</span>
+      <span class="value">{{ stats().matchedCount }} / {{ stats().totalItems }}</span>
+    </div>
+  </div>
+
+  <!-- Bảng đối soát -->
+  <div class="table-container">
+    <table>
+      <thead>
+      <tr>
+        <th>Mã đơn</th>
+        <th>Khách hàng</th>
+        <th>Ngày</th>
+        <th>Số tiền đơn hàng</th>
+        <th>Số tiền bill</th>
+        <th>Trạng thái</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of reconciliationData()">
+        <td><strong>#{{ item.orderId }}</strong></td>
+        <td>{{ item.customerName }}</td>
+        <td>{{ item.date }}</td>
+        <td class="amount">{{ item.orderAmount | number }} ₫</td>
+        <td class="amount">{{ item.billAmount ? (item.billAmount | number) + ' ₫' : '—' }}</td>
+        <td>
+            <span class="status-badge"
+                  [class.matched]="item.status === 'matched'"
+                  [class.mismatched]="item.status === 'mismatched'"
+                  [class.pending]="item.status === 'pending'">
+              {{ item.status === 'matched' ? 'Đã khớp' :
+              item.status === 'mismatched' ? 'Không khớp' : 'Chưa có bill' }}
+            </span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

@@ -1,0 +1,131 @@
+.create-user-page {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  //max-width: 900px;
+  margin: 40px auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+}
+
+.form-container {
+  .form-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 50px;
+
+    @media (max-width: 850px) {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+}
+
+/* Avatar Section */
+.avatar-section {
+  text-align: center;
+
+  .avatar-preview {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 8px solid #f8fafc;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    margin-bottom: 20px;
+  }
+
+  .tip {
+    color: #64748b;
+    font-size: 14px;
+  }
+}
+
+/* Form Fields - Chia 2 cột cân đối */
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+
+  .form-group {
+    margin-bottom: 0;   /* Reset margin vì dùng grid gap */
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #374151;
+      font-size: 14.5px;
+    }
+
+    .required {
+      color: #ef4444;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 15.5px;
+      transition: border 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+      }
+    }
+  }
+
+  /* Full width fields */
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Action Buttons */
+.form-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 50px;
+  justify-content: flex-end;
+
+  button {
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    //font-weight: 600;
+    cursor: pointer;
+    min-width: 140px;
+  }
+
+  .cancel-btn {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+  }
+
+  .create-btn {
+    background: #15803d;
+    color: white;
+    border: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .fields {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,13 @@
+<button mat-icon-button (click)="goToCart()"
+        [matTooltip]="hasItem() ? 'Xem giỏ hàng (1 pet)' : 'Giỏ hàng trống'">
+
+  <mat-icon
+    [matBadge]="itemCount()"
+    matBadgeColor="warn"
+    matBadgeSize="small"
+    matBadgeOverlap="false"
+    [matBadgeHidden]="itemCount() === 0">
+    shopping_cart
+  </mat-icon>
+
+</button>

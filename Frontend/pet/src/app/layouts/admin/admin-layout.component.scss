@@ -1,30 +1,116 @@
-// admin-layout.component.scss
+/* ==================== ADMIN LAYOUT ==================== */
+
 .admin-container {
-  height: 100vh;
+  //height: 100vh;
+  // Chỗ này ảnh hưởng đến việc tắt scrollbar
+  background: #f8fafc;
 }
 
+/* ==================== SIDEBAR ==================== */
 .admin-sidenav {
-  width: 240px;
+  width: 320px;
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
 }
+
+.admin-sidenav .mat-drawer-inner-container {
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.admin-sidenav .mat-drawer-inner-container::-webkit-scrollbar {
+  display: none; /* Chrome, Edge, Safari */
+}
+
 
 .logo {
-  font-size: 20px;
-  font-weight: bold;
-  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 20px;
+  border-bottom: 1px solid #f1f5f9;
+
+  .logo-icon {
+    font-size: 28px;
+  }
+
+  .logo-text {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e2937;
+    letter-spacing: -0.5px;
+  }
 }
 
-.admin-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* ==================== NAV LIST ==================== */
+.mat-mdc-nav-list {
+  padding: 8px 12px;
 }
 
-.admin-content {
-  padding: 24px;
+.nav-group {
+  margin-bottom: 24px;
 }
 
-.spacer {
-  flex: 1;
+.group-title {
+  padding: 8px 16px 8px 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+
+/* Menu Item */
+.mat-mdc-list-item {
+  border-radius: 12px;
+  margin: 2px 8px;
+  height: 48px;
+  color: #475569;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  mat-icon {
+    margin-right: 16px;
+    color: #64748b;
+  }
+
+  &:hover {
+    background-color: #f1f5f9;
+    color: #1e2937;
+  }
+
+  &.active-link {
+    background-color: #e0f2fe;
+    color: #0ea5e9;
+    font-weight: 600;
+
+    mat-icon {
+      color: #0ea5e9;
+    }
+  }
+}
+
+/* Expansion Panel (Menu có submenu) */
+.mat-expansion-panel {
+  box-shadow: none !important;
+  background: transparent;
+  margin: 4px 8px;
+
+  .mat-expansion-panel-header {
+    padding: 12px 16px;
+    border-radius: 12px;
+    height: 48px;
+
+    &:hover {
+      background-color: #f8fafc;
+    }
+  }
+
+  .mat-expansion-panel-body {
+    padding: 4px 0 5px 0;
+  }
 }
 /* Menu nhóm */
 .menu-group {
@@ -32,24 +118,122 @@
   border-radius: 8px;
   box-shadow: none;
 }
-
-.menu-group .mat-expansion-panel-header {
-  padding: 12px 16px;
+.menu-group a.mat-list-item {
+  margin: 2px 12px;
+  padding-left: 12px !important;
+  font-size: 14px;
+  color: #555;
 }
-
+.menu-group a.mat-list-item:hover {
+  background: #f3f6ff;
+  color: #1a73e8;
+}
 .submenu-icon {
-  margin-left: 12px;
+  margin-left: 1px;
   opacity: 0.85;
 }
 
-/* Active link */
-.active-link {
-  background-color: #e0e7ff !important;
-  color: #3b82f6 !important;
-  font-weight: 500;
+/* ==================== TOOLBAR ==================== */
+.admin-toolbar {
+  background: white !important;
+  color: #1e2937;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  height: 68px;
+  padding: 0 24px;
+
+  .menu-button {
+    margin-right: 12px;
+  }
+
+  .toolbar-title {
+    font-size: 19px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+
+  .spacer {
+    flex: 1;
+  }
 }
 
-/* Hover */
-.mat-mdc-list-item:hover {
-  background-color: #f1f5f9;
+/* ==================== MAIN CONTENT ==================== */
+.admin-content {
+  padding: 32px;
+  background: #f8fafc;
+  min-height: calc(100vh - 68px);
 }
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 960px) {
+  .admin-sidenav {
+    width: 260px;
+  }
+
+  .admin-content {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-content {
+    padding: 16px;
+  }
+}
+
+
+
+//// admin-layout.component.scss
+//.admin-container {
+//  height: 100vh;
+//}
+//
+//.admin-sidenav {
+//  width: 240px;
+//}
+//
+//.logo {
+//  font-size: 20px;
+//  font-weight: bold;
+//  padding: 16px;
+//}
+//
+//.admin-toolbar {
+//  position: sticky;
+//  top: 0;
+//  z-index: 100;
+//}
+//
+//.admin-content {
+//  padding: 24px;
+//}
+//
+//.spacer {
+//  flex: 1;
+//}
+///* Menu nhóm */
+//.menu-group {
+//  margin: 4px 8px 4px 8px;
+//  border-radius: 8px;
+//  box-shadow: none;
+//}
+//
+//.menu-group .mat-expansion-panel-header {
+//  padding: 12px 16px;
+//}
+//
+//.submenu-icon {
+//  margin-left: 12px;
+//  opacity: 0.85;
+//}
+//
+///* Active link */
+//.active-link {
+//  background-color: #e0e7ff !important;
+//  color: #3b82f6 !important;
+//  font-weight: 500;
+//}
+//
+///* Hover */
+//.mat-mdc-list-item:hover {
+//  background-color: #f1f5f9;
+//}

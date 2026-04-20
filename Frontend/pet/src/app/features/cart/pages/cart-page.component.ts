@@ -19,20 +19,44 @@ export class CartPageComponent {
   items = this.cart.items;
   total = this.cart.total;
 
-  increase(item: any) {
-    this.cart.updateQuantity(item.productId, item.quantity + 1);
-  }
+  addToCartMessage = '';
 
-  decrease(item: any) {
-    this.cart.updateQuantity(item.productId, item.quantity - 1);
+  addToCartSuccess(item: any) {
+    this.addToCartMessage = `Đã thêm "${item.name}" vào giỏ hàng`;
+    setTimeout(() => this.addToCartMessage = '', 2500);
   }
 
   remove(id: number) {
     this.cart.removeItem(id);
   }
 
-  checkout() {
-    this.router.navigate(['/checkout']);
+  // Thanh toán chỉ sản phẩm này
+  // checkoutThisItem(item: any) {
+  //   // Logic checkout một sản phẩm (bạn có thể truyền item qua state hoặc query param)
+  //   this.router.navigate(['/checkout'], {
+  //     state: { selectedItems: [item] }
+  //   });
+  // }
+
+  checkoutThisItem(item: any) {
+    this.router.navigate(['/checkout'], {
+      queryParams: {
+        productId: item.productId,     // Chỉ truyền ID
+        mode: 'single'                 // Để phân biệt checkout 1 hay nhiều
+      }
+    });
   }
 
+// Nếu muốn giữ nút thanh toán tất cả giỏ hàng
+  checkoutAll() {
+    this.router.navigate(['/checkout'], {
+      queryParams: { mode: 'all' }
+    });
+  }
+
+  clearCart() {
+    if (confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) {
+      this.cart.clearCart();
+    }
+  }
 }

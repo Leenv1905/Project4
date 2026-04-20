@@ -1,0 +1,57 @@
+<div class="success-page">
+
+  <div class="success-container">
+
+    <!-- Icon thành công -->
+    <div class="success-icon">
+      <span>🎉</span>
+    </div>
+
+    <h1>Đặt hàng thành công!</h1>
+    <p class="subtitle">Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng của chúng tôi</p>
+
+    <div *ngIf="order() as o" class="order-info">
+
+      <div class="info-row">
+        <span class="label">Mã đơn hàng</span>
+        <span class="value">#{{ o.id }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">Khách hàng</span>
+        <span class="value">{{ o.customerName }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">Số điện thoại</span>
+        <span class="value">{{ o.phone }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">Địa chỉ giao hàng</span>
+        <span class="value">{{ o.address }}</span>
+      </div>
+
+      <div class="info-row total-row">
+        <span class="label">Tổng thanh toán</span>
+        <span class="value total">{{ o.totalAmount | number }} ₫</span>
+      </div>
+
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" (click)="goToHome()">
+        Về trang chủ
+      </button>
+      <button class="btn-secondary" (click)="goToOrders()">
+        Xem đơn hàng của tôi
+      </button>
+    </div>
+
+    <p class="note">
+      Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để xác nhận đơn hàng.<br>
+      Thời gian giao hàng dự kiến: 1-3 ngày.
+    </p>
+
+  </div>
+</div>

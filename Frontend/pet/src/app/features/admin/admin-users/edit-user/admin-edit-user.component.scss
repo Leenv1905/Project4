@@ -1,0 +1,105 @@
+.edit-user-page {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  //max-width: 900px;
+  margin: 40px auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+}
+
+.form-container {
+  .form-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 50px;
+
+    @media (max-width: 850px) {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+}
+
+/* Avatar Section */
+.avatar-section {
+  text-align: center;
+
+  .avatar-preview {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 8px solid #f8fafc;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    margin-bottom: 30px;
+  }
+
+  .tip {
+    color: #64748b;
+    font-size: 14px;
+  }
+}
+
+/* Form Fields */
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+
+  .form-group {
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 15.5px;
+    }
+  }
+}
+
+/* Action Buttons - Nằm dưới avatar */
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
+
+  button {
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    min-width: 160px;
+  }
+
+  .cancel-btn {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+  }
+
+  .update-btn {
+    background: #15803d;
+    color: white;
+    border: none;
+  }
+}

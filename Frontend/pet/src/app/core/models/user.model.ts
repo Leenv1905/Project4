@@ -5,4 +5,11 @@ export interface User {
   email: string;
   name: string;
   role: Role;
+  // Các trường bổ sung cho Admin
+  age?: number;
+  phone?: string;
+  avatar?: string;
+  address?: string;
+  createdAt?: Date;
+  status?: 'active' | 'inactive';
 }

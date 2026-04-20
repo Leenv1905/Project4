@@ -7,35 +7,56 @@
 
       <h2>Thông tin nhận hàng</h2>
 
-      <input placeholder="Tên" [(ngModel)]="form.customerName" />
-      <input placeholder="SĐT" [(ngModel)]="form.phone" />
-      <input placeholder="Địa chỉ" [(ngModel)]="form.address" />
-      <textarea placeholder="Ghi chú" [(ngModel)]="form.note"></textarea>
+      <input
+        placeholder="Họ và tên"
+        [(ngModel)]="form.customerName"
+        required />
+
+      <input
+        placeholder="Số điện thoại"
+        [(ngModel)]="form.phone"
+        required />
+
+      <input
+        placeholder="Địa chỉ giao hàng"
+        [(ngModel)]="form.address"
+        required />
+
+      <textarea
+        placeholder="Ghi chú cho người bán (tùy chọn)"
+        [(ngModel)]="form.note">
+      </textarea>
 
     </div>
 
     <!-- RIGHT: SUMMARY -->
     <div class="summary">
 
-      <h2>Đơn hàng</h2>
+      <h2>Đơn hàng của bạn ({{ selectedItems.length }} pet)</h2>
 
-      <div *ngFor="let item of items()">
-        {{ item.name }} x{{ item.quantity }}
-        <span>{{ item.price | number }} ₫</span>
+      <div class="order-items">
+        <div *ngFor="let item of selectedItems" class="order-item">
+          <img [src]="item.image" [alt]="item.name" class="item-image">
+          <div class="item-detail">
+            <h4>{{ item.name }}</h4>
+            <p>{{ item.shopName }}</p>
+            <p class="price">{{ item.price | number }} ₫</p>
+          </div>
+        </div>
       </div>
 
       <hr />
 
       <div class="total">
-        Tổng: {{ total() | number }} ₫
+        <span>Tổng thanh toán:</span>
+        <strong>{{ total() | number }} ₫</strong>
       </div>
 
-      <button (click)="placeOrder()">
-        Đặt hàng
+      <button class="place-order-btn" (click)="placeOrder()">
+        Đặt hàng và thanh toán
       </button>
 
     </div>
 
   </div>
-
 </div>

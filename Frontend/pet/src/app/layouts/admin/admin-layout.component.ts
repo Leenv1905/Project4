@@ -87,12 +87,12 @@ export class AdminLayoutComponent {
       ]
     },
     {
-      label: 'Khách hàng',
+      label: 'Người dùng',
       icon: 'group',
       rolesAllowed: ['admin'],
       children: [
-        { label: 'Danh sách khách hàng', icon: 'people_outline', route: '/admin/customers', rolesAllowed: ['admin'] },
-        { label: 'Phân tích khách hàng', icon: 'analytics', route: '/admin/customers/analytics', rolesAllowed: ['admin'] }
+        { label: 'Danh sách người dùng', icon: 'people_outline', route: '/admin/users', rolesAllowed: ['admin'] },
+        { label: 'Phân tích khách hàng', icon: 'analytics', route: '/admin/users/analytics', rolesAllowed: ['admin'] }
       ]
     },
     {
@@ -100,9 +100,9 @@ export class AdminLayoutComponent {
       icon: 'account_balance',
       rolesAllowed: ['admin'],                     // Chỉ Admin
       children: [
-        { label: 'Doanh thu', icon: 'trending_up', route: '/admin/finance/revenue', rolesAllowed: ['admin'] },
-        { label: 'Tài khoản ngân hàng', icon: 'account_balance_wallet', route: '/admin/finance/bank', rolesAllowed: ['admin'] },
-        { label: 'Kênh thanh toán', icon: 'payment', route: '/admin/finance/payment', rolesAllowed: ['admin'] }
+        { label: 'Doanh thu', icon: '*', route: '/admin/finance/revenue', rolesAllowed: ['admin'] },
+        { label: 'Tài khoản ngân hàng', icon: '*', route: '/admin/finance/bank', rolesAllowed: ['admin'] },
+        { label: 'Kênh thanh toán', icon: '*', route: '/admin/finance/payment', rolesAllowed: ['admin'] }
       ]
     },
     {

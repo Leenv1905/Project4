@@ -1,0 +1,81 @@
+<div class="admin-users">
+
+  <div class="header">
+    <h2>Quản lý người dùng</h2>
+    <button class="create-btn" (click)="createUser()">
+      + Create User
+    </button>
+  </div>
+
+  <!-- Table -->
+  <table>
+    <thead>
+    <tr>
+      <th><input type="checkbox"></th>
+      <th>Name</th>
+      <th>Role</th>
+      <th>Age</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let user of paginatedUsers">
+      <td><input type="checkbox"></td>
+
+      <td>
+  <span class="role-badge" [class]="user.role">
+    {{ user.role | titlecase }}
+  </span>
+      </td>
+
+      <td class="user-cell">
+        <img [src]="user.avatar || 'https://i.pravatar.cc/150?u=default'" alt="{{user.name}}" class="avatar">
+        <span>{{ user.name }}</span>
+      </td>
+<!--      <td class="user-cell">-->
+<!--        <img [src]="user.avatar" alt="{{user.name}}" class="avatar">-->
+<!--        <span>{{ user.name }}</span>-->
+<!--      </td>-->
+
+<!--      <td>-->
+<!--          <span class="role-badge" [class]="user.role">-->
+<!--            {{ user.role | titlecase }}-->
+<!--          </span>-->
+<!--      </td>-->
+
+      <td>{{ user.age }}</td>
+      <td>{{ user.phone }}</td>
+      <td>{{ user.email }}</td>
+
+      <td class="actions">
+        <button class="action-btn" (click)="viewUser(user.id)" title="View">👁</button>
+        <button class="action-btn" (click)="editUser(user.id)" title="Edit">✏️</button>
+        <button class="action-btn delete" (click)="deleteUser(user.id)" title="Delete">🗑</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <div class="page-size">
+      <span>Rows per page:</span>
+      <select (change)="changePageSize($any($event.target).value)">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="20">20</option>
+      </select>
+    </div>
+
+    <div class="page-info">
+      {{ (page-1)*pageSize + 1 }} – {{ Math.min(page*pageSize, total) }} of {{ total }}
+    </div>
+
+    <div class="page-controls">
+      <button (click)="prevPage()" [disabled]="page === 1">‹</button>
+      <button (click)="nextPage()" [disabled]="page === totalPages">›</button>
+    </div>
+  </div>
+</div>

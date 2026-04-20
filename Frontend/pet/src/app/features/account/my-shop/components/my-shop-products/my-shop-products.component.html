@@ -1,251 +1,361 @@
 <div class="products">
 
   <!-- FILTERS -->
-
   <div class="filters">
-
     <select>
-      <option>Status</option>
-      <option>Publish</option>
-      <option>Inactive</option>
+      <option value="">Tất cả trạng thái</option>
+      <option value="available">Còn hàng</option>
+      <option value="sold">Đã bán</option>
+      <option value="reserved">Đặt trước</option>
     </select>
 
     <select>
-      <option>Category</option>
-      <option>Dog</option>
-      <option>Food</option>
-      <option>Accessory</option>
+      <option value="">Tất cả loài</option>
+      <option value="Chó">Chó</option>
+      <option value="Mèo">Mèo</option>
     </select>
 
-    <select>
-      <option>Stock</option>
-      <option>In stock</option>
-      <option>Out of stock</option>
-    </select>
-
+    <input type="text" placeholder="Tìm theo giống..." />
   </div>
 
-
   <!-- TOOLBAR -->
-
   <div class="toolbar">
-
     <input
       type="text"
-      placeholder="Search Product"
+      placeholder="Tìm kiếm sản phẩm..."
     />
 
     <button class="add-btn" (click)="addProduct()">
-      + Add Product
+      + Thêm sản phẩm mới
     </button>
-
   </div>
 
-
   <!-- TABLE -->
-
   <table>
-
     <thead>
-
     <tr>
       <th></th>
-      <th>Product</th>
-      <th>Category</th>
-      <th>Stock</th>
-      <th>SKU</th>
-      <th>Price</th>
-      <th>Status</th>
-      <th>Actions</th>
+      <th>Sản phẩm</th>
+      <th>Loài</th>
+      <th>Giống</th>
+      <th>Màu lông</th>
+      <th>Giới tính</th>
+      <th>Cân nặng</th>
+      <th>Giá</th>
+      <th>Trạng thái</th>
+      <th>Hành động</th>
     </tr>
-
     </thead>
-
-
     <tbody>
-
     <tr *ngFor="let p of paginatedProducts">
-
-      <td>
-        <input type="checkbox">
-      </td>
+      <td><input type="checkbox"></td>
 
       <td class="product">
-
-        <img [src]="p.image">
-
+        <img [src]="p.images[0]" alt="{{p.name}}">
         <div>
-
-          <div class="name">
-            {{p.name}}
-          </div>
-
-          <div class="desc">
-            {{p.description}}
-          </div>
-
+          <div class="name">{{ p.name }}</div>
+          <div class="desc">{{ p.description | slice:0:60 }}...</div>
         </div>
-
       </td>
 
-      <td>{{p.category}}</td>
-
-      <td>{{p.stock}}</td>
-
-      <td>{{p.sku}}</td>
-
-      <td>${{p.price}}</td>
+      <td>{{ p.species }}</td>
+      <td>{{ p.breed }}</td>
+      <td>{{ p.color }}</td>
+      <td>{{ p.gender === 'male' ? 'Đực' : 'Cái' }}</td>
+      <td>{{ p.weight | number:'1.1-1' }} kg</td>
+      <td class="price">{{ p.price | number }} ₫</td>
 
       <td>
-
-<span
-  class="badge"
-  [class.publish]="p.status==='publish'"
-  [class.inactive]="p.status==='inactive'"
->
-
-{{p.status}}
-
-</span>
-
+          <span class="badge"
+                [class.available]="p.status === 'available'"
+                [class.sold]="p.status === 'sold'">
+            {{ p.status === 'available' ? 'Còn hàng' : 'Đã bán' }}
+          </span>
       </td>
 
       <td class="actions">
+        <button class="dots" (click)="toggleMenu(p.id)">⋮</button>
 
-        <div class="action-wrapper">
-
-          <button
-            class="dots"
-            (click)="toggleMenu(p.id)"
-          >
-            ⋮
-          </button>
-
-          <div
-            class="dropdown"
-            *ngIf="openMenu === p.id"
-          >
-
-            <div (click)="editProduct(p.id)">
-              Edit
-            </div>
-
-            <div (click)="openDelete(p)">
-              Delete
-            </div>
-
-            <div (click)="openView(p)">
-              View
-            </div>
-
-          </div>
-
+        <div class="dropdown" *ngIf="openMenu === p.id">
+          <div (click)="openView(p)">Xem chi tiết</div>
+          <div (click)="editProduct(p.id)">Chỉnh sửa</div>
+          <div (click)="openDelete(p)">Xóa</div>
         </div>
-
       </td>
-
     </tr>
-
     </tbody>
-
   </table>
+
+  <!-- PAGINATION -->
   <div class="pagination">
-
     <div class="page-size">
-
-      <span>Rows per page:</span>
-
-      <select
-        (change)="changePageSize($any($event.target).value)"
-      >
-
+      <span>Hiển thị:</span>
+      <select (change)="changePageSize($any($event.target).value)">
         <option value="5">5</option>
         <option value="10" selected>10</option>
         <option value="20">20</option>
-
       </select>
-
     </div>
 
     <div class="page-info">
-
-      {{ (page-1)*pageSize + 1 }}
-      -
-      {{ Math.min(page*pageSize,total) }}
-      of
-      {{ total }}
-
+      {{ (page-1)*pageSize + 1 }} – {{ Math.min(page*pageSize, total) }} của {{ total }}
     </div>
 
     <div class="page-controls">
-
-      <button
-        (click)="prevPage()"
-        [disabled]="page===1"
-      >
-        ‹
-      </button>
-
-      <button
-        (click)="nextPage()"
-        [disabled]="page===totalPages"
-      >
-        ›
-      </button>
-
+      <button (click)="prevPage()" [disabled]="page === 1">‹</button>
+      <button (click)="nextPage()" [disabled]="page === totalPages">›</button>
     </div>
-
   </div>
-
 </div>
 
+<!--<div class="products">-->
 
-<!-- VIEW MODAL -->
+<!--  &lt;!&ndash; FILTERS &ndash;&gt;-->
 
-<div class="modal" *ngIf="selectedProduct">
+<!--  <div class="filters">-->
 
-  <div class="modal-content">
+<!--    <select>-->
+<!--      <option>Status</option>-->
+<!--      <option>Publish</option>-->
+<!--      <option>Inactive</option>-->
+<!--    </select>-->
 
-    <h3>{{selectedProduct.name}}</h3>
+<!--    <select>-->
+<!--      <option>Category</option>-->
+<!--      <option>Dog</option>-->
+<!--      <option>Food</option>-->
+<!--      <option>Accessory</option>-->
+<!--    </select>-->
 
-    <img [src]="selectedProduct.image">
+<!--    <select>-->
+<!--      <option>Stock</option>-->
+<!--      <option>In stock</option>-->
+<!--      <option>Out of stock</option>-->
+<!--    </select>-->
 
-    <p>{{selectedProduct.description}}</p>
-
-    <p>Price: ${{selectedProduct.price}}</p>
-
-    <button (click)="closeView()">
-      Close
-    </button>
-
-  </div>
-
-
-</div>
+<!--  </div>-->
 
 
-<!-- DELETE MODAL -->
+<!--  &lt;!&ndash; TOOLBAR &ndash;&gt;-->
 
-<div class="modal" *ngIf="deleteProduct">
+<!--  <div class="toolbar">-->
 
-  <div class="modal-content">
+<!--    <input-->
+<!--      type="text"-->
+<!--      placeholder="Search Product"-->
+<!--    />-->
 
-    <h3>Delete Product</h3>
+<!--    <button class="add-btn" (click)="addProduct()">-->
+<!--      + Add Product-->
+<!--    </button>-->
 
-    <p>Are you sure you want to delete this product?</p>
+<!--  </div>-->
 
-    <div class="modal-actions">
 
-      <button (click)="confirmDelete()">
-        Delete
-      </button>
+<!--  &lt;!&ndash; TABLE &ndash;&gt;-->
 
-      <button (click)="closeDelete()">
-        Cancel
-      </button>
+<!--  <table>-->
 
-    </div>
+<!--    <thead>-->
 
-  </div>
+<!--    <tr>-->
+<!--      <th></th>-->
+<!--      <th>Product</th>-->
+<!--      <th>Category</th>-->
+<!--      <th>Stock</th>-->
+<!--      <th>SKU</th>-->
+<!--      <th>Price</th>-->
+<!--      <th>Status</th>-->
+<!--      <th>Actions</th>-->
+<!--    </tr>-->
 
-</div>
+<!--    </thead>-->
+
+
+<!--    <tbody>-->
+
+<!--    <tr *ngFor="let p of paginatedProducts">-->
+
+<!--      <td>-->
+<!--        <input type="checkbox">-->
+<!--      </td>-->
+
+<!--      <td class="product">-->
+
+<!--        <img [src]="p.image">-->
+
+<!--        <div>-->
+
+<!--          <div class="name">-->
+<!--            {{p.name}}-->
+<!--          </div>-->
+
+<!--          <div class="desc">-->
+<!--            {{p.description}}-->
+<!--          </div>-->
+
+<!--        </div>-->
+
+<!--      </td>-->
+
+<!--      <td>{{p.category}}</td>-->
+
+<!--      <td>{{p.stock}}</td>-->
+
+<!--      <td>{{p.sku}}</td>-->
+
+<!--      <td>${{p.price}}</td>-->
+
+<!--      <td>-->
+
+<!--<span-->
+<!--  class="badge"-->
+<!--  [class.publish]="p.status==='publish'"-->
+<!--  [class.inactive]="p.status==='inactive'"-->
+<!--&gt;-->
+
+<!--{{p.status}}-->
+
+<!--</span>-->
+
+<!--      </td>-->
+
+<!--      <td class="actions">-->
+
+<!--        <div class="action-wrapper">-->
+
+<!--          <button-->
+<!--            class="dots"-->
+<!--            (click)="toggleMenu(p.id)"-->
+<!--          >-->
+<!--            ⋮-->
+<!--          </button>-->
+
+<!--          <div-->
+<!--            class="dropdown"-->
+<!--            *ngIf="openMenu === p.id"-->
+<!--          >-->
+
+<!--            <div (click)="editProduct(p.id)">-->
+<!--              Edit-->
+<!--            </div>-->
+
+<!--            <div (click)="openDelete(p)">-->
+<!--              Delete-->
+<!--            </div>-->
+
+<!--            <div (click)="openView(p)">-->
+<!--              View-->
+<!--            </div>-->
+
+<!--          </div>-->
+
+<!--        </div>-->
+
+<!--      </td>-->
+
+<!--    </tr>-->
+
+<!--    </tbody>-->
+
+<!--  </table>-->
+<!--  <div class="pagination">-->
+
+<!--    <div class="page-size">-->
+
+<!--      <span>Rows per page:</span>-->
+
+<!--      <select-->
+<!--        (change)="changePageSize($any($event.target).value)"-->
+<!--      >-->
+
+<!--        <option value="5">5</option>-->
+<!--        <option value="10" selected>10</option>-->
+<!--        <option value="20">20</option>-->
+
+<!--      </select>-->
+
+<!--    </div>-->
+
+<!--    <div class="page-info">-->
+
+<!--      {{ (page-1)*pageSize + 1 }}-->
+<!--      - -->
+<!--      {{ Math.min(page*pageSize,total) }}-->
+<!--      of-->
+<!--      {{ total }}-->
+
+<!--    </div>-->
+
+<!--    <div class="page-controls">-->
+
+<!--      <button-->
+<!--        (click)="prevPage()"-->
+<!--        [disabled]="page===1"-->
+<!--      >-->
+<!--        ‹-->
+<!--      </button>-->
+
+<!--      <button-->
+<!--        (click)="nextPage()"-->
+<!--        [disabled]="page===totalPages"-->
+<!--      >-->
+<!--        ›-->
+<!--      </button>-->
+
+<!--    </div>-->
+
+<!--  </div>-->
+
+<!--</div>-->
+
+
+<!--&lt;!&ndash; VIEW MODAL &ndash;&gt;-->
+
+<!--<div class="modal" *ngIf="selectedProduct">-->
+
+<!--  <div class="modal-content">-->
+
+<!--    <h3>{{selectedProduct.name}}</h3>-->
+
+<!--    <img [src]="selectedProduct.image">-->
+
+<!--    <p>{{selectedProduct.description}}</p>-->
+
+<!--    <p>Price: ${{selectedProduct.price}}</p>-->
+
+<!--    <button (click)="closeView()">-->
+<!--      Close-->
+<!--    </button>-->
+
+<!--  </div>-->
+
+
+<!--</div>-->
+
+
+<!--&lt;!&ndash; DELETE MODAL &ndash;&gt;-->
+
+<!--<div class="modal" *ngIf="deleteProduct">-->
+
+<!--  <div class="modal-content">-->
+
+<!--    <h3>Delete Product</h3>-->
+
+<!--    <p>Are you sure you want to delete this product?</p>-->
+
+<!--    <div class="modal-actions">-->
+
+<!--      <button (click)="confirmDelete()">-->
+<!--        Delete-->
+<!--      </button>-->
+
+<!--      <button (click)="closeDelete()">-->
+<!--        Cancel-->
+<!--      </button>-->
+
+<!--    </div>-->
+
+<!--  </div>-->
+
+<!--</div>-->

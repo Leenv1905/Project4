@@ -1,21 +1,77 @@
 .sidebar {
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 16px;
+  background: white;
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  height: fit-content;
+  min-width: 260px;
 }
 
-.item {
-  padding: 10px;
-  border-radius: 8px;
+.sidebar-header {
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+
+  h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+}
+
+.nav-group {
+  margin-bottom: 32px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.group-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 12px;
+  padding-left: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 4px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  color: #374151;
 
   &:hover {
-    background: #f5f5f5;
+    background: #f8fafc;
   }
 
   &.active {
-    background: #f86d72;
-    color: white;
-    font-weight: bold;
+    background: #fee2e2;
+    color: #ef4444;
+    font-weight: 600;
+  }
+
+  .icon {
+    font-size: 18px;
+    width: 24px;
+  }
+
+  .label {
+    font-size: 15px;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    min-width: unset;
   }
 }

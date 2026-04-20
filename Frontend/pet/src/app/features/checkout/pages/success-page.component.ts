@@ -1,6 +1,6 @@
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { OrderService } from '../../../core/services/order.service';
 
@@ -8,29 +8,27 @@ import { OrderService } from '../../../core/services/order.service';
   standalone: true,
   selector: 'app-success-page',
   imports: [CommonModule],
-  template: `
-    <div *ngIf="order() as o">
-      <h2>🎉 Đặt hàng thành công!</h2>
-
-      <p>Cảm ơn {{ o.customerName }}</p>
-
-      <p>Mã đơn: #{{ o.id }}</p>
-
-      <p>Tổng tiền: {{ o.totalAmount | number }} ₫</p>
-    </div>
-  `
+  templateUrl: './success-page.component.html',
+  styleUrls: ['./success-page.component.scss']
 })
 export class SuccessPageComponent {
 
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private orderService = inject(OrderService);
 
   order = computed(() => {
-
     const id = Number(this.route.snapshot.queryParamMap.get('id'));
+    if (!id) return null;
 
     return this.orderService.getById(id)();
-
   });
 
+  goToHome() {
+    this.router.navigate(['/']);
+  }
+
+  goToOrders() {
+    this.router.navigate(['/account'], { queryParams: { tab: 'orders' } });
+  }
 }

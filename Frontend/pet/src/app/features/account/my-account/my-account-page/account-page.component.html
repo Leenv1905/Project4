@@ -4,19 +4,21 @@
 
     <!-- SIDEBAR -->
     <app-account-sidebar
-      [active]="tab()"
-      (changeTab)="setTab($event)"
+      [activeTab]="tab()"
+      (tabChange)="setTab($event)"
     />
 
-    <!-- CONTENT -->
+    <!-- MAIN CONTENT -->
     <div class="content">
 
       <app-account-orders *ngIf="tab() === 'orders'" />
       <app-account-info *ngIf="tab() === 'info'" />
       <app-account-payment *ngIf="tab() === 'payment'" />
+      <app-account-edit *ngIf="tab() === 'edit'" />
+      <!-- Thêm các component khác khi cần -->
+      <!-- <app-account-wallet *ngIf="tab() === 'wallet'" /> -->
 
     </div>
 
   </div>
-
 </div>

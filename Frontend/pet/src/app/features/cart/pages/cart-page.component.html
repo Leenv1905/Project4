@@ -1,37 +1,74 @@
-<div class="cart">
+<div class="cart-page">
 
-  <h2>Giỏ hàng</h2>
+  <div class="header">
+    <h1>Giỏ hàng của bạn ({{ items().length }} sản phẩm)</h1>
 
-  <div *ngIf="items().length === 0">
-    Giỏ hàng trống
+    <button *ngIf="items().length > 0" class="clear-all-btn" (click)="clearCart()">
+      Xóa toàn bộ giỏ hàng
+    </button>
   </div>
 
-  <div *ngFor="let item of items()" class="item">
+  <!-- Thông báo -->
+  <div *ngIf="addToCartMessage" class="success-message">
+    {{ addToCartMessage }}
+  </div>
 
-    <img [src]="item.image" />
+  <div *ngIf="items().length === 0" class="empty-cart">
+    <p>Giỏ hàng của bạn đang trống</p>
+    <button routerLink="/shop" class="shop-btn">Tiếp tục mua sắm</button>
+  </div>
 
-    <div class="info">
-      <h4>{{ item.name }}</h4>
-      <p>{{ item.shopName }}</p>
-      <p>{{ item.price | number }} ₫</p>
+  <div *ngIf="items().length > 0" class="cart-content">
+
+    <!-- LEFT: Danh sách sản phẩm -->
+    <div class="cart-items">
+      <div *ngFor="let item of items()" class="cart-item">
+
+        <img [src]="item.image" [alt]="item.name" class="item-image">
+
+        <div class="item-info">
+          <h3>{{ item.name }}</h3>
+          <p class="shop">{{ item.shopName }}</p>
+          <p class="price">{{ item.price | number }} ₫</p>
+        </div>
+
+        <div class="item-actions">
+          <button class="checkout-btn" (click)="checkoutThisItem(item)">
+            Thanh toán ngay
+          </button>
+          <button class="remove-btn" (click)="remove(item.productId)">
+            Xóa
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div class="quantity">
-      <button (click)="decrease(item)">-</button>
-      <span>{{ item.quantity }}</span>
-      <button (click)="increase(item)">+</button>
+    <!-- RIGHT: Tóm tắt + Thông tin nhận hàng -->
+    <div class="cart-summary">
+
+      <div class="summary-box">
+        <h3>Thông tin nhận hàng</h3>
+        <p><strong>Nguyễn Văn A</strong></p>
+        <p>SĐT: 0966 228 008</p>
+        <p>Địa chỉ: Hậu Dưỡng, Thiện Lộc, HN</p>
+      </div>
+
+      <div class="total-box">
+        <div class="total-row">
+          <span>Tổng tiền</span>
+          <strong>{{ total() | number }} ₫</strong>
+        </div>
+        <div class="total-row">
+          <span>Số lượng sản phẩm</span>
+          <strong>{{ items().length }}</strong>
+        </div>
+      </div>
+
+      <button class="proceed-btn" (click)="checkoutAll()">
+        Tiến hành thanh toán
+      </button>
+
     </div>
 
-    <button (click)="remove(item.productId)">X</button>
-
   </div>
-
-  <div class="total">
-    Tổng: {{ total() | number }} ₫
-  </div>
-
-  <button (click)="checkout()">
-    Thanh toán
-  </button>
-
 </div>

@@ -1,0 +1,58 @@
+<div class="account-info">
+
+  <div class="header">
+    <h2>Thông tin cá nhân</h2>
+    <button class="edit-btn" (click)="editProfile()">
+      <span>✏️</span> Sửa thông tin
+    </button>
+  </div>
+
+  <div class="info-grid">
+
+    <!-- Avatar & Name -->
+    <div class="profile-card">
+      <div class="avatar-section">
+        <img [src]="userInfo().avatar" alt="Avatar" class="avatar">
+        <div class="status-dot"></div>
+      </div>
+      <h3>{{ user()?.name || 'Chưa cập nhật' }}</h3>
+      <p class="email">{{ user()?.email || 'Chưa có email' }}</p>
+    </div>
+
+    <!-- Thông tin chi tiết -->
+    <div class="details-grid">
+
+      <div class="info-block">
+        <span class="label">Họ và tên</span>
+        <span class="value">{{ user()?.name || 'Chưa cập nhật' }}</span>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Email</span>
+        <span class="value">{{ user()?.email || 'Chưa cập nhật' }}</span>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Số điện thoại</span>
+        <span class="value">0966 228 008</span> <!-- Sau này lấy từ user -->
+      </div>
+
+      <div class="info-block">
+        <span class="label">Ngày sinh</span>
+        <span class="value">{{ userInfo().dateOfBirth }}</span>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Địa chỉ</span>
+        <span class="value">Hậu Dưỡng, Thiện Lộc, Hà Nội</span>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Mật khẩu</span>
+        <span class="value password">{{ getMaskedPassword() }}</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>

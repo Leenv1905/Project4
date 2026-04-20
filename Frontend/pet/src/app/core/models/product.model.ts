@@ -16,7 +16,8 @@ export interface Product {
   gender: 'male' | 'female';         // Giới tính
   weight: number;                    // Cân nặng (kg) - thay cho dogType cũ
 
-  age?: number;                      // Tuổi (tháng)
+  age?: number;                      // Tuổi (tháng) (SAU THAY BẰNG birth_of_date)
+  // birth_of_date?: Date;               // Ngày sinh
   vaccinated: boolean;               // Đã tiêm vaccine chưa
   neutered: boolean;                 // Đã triệt sản chưa
 

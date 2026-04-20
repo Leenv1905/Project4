@@ -23,7 +23,8 @@
                *ngFor="let child of item.children"
                routerLinkActive="active-link"
                [routerLink]="child.route">
-              <mat-icon class="submenu-icon">{{ child.icon }}</mat-icon>
+<!--              Tắt Icon ở chirdren-->
+<!--              <mat-icon class="submenu-icon">{{ child.icon }}</mat-icon>-->
               <span>{{ child.label }}</span>
             </a>
           </mat-nav-list>

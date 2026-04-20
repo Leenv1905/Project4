@@ -1,0 +1,127 @@
+.account-info {
+  background: white;
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+  margin-left: 50px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+
+  h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .edit-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #2563eb;
+    }
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Avatar Card */
+.profile-card {
+  text-align: center;
+  background: #f8fafc;
+  padding: 32px 24px;
+  border-radius: 20px;
+  height: fit-content;
+
+  .avatar-section {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+
+    .avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 6px solid white;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .status-dot {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      width: 18px;
+      height: 18px;
+      background: #22c55e;
+      border: 3px solid white;
+      border-radius: 50%;
+    }
+  }
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 22px;
+    color: #1f2937;
+  }
+
+  .email {
+    color: #64748b;
+    font-size: 15px;
+  }
+}
+
+/* Details Grid */
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  .info-block {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 16px;
+
+    .label {
+      display: block;
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .password {
+      font-family: monospace;
+      letter-spacing: 2px;
+    }
+  }
+}

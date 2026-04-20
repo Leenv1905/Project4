@@ -19,6 +19,10 @@ export const routes: Routes = [
       { path: '', loadComponent: () => import('./features/admin/dashboard/pages/dashboard.page').then(m => m.DashboardPage)},
       { path: 'operators', loadComponent: () => import('./features/admin/operator-orders/operator-orders.component').then(m => m.OperatorOrdersComponent)},
       { path: 'operators/order/:id', loadComponent: () => import('./features/admin/operator-orders/operator-order-detail/operator-order-detail.component').then(m => m.OperatorOrderDetailComponent)},
+      { path: 'products', loadComponent: () => import('./features/admin/admin-products/admin-products.component').then(m => m.AdminProductsComponent) },
+      { path: 'users', loadComponent: () => import('./features/admin/admin-users/admin-users.component').then(m => m.AdminUsersComponent) },
+      { path: 'users/add', loadComponent: () => import('./features/admin/admin-users/create-user/admin-create-user.component').then(m => m.AdminCreateUserComponent) },
+      { path: 'users/edit/:id', loadComponent: () => import('./features/admin/admin-users/edit-user/admin-edit-user.component').then(m => m.AdminEditUserComponent) }
     ]
   },
 
