@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.HashSet;
 import java.util.Set;
-
+import java.util.List;
 @Getter
 @Setter
 @Entity
@@ -42,4 +42,12 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL)
+    private List<com.eproject.petsale.order.entity.Order> purchasedOrders;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<com.eproject.petsale.auth.entity.SsoAccount> ssoAccounts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<com.eproject.petsale.auth.entity.OtpVerification> otpVerifications;
 }

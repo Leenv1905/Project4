@@ -73,14 +73,16 @@ public class AuthService {
                 .collect(Collectors.joining(","));
 
         // Personalization
-        BuyerProfile profile = new BuyerProfile();
-        profile.setDailyTime(request.getPersonalization().getDailyTime());
-        profile.setLivingSpace(request.getPersonalization().getLivingSpace());
-        profile.setActivityTime(request.getPersonalization().getActivityTime());
-        profile.setMonthlyBudget(request.getPersonalization().getMonthlyBudget());
-        profile.setExperienceLevel(request.getPersonalization().getExperienceLevel());
-        profile.setUser(user);
-        buyerProfileRepository.save(profile);
+        if (request.getPersonalization() != null) {
+            BuyerProfile profile = new BuyerProfile();
+            profile.setDailyTime(request.getPersonalization().getDailyTime());
+            profile.setLivingSpace(request.getPersonalization().getLivingSpace());
+            profile.setActivityTime(request.getPersonalization().getActivityTime());
+            profile.setMonthlyBudget(request.getPersonalization().getMonthlyBudget());
+            profile.setExperienceLevel(request.getPersonalization().getExperienceLevel());
+            profile.setUser(user);
+            buyerProfileRepository.save(profile);
+        }
 
 
 
