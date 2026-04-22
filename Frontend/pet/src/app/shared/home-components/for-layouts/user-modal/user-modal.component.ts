@@ -10,8 +10,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { AuthService } from '../../../../core/services/auth.service';
-import {MatOption} from '@angular/material/core';
-import {MatSelect} from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   standalone: true,
@@ -26,7 +27,8 @@ import {MatSelect} from '@angular/material/select';
     MatFormFieldModule,
     MatCheckboxModule,
     MatOption,
-    MatSelect
+    MatSelect,
+    MatIconModule
   ],
   templateUrl: './user-modal.component.html',
   styleUrls: ['./user-modal.component.scss']
@@ -43,18 +45,80 @@ export class UserModalComponent {
   name = '';
   regEmail = '';
   regPassword = '';
-  gender = 'male';
+  confirmPassword = '';
+  phone = '';
+  address = '';
+
+  // UI States
+  hidePassword = true;
+  hideRegPassword = true;
+  hideConfirmPassword = true;
+  isLoading = false;
 
   constructor(public auth: AuthService) {}
 
   login() {
-    this.auth.login(this.email, this.password);
+    if (!this.email || !this.password) {
+      alert('Vui lòng nhập email và mật khẩu');
+      return;
+    }
+
+    this.isLoading = true;
+    this.auth.login(this.email, this.password).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.auth.navigateAfterLogin();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Lỗi đăng nhập:', err);
+        alert('Sai tài khoản hoặc mật khẩu');
+      }
+    });
   }
 
   register() {
-    // Bạn có thể mở rộng sau
-    console.log('Register:', this.name, this.regEmail, this.gender);
-    this.auth.register();
+    if (!this.name || !this.regEmail || !this.regPassword) {
+      alert('Vui lòng điền đầy đủ họ tên, email và mật khẩu!');
+      return;
+    }
+    if (this.regPassword !== this.confirmPassword) {
+      alert('Mật khẩu xác nhận không khớp!');
+      return;
+    }
+
+    this.isLoading = true;
+    const payload = {
+      name: this.name,
+      email: this.regEmail,
+      password: this.regPassword,
+      phone: this.phone,
+      address: this.address
+    };
+
+    this.auth.register(payload).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res && res.status === 200) {
+          alert('Đăng ký thành công! Vui lòng đăng nhập.');
+          this.tabIndex = 0;
+          this.email = payload.email;
+          this.password = '';
+          this.regEmail = '';
+          this.regPassword = '';
+          this.confirmPassword = '';
+          this.phone = '';
+          this.address = '';
+        } else {
+          alert('Đăng ký thất bại: ' + (res?.message || 'Lỗi server'));
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Lỗi đăng ký:', err);
+        alert('Đăng ký thất bại hoặc email đã tồn tại!');
+      }
+    });
   }
 
   loginWithGoogle() {

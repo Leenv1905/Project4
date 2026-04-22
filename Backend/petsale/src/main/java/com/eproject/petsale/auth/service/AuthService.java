@@ -146,10 +146,33 @@ public class AuthService {
     }
 
     public String refreshAccessToken(String refreshToken) {
-        jwtUtil.validateToken(refreshToken);
-        String email = jwtUtil.extractEmail(refreshToken);
 
-        // --- PHẢI TÌM USER ĐỂ LẤY ROLE MỚI NHẤT ---
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new AuthException("Refresh token missing");
+        }
+
+        User user = userRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new AuthException("Invalid refresh token"));
+
+        String roleNames = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.joining(","));
+
+        return jwtUtil.generateToken(user.getEmail(), roleNames);
+    }
+
+    public void logout(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return;
+        }
+
+        userRepository.findByRefreshToken(refreshToken).ifPresent(user -> {
+            user.setRefreshToken(null);
+            userRepository.save(user);
+        });
+    }
+
+    public AuthResponse me(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthException("User not found"));
 
@@ -157,6 +180,16 @@ public class AuthService {
                 .map(Role::getName)
                 .collect(Collectors.joining(","));
 
-        return jwtUtil.generateToken(email, roleNames);
+        AuthResponse response = new AuthResponse();
+        response.setUserId(user.getId());
+        response.setName(user.getName());
+        response.setRole(roleNames);
+
+        return response;
+    }
+
+    public String getEmailFromAccessToken(String accessToken) {
+        jwtUtil.validateToken(accessToken);
+        return jwtUtil.extractEmail(accessToken);
     }
 }

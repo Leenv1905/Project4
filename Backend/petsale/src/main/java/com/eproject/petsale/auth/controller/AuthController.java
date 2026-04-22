@@ -8,6 +8,7 @@ import com.eproject.petsale.common.response.ApiSuccessResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,7 +68,7 @@ public class AuthController {
         return ResponseEntity.ok(res);
     }
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshToken = null;
 
@@ -86,7 +87,74 @@ public class AuthController {
 
         String newAccessToken = authService.refreshAccessToken(refreshToken);
 
-        return ResponseEntity.ok(newAccessToken);
+        Cookie accessCookie = new Cookie("access_token", newAccessToken);
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(false);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(60 * 5);
+
+        response.addCookie(accessCookie);
+
+        return ResponseEntity.ok("Access token refreshed");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = null;
+
+        if (request.getCookies() != null) {
+            for (var cookie : request.getCookies()) {
+                if ("refresh_token".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        authService.logout(refreshToken);
+
+        Cookie accessCookie = new Cookie("access_token", "");
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(false);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(0);
+
+        Cookie refreshCookie = new Cookie("refresh_token", "");
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(false);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(0);
+
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
+
+        return ResponseEntity.ok("Logout success");
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiSuccessResponse<AuthResponse>> me(HttpServletRequest request) {
+        String accessToken = null;
+
+        if (request.getCookies() != null) {
+            for (var cookie : request.getCookies()) {
+                if ("access_token".equals(cookie.getName())) {
+                    accessToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (accessToken == null || accessToken.isBlank()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String email = authService.getEmailFromAccessToken(accessToken);
+        AuthResponse data = authService.me(email);
+
+        ApiSuccessResponse<AuthResponse> res =
+                new ApiSuccessResponse<>(200, "Current user", data);
+
+        return ResponseEntity.ok(res);
     }
 
 }

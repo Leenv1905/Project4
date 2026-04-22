@@ -1,109 +1,161 @@
-<div class="modal-backdrop" *ngIf="auth.showLoginModal()">
-  <div class="modal">
+<div class="modal-backdrop" *ngIf="auth.showLoginModal()" (click)="auth.closeLogin()">
+  <div class="modal" (click)="$event.stopPropagation()">
 
-    <!-- Header -->
+    <!-- Header with Gradient & Icon -->
     <div class="modal-header">
-      <h2>Chào mừng đến với Pet Shop</h2>
-      <button class="close-btn" (click)="auth.closeLogin()">✕</button>
+      <div class="header-text">
+        <h2>Chào mừng bạn trở lại!</h2>
+        <p>Đăng nhập để trải nghiệm đầy đủ các tính năng của Pet Shop</p>
+      </div>
+      <button class="close-btn" (click)="auth.closeLogin()">
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
 
-    <mat-tab-group [(selectedIndex)]="tabIndex" animationDuration="300ms">
+    <mat-tab-group [(selectedIndex)]="tabIndex" animationDuration="500ms" class="custom-tabs">
 
       <!-- TAB LOGIN -->
-      <mat-tab label="Đăng nhập">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">login</mat-icon>
+          <span>Đăng nhập</span>
+        </ng-template>
+
         <div class="tab-content">
-
-          <!-- Form Login -->
-          <div class="form">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Email</mat-label>
-              <input matInput type="email" [(ngModel)]="email" placeholder="example@email.com">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Mật khẩu</mat-label>
-              <input matInput type="password" [(ngModel)]="password" (keyup.enter)="login()">
-            </mat-form-field>
-
-            <div class="remember-row">
-              <mat-checkbox [(ngModel)]="rememberMe">Nhớ đăng nhập</mat-checkbox>
-              <a href="#" class="forgot-link" (click)="forgotPassword($event)">Quên mật khẩu?</a>
+          <div class="form-container">
+            <!-- Social Login Section -->
+            <div class="social-section">
+              <p class="section-title">Đăng nhập nhanh với</p>
+              <div class="social-grid">
+                <button class="social-btn google" (click)="loginWithGoogle()">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png" alt="Google">
+                  <span>Google</span>
+                </button>
+                <button class="social-btn facebook" (click)="loginWithFacebook()">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/2048px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook">
+                  <span>Facebook</span>
+                </button>
+              </div>
             </div>
 
-            <button mat-raised-button color="primary" class="login-btn" (click)="login()">
-              Đăng nhập
-            </button>
-          </div>
+            <div class="divider">
+              <span>hoặc dùng Email</span>
+            </div>
 
-          <div class="divider">
-            <span>hoặc</span>
-          </div>
+            <!-- Main Form -->
+            <div class="form">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" [(ngModel)]="email" placeholder="example@email.com">
+                <mat-icon matPrefix>email</mat-icon>
+              </mat-form-field>
 
-          <!-- Social Login -->
-          <div class="social-login">
-            <button class="social-btn google" (click)="loginWithGoogle()">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png" alt="Google">
-              <span>Tiếp tục với Google</span>
-            </button>
-            <button class="social-btn facebook" (click)="loginWithFacebook()">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/2048px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook">
-              <span>Tiếp tục với Facebook</span>
-            </button>
-          </div>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Mật khẩu</mat-label>
+                <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="password" (keyup.enter)="login()">
+                <mat-icon matPrefix>lock</mat-icon>
+                <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
+                  <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+              </mat-form-field>
 
+              <div class="remember-row">
+                <mat-checkbox [(ngModel)]="rememberMe" color="primary">Ghi nhớ tôi</mat-checkbox>
+                <a href="#" class="forgot-link" (click)="forgotPassword($event)">Quên mật khẩu?</a>
+              </div>
+
+              <button mat-flat-button color="primary" class="submit-btn" (click)="login()" [disabled]="isLoading">
+                <span *ngIf="!isLoading">Đăng nhập ngay</span>
+                <mat-icon *ngIf="!isLoading">arrow_forward</mat-icon>
+                <span *ngIf="isLoading">Đang xử lý...</span>
+              </button>
+            </div>
+          </div>
         </div>
       </mat-tab>
 
       <!-- TAB REGISTER -->
-      <mat-tab label="Đăng ký">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">person_add</mat-icon>
+          <span>Đăng ký</span>
+        </ng-template>
+
         <div class="tab-content">
+          <div class="form-container">
+            <div class="form registration-grid">
+              <!-- Name & Phone -->
+              <mat-form-field appearance="outline">
+                <mat-label>Họ và tên</mat-label>
+                <input matInput [(ngModel)]="name" placeholder="Nguyễn Văn A">
+                <mat-icon matPrefix>person</mat-icon>
+              </mat-form-field>
 
-          <!-- Form Register -->
-          <div class="form">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Họ và tên</mat-label>
-              <input matInput [(ngModel)]="name">
-            </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Số điện thoại</mat-label>
+                <input matInput type="tel" [(ngModel)]="phone" placeholder="0123 456 789">
+                <mat-icon matPrefix>phone</mat-icon>
+              </mat-form-field>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Email</mat-label>
-              <input matInput type="email" [(ngModel)]="email">
-            </mat-form-field>
+              <!-- Address (Full Width) -->
+              <mat-form-field appearance="outline" class="grid-full-width">
+                <mat-label>Địa chỉ</mat-label>
+                <input matInput [(ngModel)]="address" placeholder="123 Đường ABC, Quận X, TP. Y">
+                <mat-icon matPrefix>location_on</mat-icon>
+              </mat-form-field>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Mật khẩu</mat-label>
-              <input matInput type="password" [(ngModel)]="password">
-            </mat-form-field>
+              <!-- Email (Full Width) -->
+              <mat-form-field appearance="outline" class="grid-full-width">
+                <mat-label>Email đăng ký</mat-label>
+                <input matInput type="email" [(ngModel)]="regEmail" placeholder="youremail@example.com">
+                <mat-icon matPrefix>alternate_email</mat-icon>
+              </mat-form-field>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Giới tính</mat-label>
-              <mat-select [(ngModel)]="gender">
-                <mat-option value="male">Nam</mat-option>
-                <mat-option value="female">Nữ</mat-option>
-                <mat-option value="other">Khác</mat-option>
-              </mat-select>
-            </mat-form-field>
+              <!-- Password & Confirm -->
+              <mat-form-field appearance="outline">
+                <mat-label>Mật khẩu</mat-label>
+                <input matInput [type]="hideRegPassword ? 'password' : 'text'" [(ngModel)]="regPassword">
+                <mat-icon matPrefix>lock_outline</mat-icon>
+                <button mat-icon-button matSuffix (click)="hideRegPassword = !hideRegPassword">
+                  <mat-icon>{{hideRegPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+              </mat-form-field>
 
-            <button mat-raised-button color="primary" class="register-btn" (click)="register()">
-              Tạo tài khoản
-            </button>
+              <mat-form-field appearance="outline">
+                <mat-label>Xác nhận lại</mat-label>
+                <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" [(ngModel)]="confirmPassword">
+                <mat-icon matPrefix>verified_user</mat-icon>
+                <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword">
+                  <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+              </mat-form-field>
+
+              <div class="terms-row grid-full-width">
+                <mat-checkbox color="primary">Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a></mat-checkbox>
+              </div>
+
+              <button mat-flat-button color="primary" class="submit-btn grid-full-width" (click)="register()" [disabled]="isLoading">
+                <span *ngIf="!isLoading">Tạo tài khoản mới</span>
+                <mat-icon *ngIf="!isLoading">how_to_reg</mat-icon>
+                <span *ngIf="isLoading">Đang xử lý...</span>
+              </button>
+            </div>
+
+            <div class="divider">
+              <span>hoặc đăng ký với</span>
+            </div>
+
+            <div class="social-grid">
+              <button class="social-btn google" (click)="registerWithGoogle()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png" alt="Google">
+                <span>Google</span>
+              </button>
+              <button class="social-btn facebook" (click)="registerWithFacebook()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/2048px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook">
+                <span>Facebook</span>
+              </button>
+            </div>
           </div>
-
-          <div class="divider">
-            <span>hoặc</span>
-          </div>
-          <!-- Social Login -->
-          <div class="social-login">
-            <button class="social-btn google" (click)="registerWithGoogle()">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png" alt="Google">
-              <span>Tiếp tục với Google</span>
-            </button>
-            <button class="social-btn facebook" (click)="registerWithFacebook()">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/2048px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook">
-              <span>Tiếp tục với Facebook</span>
-            </button>
-          </div>
-
         </div>
       </mat-tab>
 
