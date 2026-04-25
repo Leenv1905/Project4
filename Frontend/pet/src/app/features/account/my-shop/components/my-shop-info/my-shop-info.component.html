@@ -1,64 +1,50 @@
 <div class="shop-info">
-
   <div class="header">
-    <h2>Thông tin cửa hàng</h2>
+    <h2>Thong tin cua hang</h2>
     <button class="edit-btn" (click)="editShopInfo()">
-      ✏️ Sửa thông tin cửa hàng
+      ✏️ Sua thong tin cua hang
     </button>
   </div>
 
   <div class="info-grid">
-
-    <!-- Cột 1: Avatar & Tên shop -->
     <div class="shop-avatar-card">
       <div class="avatar-wrapper">
-        <img [src]="shopInfo().avatar" alt="Shop Avatar" class="shop-avatar">
+        <img [src]="profile()?.avatarUrl || 'https://i.pravatar.cc/300?u=shop123'" alt="Shop Avatar" class="shop-avatar">
       </div>
-      <h3>{{ shopInfo().shopName }}</h3>
-      <p class="shop-owner">Quản lý bởi: {{ user()?.name || 'Chưa có tên' }}</p>
+      <h3>{{ profile()?.name || user()?.name || 'Chua cap nhat' }}</h3>
+      <p class="shop-owner">Quan ly boi: {{ profile()?.name || user()?.name || 'Chua co ten' }}</p>
     </div>
 
-    <!-- Cột 2: Thông tin chi tiết -->
     <div class="details-grid">
-
       <div class="info-block">
-        <span class="label">Tên cửa hàng</span>
-        <span class="value">{{ shopInfo().shopName }}</span>
+        <span class="label">Ten cua hang</span>
+        <span class="value">{{ profile()?.name || user()?.name || 'Chua cap nhat' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Chủ cửa hàng</span>
-        <span class="value">{{ user()?.name || 'Chưa cập nhật' }}</span>
-      </div>
-
-<!--      <div class="info-block">-->
-<!--        <span class="label">Số điện thoại</span>-->
-<!--        <span class="value">{{ user()?.phone || '0966 228 008' }}</span>-->
-<!--      </div>-->
-
-<!--      <div class="info-block">-->
-<!--        <span class="label">Địa chỉ</span>-->
-<!--        <span class="value">{{ user()?.address || 'Hậu Dưỡng, Thiện Lộc, Hà Nội' }}</span>-->
-<!--      </div>-->
-      <div class="info-block">
-        <span class="label">Số điện thoại</span>
-        <span class="value">0966 228 008</span>
-      </div>
-      <div class="info-block">
-        <span class="label">Địa chỉ</span>
-        <span class="value">Hậu Dưỡng, Thiện Lộc, Hà Nội</span>
+        <span class="label">Chu cua hang</span>
+        <span class="value">{{ profile()?.name || user()?.name || 'Chua cap nhat' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Ngày tạo gian hàng</span>
-        <span class="value">{{ shopInfo().createdAt }}</span>
+        <span class="label">So dien thoai</span>
+        <span class="value">{{ profile()?.phone || 'Chua cap nhat' }}</span>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Dia chi</span>
+        <span class="value">{{ profile()?.address || 'Chua cap nhat' }}</span>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Ngay tao gian hang</span>
+        <span class="value">Dang cap nhat</span>
       </div>
 
       <div class="info-block full-width">
-        <span class="label">Mô tả cửa hàng</span>
-        <p class="description">{{ shopInfo().description }}</p>
+        <span class="label">Mo ta cua hang</span>
+        <p class="description">{{ profile()?.address || 'Chua co mo ta rieng cho cua hang.' }}</p>
       </div>
-
     </div>
   </div>
 </div>

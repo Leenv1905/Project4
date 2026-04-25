@@ -34,7 +34,13 @@
     <div class="info-section">
 
       <div class="header">
-        <h1>{{ p.name }}</h1>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <h1>{{ p.name }}</h1>
+          <span *ngIf="p.isVerified" class="verified-badge" title="Đã xác minh thực địa (O2O)">
+            <mat-icon style="color: #3498db; vertical-align: middle;">verified</mat-icon>
+            <small style="color: #3498db; font-weight: bold;">Verified {{p.trustScore}}%</small>
+          </span>
+        </div>
         <p class="shop">Từ: {{ p.shopName }}</p>
       </div>
 
@@ -91,7 +97,7 @@
 
         <button
           class="btn btn-outline"
-          (click)="addToCart()"
+          (click)="buyNow()"
           *ngIf="p.status === 'available'">
           Mua ngay
         </button>

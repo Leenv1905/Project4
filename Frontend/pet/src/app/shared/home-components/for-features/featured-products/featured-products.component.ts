@@ -1,10 +1,22 @@
 // SẢN PHẨM NỔI BẬT
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { inject } from '@angular/core';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ShopService } from '../../../../features/shop/services/shop.service';
 
 import { Product } from '../../../../core/models/product.model';
 import { ProductSliderComponent } from '../product-slider/product-slider.component';
+
+const MOCK_PET_IMAGES = [
+  '/assets/cho1.jpg',
+  '/assets/cho2.jpg',
+  '/assets/cho3.jpg',
+  '/assets/cho4.jpg',
+  '/assets/cho5.jpg',
+  '/assets/cho21.jpg'
+];
 
 @Component({
   standalone: true,
@@ -19,11 +31,27 @@ import { ProductSliderComponent } from '../product-slider/product-slider.compone
 })
 export class FeaturedProductsComponent implements OnInit {
 
-  featuredProducts: Product[] = [];   // ← Sửa thành cái này
-  error: string | null = null;
+  auth = inject(AuthService);
+  shop = inject(ShopService);
+
+  featuredProducts = signal<Product[]>([]);
+  error = signal<string | null>(null);
 
   ngOnInit(): void {
-    this.loadMockProducts();
+    this.loadFeaturedProducts();
+  }
+
+  private loadFeaturedProducts() {
+    if (this.auth.isAuthenticated()) {
+      this.shop.getRecommendedPets().subscribe({
+        next: (pets) => {
+          this.featuredProducts.set(pets.slice(0, 8));
+        },
+        error: () => this.loadMockProducts()
+      });
+    } else {
+      this.loadMockProducts();
+    }
   }
 
   private loadMockProducts() {
@@ -34,7 +62,7 @@ export class FeaturedProductsComponent implements OnInit {
         description: 'Thú cưng thuần chủng, sức khỏe tốt, đã tiêm vaccine đầy đủ.',
         price: 4500000 + Math.floor(Math.random() * 8000000),
         originalPrice: Math.random() > 0.7 ? 5500000 + Math.floor(Math.random() * 6000000) : undefined,
-        images: ['/assets/pets/pet-' + ((i % 6) + 1) + '.jpg'],
+        images: [MOCK_PET_IMAGES[i % MOCK_PET_IMAGES.length]],
         video: undefined,
         status: Math.random() > 0.8 ? 'sold' : 'available',
         species: i % 3 === 0 ? 'Mèo' : 'Chó',
@@ -51,13 +79,13 @@ export class FeaturedProductsComponent implements OnInit {
       }));
 
       // Lấy 8 sản phẩm nổi bật nhất để hiển thị trong Featured
-      this.featuredProducts = [...mockProducts]
+      this.featuredProducts.set([...mockProducts]
         .sort(() => Math.random() - 0.5)
-        .slice(0, 8);
+        .slice(0, 8));
 
     } catch (err) {
       console.error(err);
-      this.error = 'Không thể tải sản phẩm nổi bật.';
+      this.error.set('Không thể tải sản phẩm nổi bật.');
     }
   }
 }

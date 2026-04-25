@@ -1,21 +1,47 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { ShopFilter } from '../models/shop-filter.model';
 import { PaginationState } from '../models/pagination.model';
-import { MOCK_PRODUCTS, generateMockProducts } from '../data/mock-products';
-import {Product} from '../../../core/models/product.model';   //cập nhật mock theo model mới
+import { Product } from '../../../core/models/product.model';
+
+interface PetPublicApi {
+  id: number;
+  petCode?: string;
+  name?: string;
+  species?: string;
+  breed?: string;
+  price?: number;
+  imageUrl?: string;
+  status?: 'available' | 'sold' | 'reserved' | 'not_for_sale';
+  gender?: 'male' | 'female';
+  color?: string;
+  weight?: number;
+  age?: number;
+  shopId?: number;
+  shopName?: string;
+  isVerified?: boolean;
+  trustScore?: number;
+  isHealthVerified?: boolean;
+  isPedigreeVerified?: boolean;
+  createdAt?: string;
+  matchScore?: number;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShopService {
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8080/gupet/api/v1/pets/public';
 
   constructor(
     private router: Router,
     private route: ActivatedRoute
   ) {
-    // Sync URL → State khi thay đổi query params
     this.route.queryParams.subscribe(params => {
       this.filters.set({
         searchQuery: params['search'] || '',
@@ -32,12 +58,12 @@ export class ShopService {
         page: Number(params['page']) || 1
       }));
     });
+
+    this.loadPublicPets();
   }
 
-  // ===== STATE =====
-  // private products = signal<Product[]>(MOCK_PRODUCTS);
-// Sử dụng hàm generate để tạo nhiều dữ liệu động
-  private products = signal<Product[]>(generateMockProducts(140));
+  private products = signal<Product[]>([]);
+
   filters = signal<ShopFilter>({
     searchQuery: '',
     breed: '',
@@ -56,12 +82,10 @@ export class ShopService {
     pageSize: 24
   });
 
-  // ===== FILTERED & PAGINATED PRODUCTS =====
   filteredProducts = computed(() => {
     let result = [...this.products()];
     const f = this.filters();
 
-    // Tìm kiếm theo tên
     if (f.searchQuery) {
       const q = f.searchQuery.toLowerCase();
       result = result.filter(p =>
@@ -71,61 +95,46 @@ export class ShopService {
       );
     }
 
-    // Lọc theo giống
     if (f.breed) {
       result = result.filter(p => p.breed === f.breed);
     }
 
-    // Lọc theo loài
     if (f.species) {
       result = result.filter(p => p.species === f.species);
     }
 
-    // Lọc theo màu lông
     if (f.color) {
       result = result.filter(p => p.color === f.color);
     }
 
-    // Lọc theo cân nặng
     if (f.weightRange) {
-      if (f.weightRange === 'light') {
-        result = result.filter(p => p.weight < 5);
-      } else if (f.weightRange === 'medium') {
-        result = result.filter(p => p.weight >= 5 && p.weight <= 15);
-      } else if (f.weightRange === 'heavy') {
-        result = result.filter(p => p.weight > 15);
-      }
+      if (f.weightRange === 'light') result = result.filter(p => p.weight < 5);
+      else if (f.weightRange === 'medium') result = result.filter(p => p.weight >= 5 && p.weight <= 15);
+      else if (f.weightRange === 'heavy') result = result.filter(p => p.weight > 15);
     }
 
-    // Lọc theo trạng thái
     if (f.status) {
       result = result.filter(p => p.status === f.status);
     }
 
-    // Lọc theo giới tính
     if (f.gender) {
       result = result.filter(p => p.gender === f.gender);
     }
 
-    // Lọc theo khoảng giá
     if (f.priceRange) {
-      if (f.priceRange === 'low') {
-        result = result.filter(p => p.price < 5000000);
-      } else if (f.priceRange === 'medium') {
-        result = result.filter(p => p.price >= 5000000 && p.price <= 10000000);
-      } else if (f.priceRange === 'high') {
-        result = result.filter(p => p.price > 10000000);
-      }
+      if (f.priceRange === 'low') result = result.filter(p => p.price < 5000000);
+      else if (f.priceRange === 'medium') result = result.filter(p => p.price >= 5000000 && p.price <= 10000000);
+      else if (f.priceRange === 'high') result = result.filter(p => p.price > 10000000);
     }
 
-    // Sắp xếp
     if (f.sort) {
       result.sort((a, b) => {
         switch (f.sort) {
-          case 'priceAsc':  return a.price - b.price;
+          case 'priceAsc': return a.price - b.price;
           case 'priceDesc': return b.price - a.price;
-          case 'nameAsc':   return a.name.localeCompare(b.name);
-          case 'nameDesc':  return b.name.localeCompare(a.name);
+          case 'nameAsc': return a.name.localeCompare(b.name);
+          case 'nameDesc': return b.name.localeCompare(a.name);
+          case 'newest': return (b.createdAt?.getTime?.() || 0) - (a.createdAt?.getTime?.() || 0);
           default: return 0;
         }
       });
@@ -134,7 +143,6 @@ export class ShopService {
     return result;
   });
 
-  // Phân trang
   paginatedProducts = computed(() => {
     const { page, pageSize } = this.pagination();
     const start = (page - 1) * pageSize;
@@ -148,7 +156,54 @@ export class ShopService {
 
   totalItems = computed(() => this.filteredProducts().length);
 
-  // ===== URL SYNC =====
+  private mapApiToProduct(item: PetPublicApi): Product {
+    const species = (item.species || 'Khác') as Product['species'];
+
+    return {
+      id: Number(item.id),
+      name: item.name || 'Pet',
+      description: '',
+      price: Number(item.price || 0),
+      images: item.imageUrl ? [item.imageUrl] : [],
+      status: item.status || 'available',
+      species: species === 'Chó' || species === 'Mèo' ? species : 'Khác',
+      breed: item.breed || '',
+      color: item.color || '',
+      gender: item.gender || 'male',
+      weight: Number(item.weight || 0),
+      age: item.age,
+      vaccinated: Boolean(item.isHealthVerified),
+      neutered: false,
+      shopId: Number(item.shopId || 0),
+      shopName: item.shopName || 'Pet Shop',
+      createdAt: item.createdAt ? new Date(item.createdAt) : new Date()
+    };
+  }
+
+  loadPublicPets() {
+    this.http.get<PetPublicApi[]>(this.apiUrl).subscribe({
+      next: (res) => {
+        this.products.set((res || []).map((i) => this.mapApiToProduct(i)));
+      },
+      error: () => {
+        this.products.set([]);
+      }
+    });
+  }
+
+  getPublicPets(): Observable<Product[]> {
+    return this.http.get<PetPublicApi[]>(this.apiUrl).pipe(
+      map(res => (res || []).map(i => this.mapApiToProduct(i)))
+    );
+  }
+
+  getRecommendedPets(): Observable<Product[]> {
+    return this.http.get<PetPublicApi[]>('http://localhost:8080/gupet/api/v1/pets/recommendations', { withCredentials: true }).pipe(
+      map(res => (res || []).map(i => this.mapApiToProduct(i)))
+    );
+  }
+
+
   updateURL() {
     const f = this.filters();
     const queryParams: any = {};
@@ -172,10 +227,9 @@ export class ShopService {
     });
   }
 
-  // ===== ACTIONS =====
   updateFilter(newFilter: Partial<ShopFilter>) {
     this.filters.update(current => ({ ...current, ...newFilter }));
-    this.setPage(1);        // Reset về trang 1 khi lọc
+    this.setPage(1);
     this.updateURL();
   }
 
@@ -193,7 +247,6 @@ export class ShopService {
     });
   }
 
-  // ===== GETTERS =====
   getProductById(id: number): Product | undefined {
     return this.products().find(p => p.id === id);
   }

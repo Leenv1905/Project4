@@ -1,12 +1,12 @@
 <section id="best-selling-items" class="best-selling">
 
   <!-- ERROR -->
-  <div class="error" *ngIf="error">
-    {{ error }}
+  <div class="error" *ngIf="error()">
+    {{ error() }}
   </div>
 
   <!-- CONTENT -->
-  <ng-container *ngIf="featuredProducts.length > 0">
+  <ng-container *ngIf="featuredProducts().length > 0">
 
     <div class="header">
       <h3>Sản phẩm nổi bật</h3>
@@ -16,7 +16,7 @@
       </a>
     </div>
 
-    <app-product-slider [products]="featuredProducts" />
+    <app-product-slider [products]="featuredProducts()" />
 
   </ng-container>
 

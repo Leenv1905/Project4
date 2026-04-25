@@ -1,8 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import {Product} from '../../../../../core/models/product.model';
-import {generateMockProducts} from '../../../../shop/data/mock-products'; // Sử dụng hàm generate để có nhiều dữ liệu
+import { Product } from '../../../../../core/models/product.model';
+import { PetApiService } from '../../../../../core/services/pet-api.service';
 
 @Component({
   standalone: true,
@@ -11,37 +11,50 @@ import {generateMockProducts} from '../../../../shop/data/mock-products'; // S�
   templateUrl: './my-shop-products.component.html',
   styleUrls: ['./my-shop-products.component.scss']
 })
-export class MyShopProductsComponent {
+export class MyShopProductsComponent implements OnInit {
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly petApi = inject(PetApiService);
 
-  router = inject(Router);
-  route = inject(ActivatedRoute);
-
-  // Sử dụng mock data mới với hàm generate
-  products: Product[] = generateMockProducts(25);   // Tạo 25 sản phẩm
-
+  products: Product[] = [];
   selectedProduct: Product | null = null;
   deleteProduct: Product | null = null;
   openMenu: number | null = null;
+  isLoading = false;
 
-  // Pagination
   page = 1;
   pageSize = 10;
+
+  ngOnInit() {
+    this.loadProducts();
+  }
 
   get total() {
     return this.products.length;
   }
 
   get totalPages() {
-    return Math.ceil(this.total / this.pageSize);
+    return Math.max(1, Math.ceil(this.total / this.pageSize));
   }
 
   get paginatedProducts() {
     const start = (this.page - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    return this.products.slice(start, end);
+    return this.products.slice(start, start + this.pageSize);
   }
 
-  // ==================== ACTIONS ====================
+  loadProducts() {
+    this.isLoading = true;
+    this.petApi.listMyPets().subscribe({
+      next: (products) => {
+        this.products = products;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.products = [];
+        this.isLoading = false;
+      }
+    });
+  }
 
   addProduct() {
     this.router.navigate([], {
@@ -53,7 +66,7 @@ export class MyShopProductsComponent {
   editProduct(id: number) {
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab: 'edit-product', id: id }
+      queryParams: { tab: 'edit-product', id }
     });
   }
 
@@ -74,28 +87,37 @@ export class MyShopProductsComponent {
   }
 
   confirmDelete() {
-    if (this.deleteProduct) {
-      this.products = this.products.filter(p => p.id !== this.deleteProduct!.id);
-      this.deleteProduct = null;
-      alert('Đã xóa sản phẩm thành công!');
+    if (!this.deleteProduct) {
+      return;
     }
+
+    this.petApi.deletePet(this.deleteProduct.id).subscribe({
+      next: () => {
+        this.products = this.products.filter((product) => product.id !== this.deleteProduct?.id);
+        this.deleteProduct = null;
+      },
+      error: () => alert('Khong the xoa san pham.')
+    });
   }
 
   toggleMenu(id: number) {
     this.openMenu = this.openMenu === id ? null : id;
   }
 
-  // Pagination methods
   nextPage() {
-    if (this.page < this.totalPages) this.page++;
+    if (this.page < this.totalPages) {
+      this.page++;
+    }
   }
 
   prevPage() {
-    if (this.page > 1) this.page--;
+    if (this.page > 1) {
+      this.page--;
+    }
   }
 
   changePageSize(size: number) {
-    this.pageSize = size;
+    this.pageSize = Number(size);
     this.page = 1;
   }
 

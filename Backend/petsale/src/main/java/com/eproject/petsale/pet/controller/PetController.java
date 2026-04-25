@@ -52,4 +52,9 @@ public class PetController {
     public ResponseEntity<List<PetPublicResponse>> getAllPublicPets() {
         return ResponseEntity.ok(petService.getAllPublicPets());
     }
+
+    @GetMapping("/recommendations")
+    public ResponseEntity<List<PetPublicResponse>> getRecommendedPets() {
+        return ResponseEntity.ok(petService.getRecommendedPets());
+    }
 }

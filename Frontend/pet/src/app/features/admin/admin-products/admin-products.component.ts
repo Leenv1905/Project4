@@ -1,10 +1,9 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import { Product } from '../../../core/models/product.model';
-import { generateMockProducts } from '../../shop/data/mock-products';
-import {FormsModule} from '@angular/forms';
+import { PetApiService } from '../../../core/services/pet-api.service';
 
 @Component({
   standalone: true,
@@ -13,181 +12,111 @@ import {FormsModule} from '@angular/forms';
   templateUrl: './admin-products.component.html',
   styleUrls: ['./admin-products.component.scss']
 })
-export class AdminProductsComponent {
+export class AdminProductsComponent implements OnInit {
+  private readonly petApi = inject(PetApiService);
 
-  router = inject(Router);
+  readonly router = inject(Router);
+  readonly allProducts = signal<Product[]>([]);
+  readonly searchText = signal('');
+  readonly selectedSpecies = signal('');
+  readonly selectedStatus = signal('');
+  readonly selectedShop = signal('');
+  readonly page = signal(1);
+  readonly pageSize = signal(15);
+  readonly isLoading = signal(false);
 
-  allProducts = generateMockProducts(40);
-
-  // ==================== FILTER STATES ====================
-  searchText = signal('');
-  selectedSpecies = signal('');
-  selectedStatus = signal('');
-  selectedShop = signal('');
-
-  // Danh sách Shop unique
-  availableShops = computed(() => {
-    const shops = new Set(this.allProducts.map(p => p.shopName));
+  readonly availableShops = computed(() => {
+    const shops = new Set(this.allProducts().map((product) => product.shopName));
     return Array.from(shops).sort();
   });
 
-  // ==================== FILTERED PRODUCTS ====================
-  filteredProducts = computed(() => {
-    let result = [...this.allProducts];
+  readonly filteredProducts = computed(() => {
+    let result = [...this.allProducts()];
 
-    // Tìm kiếm theo tên hoặc giống
     const term = this.searchText().toLowerCase().trim();
     if (term) {
-      result = result.filter(p =>
-        p.name.toLowerCase().includes(term) ||
-        p.breed.toLowerCase().includes(term)
+      result = result.filter((product) =>
+        product.name.toLowerCase().includes(term) ||
+        product.breed.toLowerCase().includes(term)
       );
     }
 
-    // Lọc theo loài
     if (this.selectedSpecies()) {
-      result = result.filter(p => p.species === this.selectedSpecies());
+      result = result.filter((product) => product.species === this.selectedSpecies());
     }
 
-    // Lọc theo trạng thái
     if (this.selectedStatus()) {
-      result = result.filter(p => p.status === this.selectedStatus());
+      result = result.filter((product) => product.status === this.selectedStatus());
     }
 
-    // Lọc theo Shop
     if (this.selectedShop()) {
-      result = result.filter(p => p.shopName === this.selectedShop());
+      result = result.filter((product) => product.shopName === this.selectedShop());
     }
 
     return result;
   });
 
-  // ==================== PAGINATION ====================
-  page = signal(1);
-  pageSize = signal(15);
-
-  paginatedProducts = computed(() => {
+  readonly paginatedProducts = computed(() => {
     const start = (this.page() - 1) * this.pageSize();
     return this.filteredProducts().slice(start, start + this.pageSize());
   });
 
-  total = computed(() => this.filteredProducts().length);
-  totalPages = computed(() => Math.ceil(this.total() / this.pageSize()));
+  readonly total = computed(() => this.filteredProducts().length);
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.total() / this.pageSize())));
 
-  // ==================== BLOCK / UNBLOCK ====================
-  toggleBlock(productId: number) {
-    const product = this.allProducts.find(p => p.id === productId);
-    if (!product) return;
+  ngOnInit() {
+    this.loadProducts();
+  }
 
-    if (product.status === 'not_for_sale') {
-      product.status = 'available';
-      alert(`Đã gỡ block sản phẩm #${productId}`);
-    } else {
-      product.status = 'not_for_sale';
-      alert(`Đã block sản phẩm #${productId}`);
-    }
+  loadProducts() {
+    this.isLoading.set(true);
+    this.petApi.listAllPets().subscribe({
+      next: (products) => {
+        this.allProducts.set(products);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.allProducts.set([]);
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  toggleBlock(_productId: number) {
+    alert('Backend hien chua co endpoint block/unblock san pham.');
   }
 
   getStatusLabel(status: string): string {
     switch (status) {
-      case 'available': return 'Còn hàng';
-      case 'sold': return 'Đã bán';
-      case 'reserved': return 'Đặt trước';
-      case 'not_for_sale': return 'Đã block';
-      default: return status;
+      case 'available':
+        return 'Con hang';
+      case 'sold':
+        return 'Da ban';
+      case 'reserved':
+        return 'Dat truoc';
+      case 'not_for_sale':
+        return 'Da block';
+      default:
+        return status;
     }
   }
 
-  // Pagination methods
   nextPage() {
-    if (this.page() < this.totalPages()) this.page.update(p => p + 1);
+    if (this.page() < this.totalPages()) {
+      this.page.update((page) => page + 1);
+    }
   }
 
   prevPage() {
-    if (this.page() > 1) this.page.update(p => p - 1);
+    if (this.page() > 1) {
+      this.page.update((page) => page - 1);
+    }
   }
 
   changePageSize(size: number) {
-    this.pageSize.set(size);
+    this.pageSize.set(Number(size));
     this.page.set(1);
   }
 
   protected readonly Math = Math;
 }
-
-// import { Component, inject } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-// import { Router } from '@angular/router';
-//
-// import { Product } from '../../../core/models/product.model';
-// import { generateMockProducts } from '../../shop/data/mock-products';
-//
-// @Component({
-//   standalone: true,
-//   selector: 'app-admin-products',
-//   imports: [CommonModule],
-//   templateUrl: './admin-products.component.html',
-//   styleUrls: ['./admin-products.component.scss']
-// })
-// export class AdminProductsComponent {
-//
-//   router = inject(Router);
-//
-//   products: Product[] = generateMockProducts(35);
-//
-//   // Lưu trạng thái trước khi block (key = productId)
-//   private previousStatus = new Map<number, Product['status']>();
-//
-//   // Phân trang
-//   page = 1;
-//   pageSize = 15;
-//
-//   get total() { return this.products.length; }
-//   get totalPages() { return Math.ceil(this.total / this.pageSize); }
-//
-//   get paginatedProducts() {
-//     const start = (this.page - 1) * this.pageSize;
-//     return this.products.slice(start, start + this.pageSize);
-//   }
-//
-//   // ==================== BLOCK / UNBLOCK LOGIC ====================
-//   toggleBlock(productId: number) {
-//     const product = this.products.find(p => p.id === productId);
-//     if (!product) return;
-//
-//     if (product.status === 'not_for_sale') {
-//       // === GỠ BLOCK ===
-//       const oldStatus = this.previousStatus.get(productId) || 'available';
-//       product.status = oldStatus;
-//       this.previousStatus.delete(productId);   // Xóa khỏi bộ nhớ tạm
-//
-//       alert(`Đã gỡ block sản phẩm #${productId}. Trạng thái cũ: ${this.getStatusLabel(oldStatus)}`);
-//     } else {
-//       // === BLOCK ===
-//       this.previousStatus.set(productId, product.status);  // Lưu trạng thái cũ
-//       product.status = 'not_for_sale';
-//
-//       alert(`Đã block sản phẩm #${productId}`);
-//     }
-//   }
-//
-//   getStatusLabel(status: string): string {
-//     switch (status) {
-//       case 'available': return 'Còn hàng';
-//       case 'sold': return 'Đã bán';
-//       case 'reserved': return 'Đặt trước';
-//       case 'not_for_sale': return 'Đã block';
-//       default: return status;
-//     }
-//   }
-//
-//   // Pagination ...
-//   nextPage() { if (this.page < this.totalPages) this.page++; }
-//   prevPage() { if (this.page > 1) this.page--; }
-//   changePageSize(size: number) {
-//     this.pageSize = size;
-//     this.page = 1;
-//   }
-//
-//   protected readonly Math = Math;
-// }

@@ -1,18 +1,19 @@
 import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Order } from '../../../core/models/order.model';
 import { OrderService } from '../../../core/services/order.service';
+
 // CheckoutService  → build order + validate
 
 @Injectable({
   providedIn: 'root'
 })
 export class CheckoutService {
-
   private orderService = inject(OrderService);
 
-  // ✅ build order
+  // ✅ build order (for local preview/fallback)
   buildOrder(form: any, items: any[], total: number): Order {
-
     return {
       id: Date.now(),
       items,
@@ -25,18 +26,26 @@ export class CheckoutService {
       address: form.address,
       note: form.note
     };
-
   }
 
-  // ✅ place order (orchestrator)
-  placeOrder(order: Order) {
-
-    // 👉 sau này gọi API ở đây
-    // await http.post('/orders')
-
-    this.orderService.createOrder(order);
-
-    return order;
+  // ✅ place order via backend checkout API
+  placeOrder(form: {
+    customerName: string;
+    phone: string;
+    address: string;
+    note?: string;
+  }): Observable<Order | null> {
+    return this.orderService.checkout(form).pipe(
+      map((createdOrders) => {
+        if (!createdOrders || createdOrders.length === 0) {
+          return null;
+        }
+        return createdOrders[0];
+      })
+    );
   }
-
+  // ✅ create VNPay URL
+  createVNPayUrl(orderId: number): Observable<any> {
+    return this.orderService.createVNPayUrl(orderId);
+  }
 }

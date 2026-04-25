@@ -1,4 +1,6 @@
 export interface CartItem {
+  cartItemId?: number;
+
   productId: number;
 
   name: string;
@@ -10,5 +12,4 @@ export interface CartItem {
   shopName: string;
 
   quantity: number;
-
 }

@@ -1,19 +1,30 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
 import { Order } from '../models/order.model';
 import { OrderAction } from '../config/order-action.type';
 import { ORDER_ACTIONS } from '../config/order-action.config';
+
+export interface CheckoutRequestPayload {
+  customerName: string;
+  phone: string;
+  address: string;
+  note?: string;
+  paymentMethod?: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderService {
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8080/gupet/api/v1/orders';
 
   private _orders = signal<Order[]>([]);
   orders = this._orders.asReadonly();
 
   constructor() {
     const saved = localStorage.getItem('orders');
-
     if (saved) {
       this._orders.set(JSON.parse(saved));
     }
@@ -23,23 +34,78 @@ export class OrderService {
     localStorage.setItem('orders', JSON.stringify(this._orders()));
   }
 
+  private mapApiOrderToOrderModel(apiOrder: any): Order {
+    return {
+      id: Number(apiOrder?.id ?? Date.now()),
+      items: (apiOrder?.items || []).map((i: any) => ({
+        productId: i?.petId || i?.productId || 0,
+        name: i?.petName || i?.name || 'Pet',
+        price: Number(i?.unitPrice || i?.price || 0),
+        quantity: Number(i?.quantity || 1),
+        image: i?.petImage || i?.image || ''
+      })),
+      totalAmount: Number(apiOrder?.totalAmount || 0),
+      status: (apiOrder?.status || 'pending').toLowerCase(),
+      createdAt: apiOrder?.createdAt ? new Date(apiOrder.createdAt) : new Date(),
+      customerName: apiOrder?.customerName || '',
+      phone: apiOrder?.phone || '',
+      address: apiOrder?.address || '',
+      note: apiOrder?.note || ''
+    };
+  }
+
+  checkout(payload: CheckoutRequestPayload): Observable<Order[]> {
+    return this.http.post<any[]>(`${this.apiUrl}/checkout`, payload, { withCredentials: true }).pipe(
+      tap((apiOrders) => {
+        const mapped = (apiOrders || []).map((o) => this.mapApiOrderToOrderModel(o));
+        this._orders.update((prev) => [...mapped, ...prev]);
+        this.save();
+      })
+    );
+  }
+
+  createVNPayUrl(orderId: number): Observable<any> {
+    return this.http.post<any>(`http://localhost:8080/gupet/api/v1/payments/vnpay/create-url?orderId=${orderId}`, {}, { withCredentials: true });
+  }
+
+  loadMyOrders(): Observable<Order[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/my-orders`, { withCredentials: true }).pipe(
+      tap((apiOrders) => {
+        const mapped = (apiOrders || []).map((o) => this.mapApiOrderToOrderModel(o));
+        this._orders.set(mapped);
+        this.save();
+      })
+    );
+  }
+
+  loadShopOrders(): Observable<Order[]> {
+    return this.http.get<any[]>(`http://localhost:8080/gupet/api/v1/shop/orders`, { withCredentials: true }).pipe(
+      tap((apiOrders) => {
+        const mapped = (apiOrders || []).map((o) => this.mapApiOrderToOrderModel(o));
+        this._orders.set(mapped);
+        this.save();
+      })
+    );
+  }
+
+  updateShopOrderStatus(orderId: number, status: string): Observable<any> {
+    return this.http.put(`http://localhost:8080/gupet/api/v1/shop/orders/${orderId}/status`, { status }, { withCredentials: true });
+  }
+
   createOrder(order: Order) {
-    this._orders.update(list => [...list, order]);
+    this._orders.update((list) => [...list, order]);
     this.save();
   }
 
   getById(id: number) {
-    return () => this._orders().find(o => o.id === id);
+    return () => this._orders().find((o) => o.id === id);
   }
 
-  // 🔥 CORE FUNCTION
   performAction(id: number, action: OrderAction) {
-
     const config = ORDER_ACTIONS[action];
 
-    this._orders.update(list =>
-      list.map(order => {
-
+    this._orders.update((list) =>
+      list.map((order) => {
         if (order.id !== id) return order;
 
         if (!config.canExecute(order)) {
@@ -48,11 +114,8 @@ export class OrderService {
         }
 
         const updated = config.execute(order);
-
         console.log('✅ Action:', action, updated);
-
         return updated;
-
       })
     );
 
@@ -63,141 +126,4 @@ export class OrderService {
     this._orders.set([]);
     localStorage.removeItem('orders');
   }
-
 }
-
-
-
-// import { Injectable, signal, computed, effect } from '@angular/core';
-// import {FulfillmentStatus, Order, OrderStatus} from '../models/order.model';
-// import { ORDER_ACTIONS } from '../config/order-action.config';
-// import { OrderAction } from '../config/order-action.type';
-//
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class OrderService {
-//
-//   private _orders = signal<Order[]>([]);
-//
-//   orders = this._orders;
-//
-//   // ===== FILTER =====
-//   getOrdersByStatus(status: string) {
-//     return computed(() =>
-//       this._orders().filter(o => o.status === status)
-//     );
-//   }
-//
-//   // ===== CREATE ORDER =====
-//   createOrder(order: Order) {
-//     this._orders.update(list => [order, ...list]);
-//   }
-//
-//   // ===== UPDATE STATUS =====
-//   // updateStatus(id: number, status: Order['status']) {
-//   //
-//   //   this._orders.update(list =>
-//   //     list.map(o =>
-//   //       o.id === id ? { ...o, status } : o
-//   //     )
-//   //   );
-//   //
-//   // }
-//   // Khi shop confirm
-//   updateStatus(id: number, status: OrderStatus) {
-//
-//     this._orders.update(list =>
-//       list.map(o => {
-//
-//         if (o.id !== id) return o;
-//
-//         if (status === 'confirmed') {
-//           return {
-//             ...o,
-//             status,
-//             fulfillmentStatus: 'pending' // Trạng thái bên operator bắt đầu từ pending
-//           };
-//         }
-//
-//         return { ...o, status };
-//
-//       })
-//     );
-//
-//   }
-//
-//   // ===== GET BY ID =====
-//   getById(id: number) {
-//     return computed(() =>
-//       this._orders().find(o => o.id === id)
-//     );
-//   }
-//   // clear() {
-//   //   this._orders.set([]);
-//   //   localStorage.removeItem('orders');
-//   // }
-//
-//   updateFulfillmentStatus(id: number, status: FulfillmentStatus) {
-//     this._orders.update(list =>
-//       list.map(o =>
-//         o.id === id ? { ...o, fulfillmentStatus: status } : o
-//       )
-//     );
-//   }
-//
-//
-//   // ===== LOCAL STORAGE =====
-//   constructor() {
-//
-//     const saved = localStorage.getItem('orders');
-//     if (saved) {
-//       this._orders.set(JSON.parse(saved));
-//     }
-//
-//     effect(() => {
-//       localStorage.setItem('orders', JSON.stringify(this._orders()));
-//     });
-//   }
-//
-//   // AUTO FALLBACK NẾU THIẾU FIELD
-//   // constructor() {
-//   //   const saved = localStorage.getItem('orders');
-//   //
-//   //   if (saved) {
-//   //     const parsed = JSON.parse(saved).map((o: any) => ({
-//   //       ...o,
-//   //       fulfillmentStatus: o.fulfillmentStatus || undefined
-//   //     }));
-//   //
-//   //     this._orders.set(parsed);
-//   //   }
-//   //   console.log('Operator Orders:', this.orders());
-//   // }
-//   performAction(id: number, action: OrderAction) {
-//
-//     const config = ORDER_ACTIONS[action];
-//
-//     this._orders.update(list =>
-//       list.map(order => {
-//
-//         if (order.id !== id) return order;
-//
-//         // 🔥 VALIDATION
-//         if (!config.canExecute(order)) {
-//           console.warn('❌ Invalid action:', action, order);
-//           return order;
-//         }
-//
-//         // 🔥 APPLY TRANSITION
-//         const updated = config.execute(order);
-//
-//         console.log('✅ Action:', action, updated);
-//
-//         return updated;
-//
-//       })
-//     );
-//
-//   }
-// }

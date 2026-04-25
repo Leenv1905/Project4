@@ -1,8 +1,8 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import {AuthService} from '../../../../../core/services/auth.service';
-
+import { AuthService } from '../../../../../core/services/auth.service';
+import { UserProfile, UserProfileService } from '../../../../../core/services/user-profile.service';
 
 @Component({
   standalone: true,
@@ -11,24 +11,30 @@ import {AuthService} from '../../../../../core/services/auth.service';
   templateUrl: './my-shop-info.component.html',
   styleUrls: ['./my-shop-info.component.scss']
 })
-export class MyShopInfoComponent {
+export class MyShopInfoComponent implements OnInit {
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly profileService = inject(UserProfileService);
 
-  auth = inject(AuthService);
-  router = inject(Router);
+  readonly user = this.auth.user;
+  readonly profile = signal<UserProfile | null>(null);
 
-  // Lấy thông tin user từ AuthService (vì user có thể vừa là buyer vừa là shop)
-  user = this.auth.user;
-
-  // Fake dữ liệu cho Shop Info
-  shopInfo = signal({
-    shopName: 'Pet Kingdom Official',
-    createdAt: '12/03/2025',
-    description: 'Cửa hàng chuyên cung cấp thú cưng thuần chủng, thức ăn chất lượng cao và dịch vụ chăm sóc pet uy tín tại Hà Nội.',
-    avatar: 'https://i.pravatar.cc/300?u=shop123' // Avatar của shop (có thể khác với user avatar)
-  });
+  ngOnInit() {
+    this.profileService.getMyProfile().subscribe({
+      next: (profile) => {
+        this.profile.set(profile);
+        this.auth.updateLocalUser({
+          name: profile.name,
+          email: profile.email,
+          phone: profile.phone,
+          address: profile.address,
+          avatar: profile.avatarUrl
+        });
+      }
+    });
+  }
 
   editShopInfo() {
-    // Điều hướng đến trang chỉnh sửa thông tin shop (sau này bạn sẽ tạo)
     this.router.navigate(['/my-shop'], {
       queryParams: { tab: 'edit-shop' }
     });

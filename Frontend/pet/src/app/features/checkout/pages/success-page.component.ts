@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -11,17 +11,30 @@ import { OrderService } from '../../../core/services/order.service';
   templateUrl: './success-page.component.html',
   styleUrls: ['./success-page.component.scss']
 })
-export class SuccessPageComponent {
-
+export class SuccessPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private orderService = inject(OrderService);
 
-  order = computed(() => {
-    const id = Number(this.route.snapshot.queryParamMap.get('id'));
-    if (!id) return null;
+  private orderId = 0;
+  isLoading = false;
 
-    return this.orderService.getById(id)();
+  ngOnInit(): void {
+    this.orderId = Number(this.route.snapshot.queryParamMap.get('id')) || 0;
+    this.isLoading = true;
+    this.orderService.loadMyOrders().subscribe({
+      next: () => {
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  order = computed(() => {
+    if (!this.orderId) return null;
+    return this.orderService.getById(this.orderId)();
   });
 
   goToHome() {

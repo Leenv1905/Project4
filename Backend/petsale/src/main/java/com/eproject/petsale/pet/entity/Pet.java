@@ -35,6 +35,20 @@ public class Pet {
     @Column(name = "trust_score")
     private Integer trustScore;
 
+    private Integer age;
+    private String color;
+    private String gender;
+
+    @Column(name = "is_neutered")
+    private Boolean isNeutered;
+
+    @Column(name = "is_vaccinated")
+    private Boolean isVaccinated;
+
+    private String status;
+
+    private Double weight;
+
     @Column(name = "is_health_verified")
     private Boolean isHealthVerified;
 

@@ -1,45 +1,58 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Product } from '../../../core/models/product.model';
-import { generateMockProducts } from '../../shop/data/mock-products'; // ← Dùng hàm generate
 import { CartService } from '../../../core/services/cart.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { ShopService } from '../../shop/services/shop.service';
 
 @Component({
   standalone: true,
   selector: 'app-product-detail',
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule, MatSnackBarModule],
   templateUrl: './product-detail.component.html',
   styleUrls: ['./product-detail.component.scss']
 })
 export class ProductDetailComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly cart = inject(CartService);
+  private readonly auth = inject(AuthService);
+  private readonly shop = inject(ShopService);
+  private readonly snackBar = inject(MatSnackBar);
 
-  route = inject(ActivatedRoute);
-  cart = inject(CartService);
-
-  product = signal<Product | null>(null);
-  selectedImageIndex = signal(0);
-
-  // Danh sách mock đầy đủ
-  private allProducts = generateMockProducts(30);   // Tạo 30 sản phẩm
+  readonly product = signal<Product | null>(null);
+  readonly selectedImageIndex = signal(0);
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-
-    const found = this.allProducts.find(p => p.id === id);
-
-    if (found) {
-      this.product.set(found);
-    } else {
-      console.warn(`Không tìm thấy sản phẩm với id = ${id}`);
+    if (!id) {
+      return;
     }
+
+    const cached = this.shop.getProductById(id);
+    if (cached) {
+      this.product.set(cached);
+      return;
+    }
+
+    this.shop.getPublicPets().subscribe({
+      next: (products) => {
+        const found = products.find((product) => product.id === id) || null;
+        this.product.set(found);
+      }
+    });
   }
 
   get currentImage(): string {
-    const p = this.product();
-    if (!p || p.images.length === 0) return '';
-    return p.images[this.selectedImageIndex()];
+    const product = this.product();
+    if (!product || product.images.length === 0) {
+      return '';
+    }
+
+    return product.images[this.selectedImageIndex()];
   }
 
   selectImage(index: number) {
@@ -47,104 +60,87 @@ export class ProductDetailComponent implements OnInit {
   }
 
   addToCart() {
-    const p = this.product();
-    if (!p || p.status !== 'available') return;
+    if (!this.auth.isAuthenticated()) {
+      this.snackBar.open('Vui lòng đăng nhập để thực hiện chức năng này', 'Đóng', { duration: 5000 });
+      this.auth.openLogin();
+      return;
+    }
+
+    const product = this.product();
+    if (!product || product.status !== 'available') {
+      return;
+    }
 
     this.cart.addToCart({
-      productId: p.id,
-      name: p.name,
-      price: p.price,
+      productId: product.id,
+      name: product.name,
+      price: product.price,
       quantity: 1,
-      image: p.images[0] || '',
-      shopName: p.shopName
+      image: product.images[0] || '',
+      shopName: product.shopName
+    }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.snackBar.open('Đã thêm vào giỏ hàng!', 'Đóng', { duration: 3000 });
+        } else {
+          this.snackBar.open(res.message, 'Đóng', { duration: 5000 });
+        }
+      },
+      error: () => {
+        this.snackBar.open('Lỗi khi thêm vào giỏ hàng', 'Đóng', { duration: 5000 });
+      }
+    });
+  }
+
+  buyNow() {
+    if (!this.auth.isAuthenticated()) {
+      this.snackBar.open('Vui lòng đăng nhập để thực hiện chức năng này', 'Đóng', { duration: 5000 });
+      this.auth.openLogin();
+      return;
+    }
+
+    const product = this.product();
+    if (!product || product.status !== 'available') {
+      return;
+    }
+
+    this.cart.addToCart({
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.images[0] || '',
+      shopName: product.shopName
+    }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.router.navigate(['/checkout']);
+        } else {
+          this.snackBar.open(res.message, 'Đóng', { duration: 5000 });
+        }
+      },
+      error: () => {
+        this.snackBar.open('Lỗi khi xử lý mua ngay', 'Đóng', { duration: 5000 });
+      }
     });
   }
 
   getStatusLabel(status: string): string {
     switch (status) {
-      case 'available': return 'Còn hàng';
-      case 'sold': return 'Đã bán';
-      case 'reserved': return 'Đã đặt trước';
-      case 'not_for_sale': return 'Không bán';
-      default: return status;
+      case 'available':
+        return 'Con hang';
+      case 'sold':
+        return 'Da ban';
+      case 'reserved':
+        return 'Da dat truoc';
+      case 'not_for_sale':
+        return 'Khong ban';
+      default:
+        return status;
     }
   }
 
   getGenderLabel(gender: 'male' | 'female'): string {
-    return gender === 'male' ? 'Đực' : 'Cái';
+    return gender === 'male' ? 'Duc' : 'Cai';
   }
 }
-
-// import { Component, inject, OnInit, signal } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-// import { ActivatedRoute } from '@angular/router';
-//
-// import { Product } from '../../../core/models/product.model';
-// import { MOCK_PRODUCTS } from '../../shop/data/mock-products'; // tạm dùng mock
-// import { CartService } from '../../../core/services/cart.service';
-//
-// @Component({
-//   standalone: true,
-//   selector: 'app-product-detail',
-//   imports: [CommonModule],
-//   templateUrl: './product-detail.component.html',
-//   styleUrls: ['./product-detail.component.scss']
-// })
-// export class ProductDetailComponent implements OnInit {
-//
-//   route = inject(ActivatedRoute);
-//   cart = inject(CartService);
-//
-//   product = signal<Product | null>(null);
-//   selectedImage = signal<string>('');
-//   quantity = signal<number>(1);
-//
-//   ngOnInit() {
-//     const id = Number(this.route.snapshot.paramMap.get('id'));
-//
-//     // mock mapping (sau này replace API)
-//     const found = MOCK_PRODUCTS.find(p => p.id === id);
-//
-//     if (found) {
-//       const mapped: Product = {
-//         id: found.id,
-//         name: found.name,
-//         description: 'Chó khỏe mạnh, đã tiêm phòng đầy đủ.',
-//         price: found.price,
-//         images: [found.image],
-//         breed: found.breed,
-//         dogType: found.dogType,
-//         shopName: found.shopName
-//       };
-//
-//       this.product.set(mapped);
-//       this.selectedImage.set(mapped.images[0]);
-//     }
-//   }
-//
-//   selectImage(img: string) {
-//     this.selectedImage.set(img);
-//   }
-//
-//   increaseQty() {
-//     this.quantity.update(q => q + 1);
-//   }
-//
-//   decreaseQty() {
-//     this.quantity.update(q => Math.max(1, q - 1));
-//   }
-//
-//   addToCart() {
-//     const p = this.product();
-//     if (!p) return;
-//
-//     this.cart.addToCart({
-//       productId: p.id,
-//       name: p.name,
-//       price: p.price,
-//       image: p.images[0],
-//       shopName: p.shopName,
-//       quantity: this.quantity()
-//     });
-//   }
-// }

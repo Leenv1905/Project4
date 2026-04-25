@@ -12,6 +12,10 @@ import com.eproject.petsale.user.entity.Role;
 import com.eproject.petsale.user.entity.User;
 import com.eproject.petsale.user.repository.RoleRepository;
 import com.eproject.petsale.user.repository.UserRepository;
+import com.eproject.petsale.auth.entity.OtpVerification;
+import com.eproject.petsale.auth.entity.SsoAccount;
+import com.eproject.petsale.auth.repository.OtpVerificationRepository;
+import com.eproject.petsale.auth.repository.SsoAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,6 +45,19 @@ public class AuthService {
     private JwtUtil jwtUtil;
     @Autowired
     private UserMapperImpl userMapperImpl;
+
+    @Autowired
+    private GoogleAuthService googleAuthService;
+
+    @Autowired
+    private EmailService emailService;
+
+
+    @Autowired
+    private SsoAccountRepository ssoAccountRepository;
+
+    @Autowired
+    private OtpVerificationRepository otpVerificationRepository;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -112,13 +129,19 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AuthException("User not found"));
 
+        System.out.println("DEBUG: Login attempt for email: " + request.getEmail());
+        System.out.println("DEBUG: Incoming password: " + request.getPassword());
+        System.out.println("DEBUG: Stored hash: " + user.getPasswordHash());
+
         boolean checkPassword = passwordEncoder.matches(
                 request.getPassword(),
                 user.getPasswordHash());
 
         if (!checkPassword) {
+            System.out.println("DEBUG: Password match FAILED");
             throw new AuthException("Password incorrect");
         }
+        System.out.println("DEBUG: Password match SUCCESS");
 
         // KIỂM TRA AN TOÀN: Tránh lỗi NullPointerException nếu user không có role
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
@@ -191,5 +214,93 @@ public class AuthService {
     public String getEmailFromAccessToken(String accessToken) {
         jwtUtil.validateToken(accessToken);
         return jwtUtil.extractEmail(accessToken);
+    }
+
+    @Transactional
+    public AuthResponse loginWithGoogle(String idToken) throws Exception {
+        com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload payload = googleAuthService.verifyToken(idToken);
+        String email = payload.getEmail();
+        String name = (String) payload.get("name");
+        String googleId = payload.getSubject();
+
+        User user = userRepository.findByEmail(email).orElseGet(() -> {
+            User newUser = new User();
+            newUser.setEmail(email);
+            newUser.setName(name);
+            Role role = roleRepository.findByName("USER");
+            if (role == null) {
+                role = new Role();
+                role.setName("USER");
+                roleRepository.save(role);
+            }
+            newUser.getRoles().add(role);
+            return userRepository.save(newUser);
+        });
+
+        // Link SSO account if not linked
+        if (ssoAccountRepository.findByProviderAndProviderUserId("GOOGLE", googleId).isEmpty()) {
+            SsoAccount sso = new SsoAccount();
+            sso.setProvider("GOOGLE");
+            sso.setProviderUserId(googleId);
+            sso.setUser(user);
+            ssoAccountRepository.save(sso);
+        }
+
+        String roleNames = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.joining(","));
+
+        String accessToken = jwtUtil.generateToken(user.getEmail(), roleNames);
+        String refreshToken = UUID.randomUUID().toString();
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+
+        AuthResponse response = new AuthResponse();
+        response.setUserId(user.getId());
+        response.setName(user.getName());
+        response.setRole(roleNames);
+        response.setAccessToken(accessToken);
+        response.setRefreshToken(refreshToken);
+
+        return response;
+    }
+
+    @Transactional
+    public void forgotPassword(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthException("User not found"));
+
+        String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+        
+        OtpVerification otpEntry = otpVerificationRepository.findByUserIdAndOtpType(user.getId(), "FORGOT_PASSWORD")
+                .orElse(new OtpVerification());
+        
+        otpEntry.setUser(user);
+        otpEntry.setOtpCode(otp);
+        otpEntry.setOtpType("FORGOT_PASSWORD");
+        otpEntry.setExpiresAt(java.time.LocalDateTime.now().plusMinutes(15));
+        otpEntry.setVerified(false);
+        
+        otpVerificationRepository.save(otpEntry);
+        emailService.sendOtp(email, otp);
+    }
+
+    @Transactional
+    public void resetPassword(String email, String otp, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthException("User not found"));
+
+        OtpVerification otpEntry = otpVerificationRepository.findByUserIdAndOtpType(user.getId(), "FORGOT_PASSWORD")
+                .orElseThrow(() -> new AuthException("OTP not found"));
+
+        if (!otpEntry.getOtpCode().equals(otp) || otpEntry.getExpiresAt().isBefore(java.time.LocalDateTime.now())) {
+            throw new AuthException("Invalid or expired OTP");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        
+        otpEntry.setVerified(true);
+        otpVerificationRepository.save(otpEntry);
     }
 }

@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -15,17 +15,26 @@ import { VerificationModalComponent } from '../../../../../shared/verification-m
   templateUrl: './account-orders.component.html',
   styleUrls: ['./account-orders.component.scss']
 })
-export class AccountOrdersComponent {
+export class AccountOrdersComponent implements OnInit {
 
   orderService = inject(OrderService);
   router = inject(Router);
 
   orders = this.orderService.orders;
+  isLoading = signal(false);
 
   statuses = ORDER_STATUS_CONFIG;
   getStatusLabel = getStatusLabel;
 
   activeTab = signal<OrderStatus | 'all'>('all');
+
+  ngOnInit(): void {
+    this.isLoading.set(true);
+    this.orderService.loadMyOrders().subscribe({
+      next: () => this.isLoading.set(false),
+      error: () => this.isLoading.set(false)
+    });
+  }
 
   // Phân trang
   page = signal(1);

@@ -43,7 +43,8 @@
             </div>
 
             <!-- Main Form -->
-            <div class="form">
+            <!-- Main Form -->
+            <div class="form" *ngIf="!isForgotPassword">
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Email</mat-label>
                 <input matInput type="email" [(ngModel)]="email" placeholder="example@email.com">
@@ -68,6 +69,50 @@
                 <span *ngIf="!isLoading">Đăng nhập ngay</span>
                 <mat-icon *ngIf="!isLoading">arrow_forward</mat-icon>
                 <span *ngIf="isLoading">Đang xử lý...</span>
+              </button>
+            </div>
+
+            <!-- Forgot Password Form -->
+            <div class="form" *ngIf="isForgotPassword">
+              <p class="section-title">Khôi phục mật khẩu</p>
+
+              <div *ngIf="!otpSent">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Nhập Email của bạn</mat-label>
+                  <input matInput type="email" [(ngModel)]="forgotEmail" placeholder="example@email.com">
+                  <mat-icon matPrefix>email</mat-icon>
+                </mat-form-field>
+                <button mat-flat-button color="primary" class="submit-btn" (click)="sendOtp()" [disabled]="isLoading">
+                  <span>Gửi mã OTP</span>
+                </button>
+              </div>
+
+              <div *ngIf="otpSent">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Mã OTP</mat-label>
+                  <input matInput [(ngModel)]="otp" placeholder="123456">
+                  <mat-icon matPrefix>vpn_key</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Mật khẩu mới</mat-label>
+                  <input matInput type="password" [(ngModel)]="newPassword">
+                  <mat-icon matPrefix>lock</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Xác nhận mật khẩu mới</mat-label>
+                  <input matInput type="password" [(ngModel)]="confirmNewPassword">
+                  <mat-icon matPrefix>lock</mat-icon>
+                </mat-form-field>
+
+                <button mat-flat-button color="primary" class="submit-btn" (click)="verifyAndReset()" [disabled]="isLoading">
+                  <span>Đặt lại mật khẩu</span>
+                </button>
+              </div>
+
+              <button mat-button class="full-width" (click)="isForgotPassword = false; otpSent = false" style="margin-top: 10px;">
+                Quay lại đăng nhập
               </button>
             </div>
           </div>

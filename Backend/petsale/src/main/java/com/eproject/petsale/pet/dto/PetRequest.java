@@ -2,6 +2,8 @@ package com.eproject.petsale.pet.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -11,6 +13,7 @@ public class PetRequest {
     private String species;
     private String breed;
     private String description;
+    private BigDecimal price;
     private Integer minDailyTime;
     private Integer minLivingSpace;
     private Integer minActivityTime;

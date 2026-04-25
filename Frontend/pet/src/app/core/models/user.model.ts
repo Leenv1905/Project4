@@ -12,4 +12,5 @@ export interface User {
   address?: string;
   createdAt?: Date;
   status?: 'active' | 'inactive';
+  enabled?: boolean;
 }

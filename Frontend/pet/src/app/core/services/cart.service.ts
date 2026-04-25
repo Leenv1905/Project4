@@ -1,139 +1,137 @@
-import { Injectable, signal, computed, effect } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { CartItem } from '../models/cart-item.model';
+
+interface BackendCartItem {
+  id: number;
+  petId: number;
+  petName: string;
+  petImage: string;
+  price: number;
+  quantity: number;
+}
+
+interface BackendCartResponse {
+  id: number;
+  userId: number;
+  items: BackendCartItem[];
+  totalAmount: number;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8080/gupet/api/v1/cart';
 
   private _items = signal<CartItem[]>([]);
-
   items = this._items.asReadonly();
 
   total = computed(() =>
-    this._items().reduce((sum, item) => sum + item.price, 0)
+    this._items().reduce((sum, item) => sum + item.price * (item.quantity || 1), 0)
   );
 
-  itemCount = computed(() => this._items().length);
+  itemCount = computed(() =>
+    this._items().reduce((sum, item) => sum + (item.quantity || 1), 0)
+  );
 
   constructor() {
+    // ưu tiên load từ API; localStorage chỉ fallback
     const saved = localStorage.getItem('cart');
-    if (saved) this._items.set(JSON.parse(saved));
-
-    effect(() => {
-      localStorage.setItem('cart', JSON.stringify(this._items()));
-    });
+    if (saved) {
+      try {
+        this._items.set(JSON.parse(saved));
+      } catch {
+        this._items.set([]);
+      }
+    }
+    this.loadCart().subscribe();
   }
 
-  // Thêm vào giỏ (cho phép nhiều sản phẩm)
-  addToCart(newItem: CartItem): { success: boolean; message: string } {
-    const current = this._items();
+  private saveLocal() {
+    localStorage.setItem('cart', JSON.stringify(this._items()));
+  }
 
-    // Kiểm tra đã có sản phẩm này chưa
-    if (current.some(item => item.productId === newItem.productId)) {
-      return {
-        success: false,
-        message: 'Sản phẩm này đã có trong giỏ hàng'
-      };
-    }
-
-    this._items.update(items => [...items, newItem]);
-
+  private mapBackendItemToCartItem(item: BackendCartItem): CartItem {
     return {
-      success: true,
-      message: 'Đã thêm sản phẩm vào giỏ hàng'
+      cartItemId: Number(item.id),
+      productId: Number(item.petId),
+      name: item.petName || 'Pet',
+      image: item.petImage || '',
+      price: Number(item.price || 0),
+      shopName: '',
+      quantity: Number(item.quantity || 1)
     };
   }
 
+  private syncFromBackend(response: BackendCartResponse | null) {
+    const mapped = (response?.items || []).map((i) => this.mapBackendItemToCartItem(i));
+    this._items.set(mapped);
+    this.saveLocal();
+  }
+
+  loadCart(): Observable<CartItem[]> {
+    return this.http.get<BackendCartResponse>(this.apiUrl, { withCredentials: true }).pipe(
+      tap((res) => this.syncFromBackend(res)),
+      map((res) => (res?.items || []).map((i) => this.mapBackendItemToCartItem(i))),
+      catchError(() => {
+        return of(this._items());
+      })
+    );
+  }
+
+  addToCart(newItem: CartItem): Observable<{ success: boolean; message: string }> {
+    const payload = {
+      petId: newItem.productId,
+      quantity: newItem.quantity || 1
+    };
+
+    return this.http.post<any>(`${this.apiUrl}/add`, payload, { withCredentials: true }).pipe(
+      tap(() => {
+        this.loadCart().subscribe();
+      }),
+      map(() => ({
+        success: true,
+        message: 'Đã thêm sản phẩm vào giỏ hàng'
+      })),
+      catchError((err) => {
+        const message =
+          err?.error?.message ||
+          err?.error ||
+          'Không thể thêm vào giỏ hàng';
+        return of({
+          success: false,
+          message
+        });
+      })
+    );
+  }
+
   removeItem(productId: number) {
-    this._items.update(items => items.filter(i => i.productId !== productId));
+    const current = this._items();
+    const target = current.find((i) => i.productId === productId);
+
+    if (!target?.cartItemId) return;
+
+    this.http.delete(`${this.apiUrl}/${target.cartItemId}`, { withCredentials: true }).pipe(
+      tap(() => this.loadCart().subscribe()),
+      catchError(() => of(null))
+    ).subscribe();
   }
 
   clearCart() {
+    const items = [...this._items()];
+    if (items.length === 0) return;
+
+    // best-effort clear: remove từng item trên server nếu có thể
+    items.forEach((item) => {
+      this.removeItem(item.productId);
+    });
+
     this._items.set([]);
+    this.saveLocal();
   }
 }
-
-// import { Injectable, signal, computed, effect } from '@angular/core';
-// import { CartItem } from '../models/cart-item.model';
-//
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class CartService {
-//
-//   constructor() {
-//
-//     // Load từ localStorage
-//     const saved = localStorage.getItem('cart');
-//     if (saved) {
-//       this._items.set(JSON.parse(saved));
-//     }
-//
-//     // Lưu mỗi khi cart thay đổi
-//     effect(() => {
-//       localStorage.setItem('cart', JSON.stringify(this._items()));
-//     });
-//
-//   }
-//
-//   private _items = signal<CartItem[]>([]);
-//
-//   items = this._items;
-//
-//   total = computed(() =>
-//     this._items().reduce((sum, i) => sum + i.price * i.quantity, 0)
-//   );
-//
-//   totalCount = computed(() =>
-//     this._items().reduce((sum, i) => sum + i.quantity, 0)
-//   );
-//
-//   // ===== ADD =====
-//   addToCart(item: CartItem) {
-//
-//     this._items.update(items => {
-//
-//       const existing = items.find(i => i.productId === item.productId);
-//
-//       if (existing) {
-//         return items.map(i =>
-//           i.productId === item.productId
-//             ? { ...i, quantity: i.quantity + item.quantity }
-//             : i
-//         );
-//       }
-//
-//       return [...items, item];
-//     });
-//     alert('Đã thêm vào giỏ hàng');
-//     console.log('Cart:', this._items());
-//   }
-//
-//   // ===== REMOVE =====
-//   removeItem(productId: number) {
-//     this._items.update(items =>
-//       items.filter(i => i.productId !== productId)
-//     );
-//   }
-//
-//   // ===== UPDATE =====
-//   updateQuantity(productId: number, quantity: number) {
-//
-//     if (quantity <= 0) return;
-//
-//     this._items.update(items =>
-//       items.map(i =>
-//         i.productId === productId
-//           ? { ...i, quantity }
-//           : i
-//       )
-//     );
-//   }
-//
-//   // ===== CLEAR =====
-//   clearCart() {
-//     this._items.set([]);
-//   }
-//
-// }

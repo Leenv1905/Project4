@@ -1,8 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { afterNextRender, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ProductGroupComponent } from './product-group/product-group.component';
-import {Product} from '../../../../core/models/product.model';
+import { Product } from '../../../../core/models/product.model';
+import { inject } from '@angular/core';
+import { ShopService } from '../../../../features/shop/services/shop.service';
+
+const MOCK_PET_IMAGES = [
+  '/assets/cho1.jpg',
+  '/assets/cho2.jpg',
+  '/assets/cho3.jpg',
+  '/assets/cho4.jpg',
+  '/assets/cho5.jpg',
+  '/assets/cho21.jpg'
+];
 
 @Component({
   standalone: true,
@@ -13,11 +24,46 @@ import {Product} from '../../../../core/models/product.model';
 })
 export class ProductSectionComponent implements OnInit {
 
+  shop = inject(ShopService);
   groups: { title: string; products: Product[] }[] = [];
   error: string | null = null;
 
   ngOnInit(): void {
-    this.loadMockProducts();
+    afterNextRender(() => this.loadProducts());
+  }
+
+  private loadProducts() {
+    this.shop.getPublicPets().subscribe({
+      next: (pets) => {
+        if (pets.length > 0) {
+          this.groupProducts(pets);
+        } else {
+          this.loadMockProducts();
+        }
+      },
+      error: () => this.loadMockProducts()
+    });
+  }
+
+  private groupProducts(all: Product[]) {
+    this.groups = [
+      {
+        title: '🐶 Chó Cảnh Nổi Bật',
+        products: all.filter(p => p.species === 'Chó').slice(0, 4)
+      },
+      {
+        title: '🐱 Mèo Cảnh Dễ Thương',
+        products: all.filter(p => p.species === 'Mèo').slice(0, 4)
+      },
+      {
+        title: '🔥 Bán Chạy Nhất',
+        products: [...all].sort(() => Math.random() - 0.5).slice(0, 4)
+      },
+      {
+        title: '✨ Mới Cập Nhật',
+        products: [...all].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 4)
+      }
+    ];
   }
 
   private loadMockProducts() {
@@ -30,7 +76,7 @@ export class ProductSectionComponent implements OnInit {
         description: 'Thú cưng thuần chủng, sức khỏe tốt, đã tiêm vaccine đầy đủ.',
         price: 4500000 + Math.floor(Math.random() * 8000000),
         originalPrice: Math.random() > 0.7 ? 5500000 + Math.floor(Math.random() * 6000000) : undefined,
-        images: ['/assets/pets/pet-' + ((i % 6) + 1) + '.jpg'],
+        images: [MOCK_PET_IMAGES[i % MOCK_PET_IMAGES.length]],
         video: undefined,
         status: Math.random() > 0.8 ? 'sold' : 'available',
         species: i % 3 === 0 ? 'Mèo' : 'Chó',

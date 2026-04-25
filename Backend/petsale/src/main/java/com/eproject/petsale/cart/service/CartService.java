@@ -32,7 +32,7 @@ public class CartService {
                     Cart newCart = new Cart();
 
                     User user = userRepository.findById(userId)
-                            .orElseThrow(() -> new RuntimeException("User not found"));
+                            .orElseThrow(() -> new IllegalArgumentException("Người dùng không tồn tại"));
 
                     newCart.setUser(user);
 
@@ -41,7 +41,12 @@ public class CartService {
 
         // 2. check pet tồn tại
         Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new RuntimeException("Pet not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Pet not found"));
+
+        // 2.5 check pet status
+        if (pet.getStatus() == null || !pet.getStatus().equalsIgnoreCase("AVAILABLE")) {
+            throw new IllegalArgumentException("Thú cưng này không còn khả dụng để mua");
+        }
 
         // 3. check item đã tồn tại chưa
         Optional<CartItem> optionalItem =
@@ -50,7 +55,8 @@ public class CartService {
         if (optionalItem.isPresent()) {
             // tăng số lượng
             CartItem item = optionalItem.get();
-            item.setQuantity(item.getQuantity() + quantity);
+            int currentQty = item.getQuantity() != null ? item.getQuantity() : 0;
+            item.setQuantity(currentQty + quantity);
             cartItemRepository.save(item);
         } else {
             // tạo mới

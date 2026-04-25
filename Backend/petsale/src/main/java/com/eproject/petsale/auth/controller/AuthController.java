@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 @RestController
 @RequestMapping("gupet/v1/auth/user")
@@ -155,6 +158,54 @@ public class AuthController {
                 new ApiSuccessResponse<>(200, "Current user", data);
 
         return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<ApiSuccessResponse<AuthResponse>> googleLogin(
+            @RequestBody Map<String, String> payload,
+            HttpServletResponse response
+    ) throws Exception {
+        String idToken = payload.get("idToken");
+        AuthResponse data = authService.loginWithGoogle(idToken);
+
+        Cookie accessCookie = new Cookie("access_token", data.getAccessToken());
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(false);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(60 * 5);
+
+        Cookie refreshCookie = new Cookie("refresh_token", data.getRefreshToken());
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(false);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(60 * 60 * 24 * 7);
+
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
+
+        data.setAccessToken(null);
+        data.setRefreshToken(null);
+
+        ApiSuccessResponse<AuthResponse> res =
+                new ApiSuccessResponse<>(200, "Google login success", data);
+
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiSuccessResponse<String>> forgotPassword(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        authService.forgotPassword(email);
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "OTP sent to email", "SUCCESS"));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiSuccessResponse<String>> resetPassword(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String otp = payload.get("otp");
+        String newPassword = payload.get("newPassword");
+        authService.resetPassword(email, otp, newPassword);
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Password reset successfully", "SUCCESS"));
     }
 
 }

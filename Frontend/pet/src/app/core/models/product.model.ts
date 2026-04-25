@@ -26,6 +26,8 @@ export interface Product {
 
   createdAt: Date;
   updatedAt?: Date;
+  isVerified?: boolean;
+  trustScore?: number;
 }
 
 // export interface Product {

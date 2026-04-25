@@ -27,6 +27,18 @@
         [(ngModel)]="form.note">
       </textarea>
 
+      <h3>Phương thức thanh toán</h3>
+      <div class="payment-methods">
+        <label>
+          <input type="radio" name="paymentMethod" value="COD" [(ngModel)]="form.paymentMethod" />
+          Thanh toán khi nhận hàng (COD)
+        </label>
+        <label>
+          <input type="radio" name="paymentMethod" value="VNPAY" [(ngModel)]="form.paymentMethod" />
+          Thanh toán qua VNPAY
+        </label>
+      </div>
+
     </div>
 
     <!-- RIGHT: SUMMARY -->

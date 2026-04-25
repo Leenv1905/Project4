@@ -1,84 +1,63 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FormsModule } from '@angular/forms';
+import { AdminService } from '../../../core/services/admin.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { User } from '../../../core/models/user.model';
 
 @Component({
   standalone: true,
   selector: 'app-admin-users',
-  imports: [CommonModule],
+  imports: [CommonModule, MatSlideToggleModule, FormsModule],
   templateUrl: './admin-users.component.html',
   styleUrls: ['./admin-users.component.scss']
 })
-export class AdminUsersComponent {
+export class AdminUsersComponent implements OnInit {
+  private readonly adminService = inject(AdminService);
+  private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
-  router = inject(Router);
-
-  // Fake dữ liệu đầy đủ hơn
-  users: User[] = [
-    {
-      id: 1,
-      name: "James Johnson",
-      email: "james@petshop.com",
-      role: "admin",
-      age: 30,
-      phone: "123-456-7890",
-      avatar: "https://i.pravatar.cc/150?u=james",
-      status: "active"
-    },
-    {
-      id: 2,
-      name: "Maria Hernandez",
-      email: "maria@gmail.com",
-      role: "user",
-      age: 45,
-      phone: "555-312-8899",
-      avatar: "https://i.pravatar.cc/150?u=maria",
-      status: "active"
-    },
-    {
-      id: 3,
-      name: "Clara Mason",
-      email: "clara@enterprise.com",
-      role: "admin",
-      age: 38,
-      phone: "402-123-4567",
-      avatar: "https://i.pravatar.cc/150?u=clara",
-      status: "active"
-    },
-    {
-      id: 4,
-      name: "Derek White",
-      email: "derek@forum.com",
-      role: "operators",
-      age: 29,
-      phone: "212-321-6789",
-      avatar: "https://i.pravatar.cc/150?u=derek",
-      status: "active"
-    },
-    {
-      id: 5,
-      name: "Eva Carter",
-      email: "eva@blogging.com",
-      role: "user",
-      age: 33,
-      phone: "678-999-8212",
-      avatar: "https://i.pravatar.cc/150?u=eva",
-      status: "inactive"
-    }
-  ];
-
-  // Phân trang
+  users: User[] = [];
+  total = 0;
   page = 1;
   pageSize = 10;
+  loading = false;
 
-  get total() { return this.users.length; }
-  get totalPages() { return Math.ceil(this.total / this.pageSize); }
+  ngOnInit(): void {
+    this.loadUsers();
+  }
 
-  get paginatedUsers() {
-    const start = (this.page - 1) * this.pageSize;
-    return this.users.slice(start, start + this.pageSize);
+  loadUsers() {
+    this.loading = true;
+    this.adminService.getUsers(this.page - 1, this.pageSize).subscribe({
+      next: (res: any) => {
+        this.users = res.content || [];
+        this.total = res.totalElements || 0;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading users', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  get totalPages() {
+    return Math.max(1, Math.ceil(this.total / this.pageSize));
+  }
+
+  toggleUserStatus(user: User) {
+    const newStatus = !user.enabled;
+    this.adminService.updateUserStatus(user.id, newStatus).subscribe({
+      next: () => {
+        user.enabled = newStatus;
+      },
+      error: () => {
+        this.toast.error('Không thể cập nhật trạng thái người dùng.');
+      }
+    });
   }
 
   createUser() {
@@ -86,7 +65,7 @@ export class AdminUsersComponent {
   }
 
   viewUser(id: number) {
-    alert(`Xem chi tiết user #${id}`);
+    this.router.navigate(['/admin/users/edit', id]);
   }
 
   editUser(id: number) {
@@ -94,23 +73,36 @@ export class AdminUsersComponent {
   }
 
   deleteUser(id: number) {
-    if (confirm(`Xóa user #${id}?`)) {
-      this.users = this.users.filter(u => u.id !== id);
-      alert('Đã xóa user!');
+    if (!confirm(`Ban co chac muon xoa user #${id}?`)) {
+      return;
     }
+
+    this.adminService.deleteUser(id).subscribe({
+      next: () => this.loadUsers(),
+      error: () => {
+        this.toast.error('Không thể xóa người dùng.');
+      }
+    });
   }
 
   nextPage() {
-    if (this.page < this.totalPages) this.page++;
+    if (this.page < this.totalPages) {
+      this.page++;
+      this.loadUsers();
+    }
   }
 
   prevPage() {
-    if (this.page > 1) this.page--;
+    if (this.page > 1) {
+      this.page--;
+      this.loadUsers();
+    }
   }
 
-  changePageSize(size: number) {
-    this.pageSize = size;
+  changePageSize(size: string) {
+    this.pageSize = parseInt(size, 10);
     this.page = 1;
+    this.loadUsers();
   }
 
   protected readonly Math = Math;

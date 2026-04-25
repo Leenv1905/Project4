@@ -112,6 +112,19 @@
 			<version>${mapstruct.version}</version>
 		</dependency>
 
+		<!-- Google API Client for verifying OAuth2 tokens -->
+		<dependency>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+
+		<!-- Spring Boot Mail for sending OTP -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

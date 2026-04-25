@@ -1,0 +1,24 @@
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { ToastService } from '../services/toast.service';
+
+export const managementGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const toast = inject(ToastService);
+  const router = inject(Router);
+
+  if (!auth.isAuthenticated()) {
+    auth.openLogin();
+    router.navigate(['/']);
+    return false;
+  }
+
+  if (auth.hasAnyRole(['admin', 'operators'])) {
+    return true;
+  }
+
+  toast.error('Bạn không có quyền truy cập khu vực quản lý');
+  router.navigate(['/']);
+  return false;
+};

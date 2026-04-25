@@ -10,9 +10,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { AuthService } from '../../../../core/services/auth.service';
-import { MatOption } from '@angular/material/core';
-import { MatSelect } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { SocialAuthService, GoogleLoginProvider } from '@abacritt/angularx-social-login';
+import { hasGoogleLogin } from '../../../../app.config';
 
 @Component({
   standalone: true,
@@ -26,14 +27,14 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatFormFieldModule,
     MatCheckboxModule,
-    MatOption,
-    MatSelect,
-    MatIconModule
+    MatIconModule,
+    MatSnackBarModule
   ],
   templateUrl: './user-modal.component.html',
   styleUrls: ['./user-modal.component.scss']
 })
 export class UserModalComponent {
+  readonly hasGoogleLogin = hasGoogleLogin;
   tabIndex = 0;
 
   // Login
@@ -55,11 +56,23 @@ export class UserModalComponent {
   hideConfirmPassword = true;
   isLoading = false;
 
-  constructor(public auth: AuthService) {}
+  // Forgot Password
+  isForgotPassword = false;
+  forgotEmail = '';
+  otp = '';
+  newPassword = '';
+  confirmNewPassword = '';
+  otpSent = false;
+
+  constructor(
+    public auth: AuthService,
+    private socialAuth: SocialAuthService,
+    private snackBar: MatSnackBar
+  ) {}
 
   login() {
     if (!this.email || !this.password) {
-      alert('Vui lòng nhập email và mật khẩu');
+      this.snackBar.open('Vui lòng nhập email và mật khẩu', 'Đóng', { duration: 3000 });
       return;
     }
 
@@ -72,18 +85,22 @@ export class UserModalComponent {
       error: (err) => {
         this.isLoading = false;
         console.error('Lỗi đăng nhập:', err);
-        alert('Sai tài khoản hoặc mật khẩu');
+        const message =
+          err?.error?.message ||
+          err?.error ||
+          'Sai tài khoản hoặc mật khẩu';
+        this.snackBar.open(message, 'Đóng', { duration: 5000 });
       }
     });
   }
 
   register() {
     if (!this.name || !this.regEmail || !this.regPassword) {
-      alert('Vui lòng điền đầy đủ họ tên, email và mật khẩu!');
+      this.snackBar.open('Vui lòng điền đầy đủ họ tên, email và mật khẩu!', 'Đóng', { duration: 5000 });
       return;
     }
     if (this.regPassword !== this.confirmPassword) {
-      alert('Mật khẩu xác nhận không khớp!');
+      this.snackBar.open('Mật khẩu xác nhận không khớp!', 'Đóng', { duration: 5000 });
       return;
     }
 
@@ -100,7 +117,7 @@ export class UserModalComponent {
       next: (res) => {
         this.isLoading = false;
         if (res && res.status === 200) {
-          alert('Đăng ký thành công! Vui lòng đăng nhập.');
+          this.snackBar.open('Đăng ký thành công! Vui lòng đăng nhập.', 'Đóng', { duration: 5000 });
           this.tabIndex = 0;
           this.email = payload.email;
           this.password = '';
@@ -110,35 +127,111 @@ export class UserModalComponent {
           this.phone = '';
           this.address = '';
         } else {
-          alert('Đăng ký thất bại: ' + (res?.message || 'Lỗi server'));
+          this.snackBar.open('Đăng ký thất bại: ' + (res?.message || 'Lỗi server'), 'Đóng', { duration: 5000 });
         }
       },
       error: (err) => {
         this.isLoading = false;
         console.error('Lỗi đăng ký:', err);
-        alert('Đăng ký thất bại hoặc email đã tồn tại!');
+        const message =
+          err?.error?.message ||
+          err?.error ||
+          'Đăng ký thất bại hoặc email đã tồn tại!';
+        this.snackBar.open(message, 'Đóng', { duration: 5000 });
       }
     });
   }
 
   loginWithGoogle() {
-    alert('Đăng nhập với Google (chưa triển khai)');
+    if (!this.hasGoogleLogin) {
+      this.snackBar.open('Google login chua duoc cau hinh.', 'Đóng', { duration: 5000 });
+      return;
+    }
+
+    this.isLoading = true;
+    this.socialAuth.signIn(GoogleLoginProvider.PROVIDER_ID).then((user: any) => {
+      this.auth.loginWithGoogle(user.idToken).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.auth.navigateAfterLogin();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Lỗi đăng nhập Google:', err);
+          this.snackBar.open('Đăng nhập Google thất bại', 'Đóng', { duration: 5000 });
+        }
+      });
+    }).catch((err: any) => {
+      this.isLoading = false;
+      console.error('Lỗi SocialAuth:', err);
+    });
   }
 
   loginWithFacebook() {
-    alert('Đăng nhập với Facebook (chưa triển khai)');
+    this.snackBar.open('Đăng nhập với Facebook (chưa triển khai)', 'Đóng', { duration: 3000 });
   }
 
   registerWithGoogle() {
-    alert('Đăng ký với Google (chưa triển khai)');
+    this.snackBar.open('Đăng ký với Google (chưa triển khai)', 'Đóng', { duration: 3000 });
   }
 
   registerWithFacebook() {
-    alert('Đăng ký với Facebook (chưa triển khai)');
+    this.snackBar.open('Đăng ký với Facebook (chưa triển khai)', 'Đóng', { duration: 3000 });
   }
 
   forgotPassword(event: Event) {
     event.preventDefault();
-    alert('Chức năng quên mật khẩu chưa triển khai');
+    this.isForgotPassword = true;
+  }
+
+  sendOtp() {
+    if (!this.forgotEmail) {
+      this.snackBar.open('Vui lòng nhập email', 'Đóng', { duration: 3000 });
+      return;
+    }
+    this.isLoading = true;
+    this.auth.forgotPassword(this.forgotEmail).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.otpSent = true;
+        this.snackBar.open('Mã OTP đã được gửi về email của bạn', 'Đóng', { duration: 5000 });
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.snackBar.open('Gửi OTP thất bại: ' + (err?.error?.message || 'Lỗi server'), 'Đóng', { duration: 5000 });
+      }
+    });
+  }
+
+  verifyAndReset() {
+    if (!this.otp || !this.newPassword || !this.confirmNewPassword) {
+      this.snackBar.open('Vui lòng điền đầy đủ thông tin', 'Đóng', { duration: 3000 });
+      return;
+    }
+    if (this.newPassword !== this.confirmNewPassword) {
+      this.snackBar.open('Mật khẩu không khớp', 'Đóng', { duration: 3000 });
+      return;
+    }
+    this.isLoading = true;
+    this.auth.resetPassword({
+      email: this.forgotEmail,
+      otp: this.otp,
+      newPassword: this.newPassword
+    }).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.snackBar.open('Đặt lại mật khẩu thành công!', 'Đóng', { duration: 5000 });
+        this.isForgotPassword = false;
+        this.otpSent = false;
+        this.forgotEmail = '';
+        this.otp = '';
+        this.newPassword = '';
+        this.confirmNewPassword = '';
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.snackBar.open('Lỗi: ' + (err?.error?.message || 'Không thể đặt lại mật khẩu'), 'Đóng', { duration: 5000 });
+      }
+    });
   }
 }

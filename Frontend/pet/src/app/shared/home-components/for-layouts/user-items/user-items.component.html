@@ -26,29 +26,29 @@
       <span>👋 {{ auth.user()?.name || 'Người dùng' }}</span>
     </button>
     <button mat-menu-item disabled>
-      <span>Role: <strong>{{ userRole() | titlecase }}</strong></span>
+      <span>Role: <strong>{{ auth.role() | titlecase }}</strong></span>
     </button>
 
     <mat-divider></mat-divider>
 
     <!-- User & Shop -->
     <button mat-menu-item
-            *ngIf="userRole() === 'user' || userRole() === 'shop'"
+            *ngIf="isUserOrShop()"
             (click)="goToAccount()">
       <mat-icon>person</mat-icon>
       <span>My Account</span>
     </button>
-
+ 
     <button mat-menu-item
-            *ngIf="userRole() === 'shop'"
+            *ngIf="isShop()"
             (click)="goToShop()">
       <mat-icon>store</mat-icon>
       <span>My Shop</span>
     </button>
-
+ 
     <!-- Operator & Admin -->
     <button mat-menu-item
-            *ngIf="userRole() === 'admin' || userRole() === 'operators'"
+            *ngIf="isAdminOrOperator()"
             (click)="goToAdmin()">
       <mat-icon>admin_panel_settings</mat-icon>
       <span>Trang quản trị</span>
@@ -56,7 +56,7 @@
 
     <mat-divider></mat-divider>
 
-    <button mat-menu-item (click)="auth.logout()">
+    <button mat-menu-item (click)="logout()">
       <mat-icon>logout</mat-icon>
       <span>Đăng xuất</span>
     </button>

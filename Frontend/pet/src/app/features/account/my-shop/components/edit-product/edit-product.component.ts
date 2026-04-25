@@ -1,24 +1,22 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import {Product} from '../../../../../core/models/product.model';
-import {generateMockProducts} from '../../../../shop/data/mock-products';
-
+import { Product } from '../../../../../core/models/product.model';
+import { PetApiService } from '../../../../../core/services/pet-api.service';
 
 @Component({
   standalone: true,
   selector: 'app-edit-product',
   imports: [CommonModule, FormsModule],
   templateUrl: './edit-product.component.html',
-  styleUrls: ['../add-product/add-product.component.scss']   // Giữ CSS chung vs Add
+  styleUrls: ['../add-product/add-product.component.scss']
 })
-export class EditProductComponent {
+export class EditProductComponent implements OnInit {
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly petApi = inject(PetApiService);
 
-  router = inject(Router);
-  route = inject(ActivatedRoute);
-
-  // Form theo model Product mới
   product: Partial<Product> = {
     name: '',
     description: '',
@@ -35,36 +33,37 @@ export class EditProductComponent {
   };
 
   images: string[] = [];
+  productId: number | null = null;
+  isSaving = false;
 
   ngOnInit() {
     const id = Number(this.route.snapshot.queryParamMap.get('id'));
-    if (id) {
-      this.loadProduct(id);
+    if (!id) {
+      return;
     }
+
+    this.productId = id;
+    this.petApi.getPetById(id).subscribe({
+      next: (product) => {
+        this.product = { ...product };
+        this.images = [...product.images];
+      },
+      error: () => alert('Khong tai duoc thong tin san pham.')
+    });
   }
 
-  loadProduct(id: number) {
-    // Lấy từ mock data (generateMockProducts)
-    const allProducts = generateMockProducts(30);
-    const found = allProducts.find(p => p.id === id);
-
-    if (found) {
-      this.product = { ...found };
-      this.images = [...found.images];
-    } else {
-      console.warn(`Không tìm thấy sản phẩm với id = ${id}`);
+  uploadImages(event: Event) {
+    const input = event.target as HTMLInputElement | null;
+    const files = input?.files;
+    if (!files) {
+      return;
     }
-  }
 
-  uploadImages(event: any) {
-    const files = event.target.files;
-    if (!files) return;
-
-    for (let file of files) {
+    Array.from(files).forEach((file) => {
       const reader = new FileReader();
-      reader.onload = () => this.images.push(reader.result as string);
+      reader.onload = () => this.images.push(String(reader.result || ''));
       reader.readAsDataURL(file);
-    }
+    });
   }
 
   removeImage(index: number) {
@@ -79,35 +78,21 @@ export class EditProductComponent {
   }
 
   updateProduct() {
-    if (!this.product.name || !this.product.breed || !this.product.price || this.product.price <= 0) {
-      alert('Vui lòng nhập đầy đủ: Tên, Giống và Giá bán');
+    if (!this.productId || !this.product.name || !this.product.breed || !this.product.price || this.product.price <= 0) {
+      alert('Vui long nhap day du ten, giong va gia ban.');
       return;
     }
 
-    const updatedProduct: Product = {
-      id: Number(this.product.id) || Date.now(),
-      name: this.product.name,
-      description: this.product.description || '',
-      price: this.product.price,
-      images: this.images.length > 0 ? this.images : ['/assets/pets/default-pet.jpg'],
-      status: this.product.status || 'available',
-      species: this.product.species || 'Chó',
-      breed: this.product.breed,
-      color: this.product.color || '',
-      gender: this.product.gender || 'male',
-      weight: this.product.weight || 0,
-      age: this.product.age || 0,
-      vaccinated: this.product.vaccinated ?? true,
-      neutered: this.product.neutered ?? false,
-      shopId: this.product.shopId || 1,
-      shopName: this.product.shopName || 'My Shop',
-      createdAt: this.product.createdAt || new Date()
-      // updatedAt: new Date()
-    };
-
-    console.log('Updated Product:', updatedProduct);
-    alert('✅ Sản phẩm đã được cập nhật thành công!');
-
-    this.backToProducts();
+    this.isSaving = true;
+    this.petApi.updatePet(this.productId, this.product, this.images).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.backToProducts();
+      },
+      error: () => {
+        this.isSaving = false;
+        alert('Khong the cap nhat san pham.');
+      }
+    });
   }
 }

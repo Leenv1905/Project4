@@ -5,8 +5,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
-declare var jwt_decode: any;
-
 @Injectable({
   providedIn: 'root'
 })
@@ -15,17 +13,26 @@ export class AuthService {
   user = this._user;
 
   isAuthenticated = computed(() => !!this._user());
-  role = computed(() => this.normalizeRole(this._user()?.role || ''));
+
+  normalizedRoles = computed(() => this.extractRoles(this._user()?.role || ''));
+
+  role = computed(() => this.normalizedRoles()[0] || '');
 
   canAccessAdmin = computed(() => {
-    const currentRole = this.role();
-    return currentRole === 'admin' || currentRole === 'operators';
+    const roles = this.normalizedRoles();
+    return roles.includes('admin') || roles.includes('operators');
   });
 
   canAccessHome = computed(() => {
-    const currentRole = this.role();
-    return ['user', 'shop', 'admin', 'operators'].includes(currentRole);
+    const roles = this.normalizedRoles();
+    return roles.some((r) => ['user', 'shop', 'admin', 'operators'].includes(r));
   });
+
+  isAdmin = computed(() => this.hasAnyRole(['admin']));
+  isOperator = computed(() => this.hasAnyRole(['operators']));
+  isShop = computed(() => this.hasAnyRole(['shop']));
+  isUser = computed(() => this.hasAnyRole(['user']));
+  isStaff = computed(() => this.hasAnyRole(['admin', 'operators']));
 
   private _showLoginModal = signal(false);
   showLoginModal = this._showLoginModal;
@@ -38,8 +45,8 @@ export class AuthService {
     this.initUserFromStorage();
 
     this.loadCurrentUser().subscribe({
-      next: () => {},
-      error: () => {}
+      next: () => { },
+      error: () => { }
     });
 
     effect(() => {
@@ -77,6 +84,37 @@ export class AuthService {
       catchError((err) => this.handleError(err))
     );
   }
+
+  loginWithGoogle(idToken: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/google`, { idToken }, { withCredentials: true }).pipe(
+      tap((res) => {
+        if (res && res.status === 200 && res.data) {
+          const found: User = {
+            id: res.data.userId,
+            email: '',
+            name: res.data.name,
+            role: res.data.role
+          };
+          this._user.set(found);
+          this.closeLogin();
+        }
+      }),
+      catchError((err) => this.handleError(err))
+    );
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/forgot-password`, { email }, { withCredentials: true }).pipe(
+      catchError((err) => this.handleError(err))
+    );
+  }
+
+  resetPassword(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/reset-password`, payload, { withCredentials: true }).pipe(
+      catchError((err) => this.handleError(err))
+    );
+  }
+
 
   register(payload: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, payload, { withCredentials: true }).pipe(
@@ -118,11 +156,6 @@ export class AuthService {
         return null;
       }),
       catchError(() => {
-        const fallback = this.getUserFromToken();
-        if (fallback) {
-          this._user.set(fallback);
-          return of(fallback);
-        }
         this._user.set(null);
         return of(null);
       })
@@ -135,32 +168,32 @@ export class AuthService {
       return;
     }
 
-    const currentRole = this.role();
-    if (currentRole === 'admin' || currentRole === 'operators') {
+    if (this.canAccessAdmin()) {
       this.router.navigate(['/admin']);
     } else {
       this.router.navigate(['/']);
     }
   }
 
-  getUserFromToken(): User | null {
-    const accessToken = this.getCookie('access_token');
-    if (!accessToken) {
-      return null;
+  hasRole(requiredRole: string): boolean {
+    return this.normalizedRoles().includes(this.normalizeRole(requiredRole));
+  }
+
+  hasAnyRole(requiredRoles: string[]): boolean {
+    const roles = this.normalizedRoles();
+    return requiredRoles.some((r) => roles.includes(this.normalizeRole(r)));
+  }
+
+  updateLocalUser(partial: Partial<User>) {
+    const current = this._user();
+    if (!current) {
+      return;
     }
 
-    const decoded = this.decodeJwt(accessToken);
-    if (!decoded || !decoded.sub) {
-      return null;
-    }
-
-    const roleClaim = decoded.role || decoded.roles || 'USER';
-    return {
-      id: decoded.userId || 0,
-      email: decoded.sub,
-      name: decoded.name || '',
-      role: roleClaim
-    };
+    this._user.set({
+      ...current,
+      ...partial
+    });
   }
 
   private initUserFromStorage() {
@@ -179,23 +212,27 @@ export class AuthService {
     localStorage.removeItem('user');
   }
 
-  private getCookie(name: string): string | null {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-      const cookieValue = parts.pop()?.split(';').shift();
-      return cookieValue || null;
+  private extractRoles(roleValue: any): string[] {
+    if (!roleValue) return [];
+    
+    // Nếu là string thì split
+    if (typeof roleValue === 'string') {
+      return roleValue
+        .split(',')
+        .map((r) => this.normalizeRole(r))
+        .filter(Boolean);
     }
-    return null;
+    
+    // Nếu là array thì map và normalize từng phần tử
+    if (Array.isArray(roleValue)) {
+      return roleValue
+        .map((r) => (typeof r === 'string' ? this.normalizeRole(r) : ''))
+        .filter(Boolean);
+    }
+    
+    return [];
   }
 
-  private decodeJwt(token: string): any {
-    try {
-      return jwt_decode(token);
-    } catch {
-      return null;
-    }
-  }
 
   private normalizeRole(role: string): string {
     return (role || '').trim().toLowerCase();

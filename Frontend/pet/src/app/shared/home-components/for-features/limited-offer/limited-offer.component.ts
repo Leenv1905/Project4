@@ -2,6 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+const HOUR_MS = 60 * 60 * 1000;
+const MINUTE_MS = 60 * 1000;
+const SECOND_MS = 1000;
+
 @Component({
   standalone: true,
   selector: 'app-limited-offer',
@@ -14,43 +19,42 @@ import { RouterModule } from '@angular/router';
 })
 export class LimitedOfferComponent implements OnInit, OnDestroy {
 
-  endDate!: Date;
-  timeLeft = {
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0
-  };
+  private readonly countdownStart = Date.now();
+  private readonly endTimestamp = this.countdownStart + (4 * DAY_MS);
 
-  private timerId!: number;
+  readonly endDate = new Date(this.endTimestamp);
+  timeLeft = this.calculateTimeLeft(this.countdownStart);
+
+  private timerId?: number;
 
   ngOnInit(): void {
-    this.endDate = new Date();
-    this.endDate.setDate(this.endDate.getDate() + 4);
-
-    this.updateTime();
     this.timerId = window.setInterval(() => {
       this.updateTime();
     }, 1000);
   }
 
   ngOnDestroy(): void {
-    clearInterval(this.timerId);
+    if (this.timerId !== undefined) {
+      clearInterval(this.timerId);
+    }
   }
 
-  private updateTime() {
-    const now = new Date().getTime();
-    const diff = this.endDate.getTime() - now;
+  private updateTime(now = Date.now()): void {
+    this.timeLeft = this.calculateTimeLeft(now);
+  }
+
+  private calculateTimeLeft(now: number) {
+    const diff = this.endTimestamp - now;
 
     if (diff > 0) {
-      this.timeLeft = {
-        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((diff / (1000 * 60)) % 60),
-        seconds: Math.floor((diff / 1000) % 60),
+      return {
+        days: Math.floor(diff / DAY_MS),
+        hours: Math.floor((diff / HOUR_MS) % 24),
+        minutes: Math.floor((diff / MINUTE_MS) % 60),
+        seconds: Math.floor((diff / SECOND_MS) % 60),
       };
     } else {
-      this.timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
     }
   }
 }

@@ -30,8 +30,22 @@
     </button>
   </div>
 
+  <!-- LOADING STATE -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Đang tải danh sách sản phẩm...</p>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div *ngIf="!isLoading && products.length === 0" class="empty-state">
+    <img src="assets/images/empty-cart.png" alt="No products" style="width: 150px; opacity: 0.5;">
+    <h3>Bạn chưa có sản phẩm nào</h3>
+    <p>Hãy bắt đầu bằng cách thêm sản phẩm mới cho cửa hàng của mình.</p>
+    <button class="add-btn" (click)="addProduct()">+ Thêm sản phẩm ngay</button>
+  </div>
+
   <!-- TABLE -->
-  <table>
+  <table *ngIf="!isLoading && products.length > 0">
     <thead>
     <tr>
       <th></th>
@@ -85,6 +99,7 @@
     </tr>
     </tbody>
   </table>
+
 
   <!-- PAGINATION -->
   <div class="pagination">

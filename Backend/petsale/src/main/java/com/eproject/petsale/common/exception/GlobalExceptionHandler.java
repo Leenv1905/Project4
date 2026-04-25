@@ -1,6 +1,6 @@
 package com.eproject.petsale.common.exception;
 
-import jakarta.security.auth.message.AuthException;
+import com.eproject.petsale.common.exception.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +21,12 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
 
-        log.error("Internal error", ex);
+        log.error("Internal error: {}", ex.getMessage(), ex);
 
         return new ApiErrorResponse(
                 500,
                 "Internal Server Error",
-                "Unexpected error occurred",
+                ex.getMessage() != null ? ex.getMessage() : "Unexpected error occurred",
                 request.getRequestURI()
         );
     }

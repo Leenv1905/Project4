@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import {Product} from '../../../../../core/models/product.model';
-
+import { Product } from '../../../../../core/models/product.model';
+import { PetApiService } from '../../../../../core/services/pet-api.service';
 
 @Component({
   standalone: true,
@@ -13,11 +13,10 @@ import {Product} from '../../../../../core/models/product.model';
   styleUrls: ['./add-product.component.scss']
 })
 export class AddProductComponent {
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly petApi = inject(PetApiService);
 
-  router = inject(Router);
-  route = inject(ActivatedRoute);
-
-  // Form theo model Product (không có birth_of_date)
   product: Partial<Product> = {
     name: '',
     description: '',
@@ -27,23 +26,27 @@ export class AddProductComponent {
     color: '',
     gender: 'male',
     weight: 0,
-    age: 0,                    // Giữ age tạm thời
-    vaccinated: true,          // Bỏ sau khi sửa model
-    neutered: false,            // Bỏ sau khi sửa model
+    age: 0,
+    vaccinated: true,
+    neutered: false,
     status: 'available'
   };
 
   images: string[] = [];
+  isSaving = false;
 
-  uploadImages(event: any) {
-    const files = event.target.files;
-    if (!files) return;
-
-    for (let file of files) {
-      const reader = new FileReader();
-      reader.onload = () => this.images.push(reader.result as string);
-      reader.readAsDataURL(file);
+  uploadImages(event: Event) {
+    const input = event.target as HTMLInputElement | null;
+    const files = input?.files;
+    if (!files) {
+      return;
     }
+
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => this.images.push(String(reader.result || ''));
+      reader.readAsDataURL(file);
+    });
   }
 
   removeImage(index: number) {
@@ -58,46 +61,31 @@ export class AddProductComponent {
   }
 
   saveDraft() {
-    console.log('Draft saved:', this.product, this.images);
-    alert('Đã lưu bản nháp!');
+    alert('Backend hien chua co API luu nhap.');
   }
 
   publish() {
-    const p = this.product;
-
-    if (!p.name || !p.breed || !p.price || p.price <= 0) {
-      alert('Vui lòng nhập đầy đủ: Tên thú cưng, Giống và Giá bán (> 0)');
+    const product = this.product;
+    if (!product.name || !product.breed || !product.price || product.price <= 0) {
+      alert('Vui long nhap day du ten thu cung, giong va gia ban.');
       return;
     }
 
-    const newProduct: Product = {
-      id: Date.now(),
-      name: p.name,
-      description: p.description || '',
-      price: p.price,
-      images: this.images.length > 0 ? this.images : ['/assets/pets/default-pet.jpg'],
-      status: p.status || 'available',
-      species: p.species || 'Chó',
-      breed: p.breed,
-      color: p.color || '',
-      gender: p.gender || 'male',
-      weight: p.weight || 0,
-      age: p.age || 0,                    // Giữ age tạm thời
-      vaccinated: p.vaccinated ?? true,   // Bỏ sau khi sửa model
-      neutered: p.neutered ?? false,      // Bỏ sau khi sửa model
-      shopId: 1,
-      shopName: 'My Shop',                // Có thể lấy từ auth sau
-      createdAt: new Date()
-    };
-
-    console.log('Published Product:', newProduct);
-    alert('✅ Sản phẩm đã được đăng thành công!');
-
-    this.backToProducts();
+    this.isSaving = true;
+    this.petApi.createPet(product, this.images).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.backToProducts();
+      },
+      error: () => {
+        this.isSaving = false;
+        alert('Khong the dang san pham.');
+      }
+    });
   }
 
   discard() {
-    if (confirm('Bạn có chắc muốn hủy bỏ?')) {
+    if (confirm('Ban co chac muon huy bo?')) {
       this.backToProducts();
     }
   }

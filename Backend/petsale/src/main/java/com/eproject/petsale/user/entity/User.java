@@ -24,6 +24,8 @@ public class User {
 
     private String name;
 
+    private Boolean enabled = true;
+
     private String phone;
 
     private String address;

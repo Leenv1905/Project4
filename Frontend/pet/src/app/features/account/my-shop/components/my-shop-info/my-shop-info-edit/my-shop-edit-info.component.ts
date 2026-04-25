@@ -1,9 +1,9 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {AuthService} from '../../../../../../core/services/auth.service';
-
+import { AuthService } from '../../../../../../core/services/auth.service';
+import { UserProfileService } from '../../../../../../core/services/user-profile.service';
 
 @Component({
   standalone: true,
@@ -12,44 +12,80 @@ import {AuthService} from '../../../../../../core/services/auth.service';
   templateUrl: './my-shop-edit-info.component.html',
   styleUrls: ['./my-shop-edit-info.component.scss']
 })
-export class MyShopEditInfoComponent {
+export class MyShopEditInfoComponent implements OnInit {
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly profileService = inject(UserProfileService);
 
-  auth = inject(AuthService);
-  router = inject(Router);
-
-  // Form dữ liệu chỉnh sửa
-  editForm = signal({
-    shopName: 'Pet Kingdom Official',
-    phone: '0966 228 008',
-    address: 'Hậu Dưỡng, Thiện Lộc, Hà Nội',
-    description: 'Cửa hàng chuyên cung cấp thú cưng thuần chủng, thức ăn chất lượng cao và dịch vụ chăm sóc pet uy tín tại Hà Nội.'
+  readonly editForm = signal({
+    shopName: '',
+    phone: '',
+    address: '',
+    description: ''
   });
 
-  // Avatar cửa hàng
-  shopAvatar = signal('https://i.pravatar.cc/300?u=shop123');
+  readonly shopAvatar = signal('https://i.pravatar.cc/300?u=shop123');
+  readonly isSaving = signal(false);
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.shopAvatar.set(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
+  ngOnInit() {
+    this.profileService.getMyProfile().subscribe({
+      next: (profile) => {
+        this.editForm.set({
+          shopName: profile.name || '',
+          phone: profile.phone || '',
+          address: profile.address || '',
+          description: profile.address || ''
+        });
+
+        if (profile.avatarUrl) {
+          this.shopAvatar.set(profile.avatarUrl);
+        }
+      }
+    });
   }
 
-  saveChanges() {
-    if (!this.editForm().shopName || !this.editForm().phone || !this.editForm().address) {
-      alert('Vui lòng nhập đầy đủ thông tin bắt buộc!');
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    if (!file) {
       return;
     }
 
-    // Sau này sẽ gọi API update shop info
-    alert('✅ Thông tin cửa hàng đã được cập nhật thành công!');
+    const reader = new FileReader();
+    reader.onload = () => this.shopAvatar.set(String(reader.result || ''));
+    reader.readAsDataURL(file);
+  }
 
-    // Quay về trang thông tin cửa hàng
-    this.router.navigate(['/my-shop'], { queryParams: { tab: 'info' } });
+  saveChanges() {
+    const form = this.editForm();
+    if (!form.shopName || !form.phone || !form.address) {
+      alert('Vui long nhap day du thong tin bat buoc.');
+      return;
+    }
+
+    this.isSaving.set(true);
+    this.profileService.updateMyProfile({
+      name: form.shopName,
+      phone: form.phone,
+      address: form.address,
+      avatarUrl: this.shopAvatar()
+    }).subscribe({
+      next: (profile) => {
+        this.isSaving.set(false);
+        this.auth.updateLocalUser({
+          name: profile.name,
+          email: profile.email,
+          phone: profile.phone,
+          address: profile.address,
+          avatar: profile.avatarUrl
+        });
+        this.router.navigate(['/my-shop'], { queryParams: { tab: 'info' } });
+      },
+      error: () => {
+        this.isSaving.set(false);
+        alert('Khong the cap nhat thong tin cua hang.');
+      }
+    });
   }
 
   cancel() {

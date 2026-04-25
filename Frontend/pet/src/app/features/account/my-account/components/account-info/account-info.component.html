@@ -1,58 +1,51 @@
 <div class="account-info">
-
   <div class="header">
-    <h2>Thông tin cá nhân</h2>
+    <h2>Thong tin ca nhan</h2>
     <button class="edit-btn" (click)="editProfile()">
-      <span>✏️</span> Sửa thông tin
+      <span>✏️</span> Sua thong tin
     </button>
   </div>
 
   <div class="info-grid">
-
-    <!-- Avatar & Name -->
     <div class="profile-card">
       <div class="avatar-section">
-        <img [src]="userInfo().avatar" alt="Avatar" class="avatar">
+        <img [src]="profile()?.avatarUrl || 'https://i.pravatar.cc/150?u=user123'" alt="Avatar" class="avatar">
         <div class="status-dot"></div>
       </div>
-      <h3>{{ user()?.name || 'Chưa cập nhật' }}</h3>
-      <p class="email">{{ user()?.email || 'Chưa có email' }}</p>
+      <h3>{{ profile()?.name || user()?.name || 'Chua cap nhat' }}</h3>
+      <p class="email">{{ profile()?.email || user()?.email || 'Chua co email' }}</p>
     </div>
 
-    <!-- Thông tin chi tiết -->
     <div class="details-grid">
-
       <div class="info-block">
-        <span class="label">Họ và tên</span>
-        <span class="value">{{ user()?.name || 'Chưa cập nhật' }}</span>
+        <span class="label">Ho va ten</span>
+        <span class="value">{{ profile()?.name || user()?.name || 'Chua cap nhat' }}</span>
       </div>
 
       <div class="info-block">
         <span class="label">Email</span>
-        <span class="value">{{ user()?.email || 'Chưa cập nhật' }}</span>
+        <span class="value">{{ profile()?.email || user()?.email || 'Chua cap nhat' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Số điện thoại</span>
-        <span class="value">0966 228 008</span> <!-- Sau này lấy từ user -->
+        <span class="label">So dien thoai</span>
+        <span class="value">{{ profile()?.phone || 'Chua cap nhat' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Ngày sinh</span>
-        <span class="value">{{ userInfo().dateOfBirth }}</span>
+        <span class="label">Ngay sinh</span>
+        <span class="value">Chua cap nhat</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Địa chỉ</span>
-        <span class="value">Hậu Dưỡng, Thiện Lộc, Hà Nội</span>
+        <span class="label">Dia chi</span>
+        <span class="value">{{ profile()?.address || 'Chua cap nhat' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Mật khẩu</span>
+        <span class="label">Mat khau</span>
         <span class="value password">{{ getMaskedPassword() }}</span>
       </div>
-
     </div>
   </div>
-
 </div>

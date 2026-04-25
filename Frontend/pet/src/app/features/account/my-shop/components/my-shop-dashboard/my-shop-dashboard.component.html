@@ -5,7 +5,7 @@
   <!-- STATS -->
   <div class="stats">
 
-    <div class="card" *ngFor="let s of stats">
+    <div class="card" *ngFor="let s of stats()">
 
       <div class="card-header">
         <span>{{s.title}}</span>
@@ -68,7 +68,7 @@
 
       <tbody>
 
-      <tr *ngFor="let p of topProducts">
+      <tr *ngFor="let p of topProducts()">
 
         <td>{{p.name}}</td>
         <td>{{p.sales}}</td>

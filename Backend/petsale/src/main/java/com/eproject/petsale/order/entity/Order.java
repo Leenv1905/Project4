@@ -35,6 +35,9 @@ public class Order {
 
     @Column(name = "payment_status")
     private String paymentStatus;
+    
+    @Column(name = "payment_method")
+    private String paymentMethod;
 
     private String phone;
     private String status;

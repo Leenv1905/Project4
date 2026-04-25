@@ -1,4 +1,4 @@
-import { Component, ViewChild, signal, inject } from '@angular/core';
+import { Component, ViewChild, signal, inject, computed } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -11,7 +11,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 
 import { MatSidenav } from '@angular/material/sidenav';
 import { AuthService } from '../../core/services/auth.service';
-import {UserItemsComponent} from '../../shared/home-components/for-layouts/user-items/user-items.component';   // ← Import AuthService
+import { UserItemsComponent } from '../../shared/home-components/for-layouts/user-items/user-items.component';   // ← Import AuthService
 
 interface NavItem {
   label: string;
@@ -73,13 +73,14 @@ export class AdminLayoutComponent {
       rolesAllowed: ['admin', 'operators'],
       children: [
         { label: 'Danh sách sản phẩm', icon: 'list_alt', route: '/admin/products', rolesAllowed: ['admin', 'operators'] },
+        { label: 'Xác minh (O2O)', icon: 'verified_user', route: '/admin/verifications', rolesAllowed: ['admin'] },
         { label: 'Phân tích sản phẩm AI', icon: 'psychology', route: '/admin/products/analytics', rolesAllowed: ['admin', 'operators'] }
       ]
     },
     {
       label: 'Operator',
       icon: 'engineering',
-      rolesAllowed: ['admin'],                    // Chỉ Admin mới thấy
+      rolesAllowed: ['admin'],
       children: [
         { label: 'Danh sách Operator', icon: 'people', route: '/admin/operators/list', rolesAllowed: ['admin'] },
         { label: 'Thêm Operator', icon: 'person_add', route: '/admin/operators/add', rolesAllowed: ['admin'] },
@@ -98,27 +99,59 @@ export class AdminLayoutComponent {
     {
       label: 'Tài Chính',
       icon: 'account_balance',
-      rolesAllowed: ['admin'],                     // Chỉ Admin
+      rolesAllowed: ['admin'],
       children: [
-        { label: 'Doanh thu', icon: '*', route: '/admin/finance/revenue', rolesAllowed: ['admin'] },
-        { label: 'Tài khoản ngân hàng', icon: '*', route: '/admin/finance/bank', rolesAllowed: ['admin'] },
-        { label: 'Kênh thanh toán', icon: '*', route: '/admin/finance/payment', rolesAllowed: ['admin'] }
+        { label: 'Doanh thu', icon: 'monetization_on', route: '/admin/finance/revenue', rolesAllowed: ['admin'] },
+        { label: 'Tài khoản ngân hàng', icon: 'account_balance_wallet', route: '/admin/finance/bank', rolesAllowed: ['admin'] },
+        { label: 'Kênh thanh toán', icon: 'payments', route: '/admin/finance/payment', rolesAllowed: ['admin'] }
       ]
+    },
+    {
+      label: 'Nhiệm vụ xác minh',
+      icon: 'assignment',
+      route: '/operator/tasks',
+      rolesAllowed: ['operators']
     },
     {
       label: 'Cài đặt chung',
       icon: 'settings',
       route: '/admin/settings',
       rolesAllowed: ['admin', 'operators']
+    },
+    {
+      label: 'Quay lại Website',
+      icon: 'home',
+      route: '/',
+      rolesAllowed: [] // Không giới hạn quyền để debug
     }
   ];
 
-  // Lọc menu theo role hiện tại
-  get visibleNavItems(): NavItem[] {
-    const role = this.currentRole() || '';
-    return this.navItems.filter(item =>
-      item.rolesAllowed.includes(role)
-    );
+  // Lọc menu theo role hiện tại (Bao gồm cả con) - Chuyển sang dùng Computed để đảm bảo tính reactive
+  visibleNavItems = computed(() => {
+    const userRoles = this.authService.normalizedRoles(); // Đã được normalize thành lowercase array
+    console.log('DEBUG: User Roles in AdminLayout:', userRoles);
+    
+    return this.navItems
+      .filter(item => this.checkAccess(item, userRoles))
+      .map(item => {
+        if (item.children) {
+          const visibleChildren = item.children.filter(child => this.checkAccess(child, userRoles));
+          return { ...item, children: visibleChildren.length > 0 ? visibleChildren : undefined };
+        }
+        return item;
+      })
+      .filter(item => {
+        const originalItem = this.navItems.find(i => i.label === item.label);
+        if (originalItem?.children && (!item.children || item.children.length === 0)) {
+          return false;
+        }
+        return true;
+      });
+  });
+
+  private checkAccess(item: NavItem, userRoles: string[]): boolean {
+    if (!item.rolesAllowed || item.rolesAllowed.length === 0) return true;
+    return item.rolesAllowed.some(role => userRoles.includes(role.toLowerCase()));
   }
 
   toggleSidenav() {
@@ -126,28 +159,3 @@ export class AdminLayoutComponent {
   }
 }
 
-// // admin-layout.component.ts
-// import { Component } from '@angular/core';
-// import { RouterOutlet, RouterLink } from '@angular/router';
-// import { MatSidenavModule } from '@angular/material/sidenav';
-// import { MatToolbarModule } from '@angular/material/toolbar';
-// import { MatListModule } from '@angular/material/list';
-// import { MatIconModule } from '@angular/material/icon';
-// import { MatButtonModule } from '@angular/material/button';
-//
-// @Component({
-//   standalone: true,
-//   selector: 'app-admin-layout',
-//   templateUrl: './admin-layout.component.html',
-//   styleUrls: ['./admin-layout.component.scss'],
-//   imports: [
-//     RouterOutlet,
-//     MatSidenavModule,
-//     MatToolbarModule,
-//     MatListModule,
-//     MatIconModule,
-//     MatButtonModule,
-//     RouterLink
-//   ]
-// })
-// export class AdminLayoutComponent {}

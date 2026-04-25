@@ -65,6 +65,7 @@ public class OrderService {
             order.setCustomerName(request.getCustomerName());
             order.setNote(request.getNote());
             order.setPaymentStatus("PENDING");
+            order.setPaymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "COD");
             order.setFulfillmentStatus("PROCESSING");
             order.setStatus("CREATED");
             order.setCreatedAt(LocalDateTime.now());
@@ -110,6 +111,27 @@ public class OrderService {
         return orderRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getShopOrders(Long shopId) {
+        return orderRepository.findByShopIdOrderByCreatedAtDesc(shopId)
+                .stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public OrderResponse updateShopOrderStatus(Long shopId, Long orderId, String status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        
+        if (!order.getShop().getId().equals(shopId)) {
+            throw new RuntimeException("You do not have permission to update this order");
+        }
+        
+        // Shop can only change fulfillment status, e.g. from PROCESSING to SHIPPING or DELIVERED
+        order.setFulfillmentStatus(status);
+        order.setUpdatedAt(LocalDateTime.now());
+        return mapToResponse(orderRepository.save(order));
+    }
+
     @Transactional
     public OrderResponse updateOrderStatus(Long orderId, String status) {
         Order order = orderRepository.findById(orderId)
@@ -129,6 +151,7 @@ public class OrderService {
         dto.setStatus(order.getStatus());
         dto.setFulfillmentStatus(order.getFulfillmentStatus());
         dto.setPaymentStatus(order.getPaymentStatus());
+        dto.setPaymentMethod(order.getPaymentMethod());
         dto.setTotalAmount(order.getTotalAmount());
         dto.setCreatedAt(order.getCreatedAt());
         dto.setBuyerId(order.getBuyer().getId());

@@ -3,6 +3,7 @@
   <img
     [src]="image"
     [alt]="name"
+    (error)="handleImageError($event)"
     (click)="navigate()"
   />
 

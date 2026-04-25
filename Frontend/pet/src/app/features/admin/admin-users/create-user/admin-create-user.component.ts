@@ -2,8 +2,9 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {Role, User} from '../../../../core/models/user.model';
-
+import { Role } from '../../../../core/models/user.model';
+import { AdminService } from '../../../../core/services/admin.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   standalone: true,
@@ -13,51 +14,63 @@ import {Role, User} from '../../../../core/models/user.model';
   styleUrls: ['./admin-create-user.component.scss']
 })
 export class AdminCreateUserComponent {
+  private readonly router = inject(Router);
+  private readonly adminService = inject(AdminService);
+  private readonly toast = inject(ToastService);
 
-  router = inject(Router);
-
-  // Form tạo user mới
-  newUser: Partial<User> & { password?: string; confirmPassword?: string } = {
+  newUser: {
+    name: string;
+    email: string;
+    role: Role;
+    phone: string;
+    address: string;
+    avatar: string;
+    password?: string;
+    confirmPassword?: string;
+  } = {
     name: '',
     email: '',
     role: 'user',
-    age: undefined,
     phone: '',
-    avatar: 'https://i.pravatar.cc/150?u=newuser',
-    status: 'active'
+    address: '',
+    avatar: 'https://i.pravatar.cc/150?u=newuser'
   };
 
   roles: Role[] = ['user', 'shop', 'admin', 'operators'];
+  isSaving = false;
 
   createUser() {
     if (!this.newUser.name || !this.newUser.email || !this.newUser.password) {
-      alert('Vui lòng nhập đầy đủ Tên, Email và Mật khẩu');
+      this.toast.error('Vui long nhap day du Ten, Email va Mat khau.');
       return;
     }
 
     if (this.newUser.password !== this.newUser.confirmPassword) {
-      alert('Mật khẩu xác nhận không khớp!');
+      this.toast.error('Mat khau xac nhan khong khop.');
       return;
     }
 
-    // Tạo user mới (giả lập)
-    const createdUser: User = {
-      id: Date.now(),
+    this.isSaving = true;
+    this.adminService.createUser({
       name: this.newUser.name,
       email: this.newUser.email,
-      role: this.newUser.role || 'user',
-      age: this.newUser.age,
+      role: this.newUser.role,
       phone: this.newUser.phone,
-      avatar: this.newUser.avatar,
-      status: this.newUser.status || 'active',
-      createdAt: new Date()
-    };
-
-    console.log('User created:', createdUser);
-    alert(`✅ Đã tạo người dùng mới: ${createdUser.name} (${createdUser.role})`);
-
-    // Quay lại danh sách user
-    this.router.navigate(['/admin/users']);
+      address: this.newUser.address,
+      avatarUrl: this.newUser.avatar,
+      password: this.newUser.password
+    }).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.toast.success('Da tao nguoi dung thanh cong!');
+        this.router.navigate(['/admin/users']);
+      },
+      error: (err) => {
+        console.error('Create user failed', err);
+        this.isSaving = false;
+        this.toast.error('Khong the tao nguoi dung moi.');
+      }
+    });
   }
 
   cancel() {

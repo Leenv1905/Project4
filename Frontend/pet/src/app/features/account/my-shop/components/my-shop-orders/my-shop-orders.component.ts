@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import { OrderService } from '../../../../../core/services/order.service';
@@ -13,7 +13,7 @@ import { getStatusLabel } from '../../../../../core/utils/order-status.util';
   templateUrl: './my-shop-orders.component.html',
   styleUrls: ['./my-shop-orders.component.scss']
 })
-export class MyShopOrdersComponent {
+export class MyShopOrdersComponent implements OnInit {
 
   router = inject(Router);
   route = inject(ActivatedRoute);
@@ -31,19 +31,25 @@ export class MyShopOrdersComponent {
 
   pageSize = signal(10);
 
+  ngOnInit() {
+    this.orderService.loadShopOrders().subscribe();
+  }
+
   total = computed(() => this.filteredOrders().length);
 
   filteredOrders = computed(() => {
     if (this.activeTab() === 'all') return this.orders();
-    return this.orders().filter(o => o.status === this.activeTab());
+    return this.orders().filter(o => o.status === this.activeTab() || o.fulfillmentStatus === this.activeTab());
   });
 
   count(status: OrderStatus) {
-    return this.orders().filter(o => o.status === status).length;
+    return this.orders().filter(o => o.status === status || o.fulfillmentStatus === status).length;
   }
 
   confirmOrder(id: number) {
-    this.orderService.performAction(id, 'shop_confirm');
+    this.orderService.updateShopOrderStatus(id, 'SHIPPING').subscribe(() => {
+      this.orderService.loadShopOrders().subscribe();
+    });
   }
 
   confirmReturn(id: number) {
@@ -63,7 +69,9 @@ export class MyShopOrdersComponent {
   }
 
   rejectOrder(id: number) {
-    this.orderService.performAction(id, 'shop_confirm');
+    this.orderService.updateShopOrderStatus(id, 'CANCELLED').subscribe(() => {
+      this.orderService.loadShopOrders().subscribe();
+    });
   }
 
   getStatusClass(status: OrderStatus) {
