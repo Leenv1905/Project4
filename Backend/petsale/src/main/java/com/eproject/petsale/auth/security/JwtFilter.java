@@ -28,6 +28,14 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        // Bỏ qua validation cho các auth endpoint (login, refresh, register, ...)
+        // để refresh token hoạt động khi access token đã hết hạn
+        String path = request.getRequestURI();
+        if (path.startsWith("/gupet/v1/auth/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
 
             String token = null;

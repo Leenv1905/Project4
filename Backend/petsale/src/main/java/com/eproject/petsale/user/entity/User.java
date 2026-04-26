@@ -36,13 +36,17 @@ public class User {
     @Column(name = "refresh_token")
     private String refreshToken;
 
-    @ManyToMany(fetch = FetchType.EAGER) // EAGER giúp lấy luôn danh sách Role khi tìm User
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    // --- BỔ SUNG QUAN HỆ VỚI SELLER PROFILE ---
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private SellerProfile sellerProfile;
 
     @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL)
     private List<com.eproject.petsale.order.entity.Order> purchasedOrders;

@@ -1,9 +1,9 @@
 import { Injectable, signal, computed, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from '../models/user.model';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
+import { catchError, filter, map, take, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,9 @@ import { catchError, map, tap } from 'rxjs/operators';
 export class AuthService {
   private _user = signal<User | null>(null);
   user = this._user;
+
+  private readonly _authReady$ = new BehaviorSubject<boolean>(false);
+  readonly authReady$ = this._authReady$.asObservable().pipe(filter(Boolean), take(1));
 
   isAuthenticated = computed(() => !!this._user());
 
@@ -33,6 +36,7 @@ export class AuthService {
   isShop = computed(() => this.hasAnyRole(['shop']));
   isUser = computed(() => this.hasAnyRole(['user']));
   isStaff = computed(() => this.hasAnyRole(['admin', 'operators']));
+  isSeller = computed(() => this.hasAnyRole(['seller']));
 
   private _showLoginModal = signal(false);
   showLoginModal = this._showLoginModal;
@@ -45,8 +49,8 @@ export class AuthService {
     this.initUserFromStorage();
 
     this.loadCurrentUser().subscribe({
-      next: () => { },
-      error: () => { }
+      next: () => { this._authReady$.next(true); },
+      error: () => { this._authReady$.next(true); }
     });
 
     effect(() => {
@@ -137,26 +141,37 @@ export class AuthService {
   }
 
   refresh(): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/refresh`, {}, { withCredentials: true });
+    return this.http.post(`${this.apiUrl}/refresh`, {}, { withCredentials: true, responseType: 'text' });
+  }
+
+  forceLogout() {
+    this.clearSession();
+    this.router.navigate(['/']);
   }
 
   loadCurrentUser(): Observable<User | null> {
     return this.http.get<any>(`${this.apiUrl}/me`, { withCredentials: true }).pipe(
       map((res) => {
-        if (res && res.status === 200 && res.data) {
-          const me: User = {
-            id: res.data.userId,
-            email: res.data.email || '',
-            name: res.data.name,
-            role: res.data.role
-          };
-          this._user.set(me);
-          return me;
-        }
-        return null;
+        // BE trả về ApiSuccessResponse wrapper: { status, message, data: { userId, name, role, ... } }
+        const data = res?.data ?? res;
+        if (!data) return null;
+
+        const me: User = {
+          id: data.userId ?? data.id,
+          email: data.email || '',
+          name: data.name,
+          role: data.role,
+          phone: data.phone,
+          address: data.address,
+          avatarUrl: data.avatarUrl
+        };
+        this._user.set(me);
+        return me;
       }),
-      catchError(() => {
-        this._user.set(null);
+      catchError((err: HttpErrorResponse) => {
+        if (err?.status === 401) {
+          this._user.set(null);
+        }
         return of(null);
       })
     );

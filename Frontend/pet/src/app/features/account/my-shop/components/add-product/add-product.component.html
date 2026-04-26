@@ -1,14 +1,10 @@
 <div class="add-product">
-
   <div class="header">
     <div class="title">
-      <button class="back-btn" (click)="backToProducts()">
-        ← Quay lại danh sách
-      </button>
+      <button class="back-btn" (click)="backToProducts()">← Quay lại danh sách</button>
       <h2>Thêm thú cưng mới</h2>
       <p class="subtitle">Điền thông tin chi tiết cho pet</p>
     </div>
-
     <div class="actions">
       <button class="discard-btn" (click)="discard()">Hủy bỏ</button>
       <button class="draft-btn" (click)="saveDraft()">Lưu nháp</button>
@@ -17,13 +13,26 @@
   </div>
 
   <div class="layout">
-
-    <!-- LEFT: Thông tin chính -->
     <div class="left">
+      <div class="card">
+        <h3>Thông tin định danh</h3>
+        <div class="form-group">
+          <label>Mã chip thú cưng (PET-YYYYMMDD-XXXX) *</label>
+          <input
+            placeholder="Ví dụ: PET-20260426-0001"
+            [(ngModel)]="product.petCode"
+            maxlength="17"
+            (input)="validatePetCode($event)"
+            class="pet-code-input"
+          />
+          <small *ngIf="product.petCode?.length > 0 && product.petCode?.length < 17" class="error-text">
+            Mã chip chưa đủ định dạng (Hiện có: {{product.petCode.length}}/17 ký tự)
+          </small>
+        </div>
+      </div>
 
       <div class="card">
         <h3>Thông tin cơ bản</h3>
-
         <input placeholder="Tên thú cưng *" [(ngModel)]="product.name" />
 
         <div class="row">
@@ -35,7 +44,6 @@
               <option value="Khác">Khác</option>
             </select>
           </div>
-
           <div class="form-group">
             <label>Giống</label>
             <input placeholder="Ví dụ: Poodle, Corgi..." [(ngModel)]="product.breed" />
@@ -47,7 +55,6 @@
             <label>Màu lông</label>
             <input placeholder="Màu lông" [(ngModel)]="product.color" />
           </div>
-
           <div class="form-group">
             <label>Giới tính</label>
             <select [(ngModel)]="product.gender">
@@ -62,41 +69,61 @@
             <label>Cân nặng (kg)</label>
             <input type="number" step="0.1" [(ngModel)]="product.weight" />
           </div>
-
           <div class="form-group">
             <label>Ngày sinh</label>
             <input type="date" value="2022-12-20" disabled />
-            <small style="color:#888; font-size:13px;">(Tạm fix - sẽ mở sau)</small>
           </div>
         </div>
 
         <label>Mô tả</label>
-        <textarea rows="5" placeholder="Mô tả tính cách, sức khỏe, đặc điểm..." [(ngModel)]="product.description"></textarea>
+        <textarea rows="5" placeholder="Mô tả tính cách..." [(ngModel)]="product.description"></textarea>
       </div>
-
     </div>
 
-    <!-- RIGHT: Giá & Hình ảnh -->
     <div class="right">
-
       <div class="card">
         <h3>Giá bán</h3>
         <input type="number" placeholder="Giá bán (VNĐ) *" [(ngModel)]="product.price" />
       </div>
 
       <div class="card">
-        <h3>Hình ảnh thú cưng</h3>
-        <input type="file" multiple accept="image/*" (change)="uploadImages($event)" />
+        <h3>Hình ảnh thú cưng & AI Render</h3>
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" class="mb-3" />
 
-        <div class="image-preview">
-          <div class="image-card" *ngFor="let img of images; let i = index">
-            <img [src]="img" alt="preview">
+        <div class="ai-box mt-3" *ngIf="originalPreview">
+          <div class="d-flex gap-3 mb-3">
+            <div class="p-view">
+              <small>Ảnh gốc</small>
+              <img [src]="originalPreview" class="rounded shadow-sm">
+            </div>
+
+            <div class="p-view" *ngIf="aiImageUrl">
+              <small class="text-purple">Bản AI ✨</small>
+              <img [src]="aiImageUrl" class="rounded shadow-sm border-purple">
+            </div>
+          </div>
+
+          <button type="button" class="btn-ai" (click)="generateAiImage()" [disabled]="isAiLoading">
+            <span *ngIf="!isAiLoading">🪄 Tạo phong cách AI (DALL-E)</span>
+            <span *ngIf="isAiLoading">⏳ Đang xử lý...</span>
+          </button>
+        </div>
+
+        <div class="image-preview mt-4">
+          <div class="image-card" *ngFor="let img of finalImages; let i = index">
+            <img [src]="img.imageUrl"> <span class="badge-ai" *ngIf="img.isAiProcessed">AI</span>
             <button class="remove-btn" (click)="removeImage(i)">×</button>
           </div>
         </div>
       </div>
-
     </div>
-
   </div>
 </div>
+
+<app-notification-modal
+  *ngIf="modal.show"
+  [title]="modal.title"
+  [message]="modal.message"
+  [type]="modal.type"
+  (closed)="closeModal()"
+/>

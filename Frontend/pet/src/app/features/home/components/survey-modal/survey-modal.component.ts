@@ -7,6 +7,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../../core/services/auth.service';
+import { NotificationModalComponent } from '../../../../shared/notification-modal/notification-modal.component';
 
 @Component({
   standalone: true,
@@ -17,7 +18,8 @@ import { AuthService } from '../../../../core/services/auth.service';
     MatDialogModule,
     MatButtonModule,
     MatSliderModule,
-    MatIconModule
+    MatIconModule,
+    NotificationModalComponent
   ],
   template: `
     <div class="survey-container" style="padding: 20px; max-width: 500px;">
@@ -40,18 +42,18 @@ import { AuthService } from '../../../../core/services/auth.service';
         <div *ngIf="step === 2" class="step-content">
           <h3>2. Khong gian song cua ban nhu the nao?</h3>
           <div class="choice-grid">
-            <button mat-stroked-button (click)="livingSpace = 1" [color]="livingSpace === 1 ? 'primary' : ''">Can ho nho</button>
-            <button mat-stroked-button (click)="livingSpace = 2" [color]="livingSpace === 2 ? 'primary' : ''">Nha pho vua</button>
-            <button mat-stroked-button (click)="livingSpace = 3" [color]="livingSpace === 3 ? 'primary' : ''">Biet thu co san vuon</button>
+            <button class="choice-btn" [class.selected]="livingSpace === 1" (click)="livingSpace = 1">Can ho nho</button>
+            <button class="choice-btn" [class.selected]="livingSpace === 2" (click)="livingSpace = 2">Nha pho vua</button>
+            <button class="choice-btn" [class.selected]="livingSpace === 3" (click)="livingSpace = 3">Biet thu co san vuon</button>
           </div>
         </div>
 
         <div *ngIf="step === 3" class="step-content">
           <h3>3. Kinh nghiem nuoi thu cung cua ban?</h3>
           <div class="choice-grid">
-            <button mat-stroked-button (click)="experienceLevel = 1" [color]="experienceLevel === 1 ? 'primary' : ''">Chua co kinh nghiem</button>
-            <button mat-stroked-button (click)="experienceLevel = 2" [color]="experienceLevel === 2 ? 'primary' : ''">Da tung nuoi</button>
-            <button mat-stroked-button (click)="experienceLevel = 3" [color]="experienceLevel === 3 ? 'primary' : ''">Rat nhieu kinh nghiem</button>
+            <button class="choice-btn" [class.selected]="experienceLevel === 1" (click)="experienceLevel = 1">Chua co kinh nghiem</button>
+            <button class="choice-btn" [class.selected]="experienceLevel === 2" (click)="experienceLevel = 2">Da tung nuoi</button>
+            <button class="choice-btn" [class.selected]="experienceLevel === 3" (click)="experienceLevel = 3">Rat nhieu kinh nghiem</button>
           </div>
         </div>
 
@@ -67,11 +69,45 @@ import { AuthService } from '../../../../core/services/auth.service';
         <button mat-flat-button color="warn" (click)="submit()" *ngIf="step === 4">Hoan tat</button>
       </div>
     </div>
+
+    <app-notification-modal
+      *ngIf="modal"
+      [title]="modal.title"
+      [message]="modal.message"
+      [type]="modal.type"
+      (closed)="onModalClosed()"
+    />
   `,
   styles: [`
     .step-content { text-align: center; }
     .choice-grid { display: grid; gap: 10px; margin-top: 20px; }
     .full-width { width: 100%; padding: 10px; box-sizing: border-box; }
+
+    .choice-btn {
+      padding: 12px 20px;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .choice-btn:hover {
+      background: #f0f4ff;
+      border-color: #6366f1;
+      color: #4f46e5;
+    }
+    .choice-btn.selected {
+      background: #6366f1;
+      border-color: #6366f1;
+      color: #fff;
+    }
+    .choice-btn.selected:hover {
+      background: #4f46e5;
+      border-color: #4f46e5;
+    }
   `]
 })
 export class SurveyModalComponent {
@@ -80,6 +116,7 @@ export class SurveyModalComponent {
   livingSpace = 1;
   experienceLevel = 1;
   monthlyBudget = 500000;
+  modal: { title: string; message: string; type: 'success' | 'error' | 'info' } | null = null;
 
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
@@ -105,19 +142,23 @@ export class SurveyModalComponent {
     this.http.post('http://localhost:8080/gupet/api/v1/buyer-profiles', payload, { withCredentials: true })
       .subscribe({
         next: () => {
-          alert('Cam on ban. Chung toi da cap nhat goi y cho ban.');
-          this.dialogRef.close(true);
+          this.modal = { title: 'Cảm ơn bạn!', message: 'Chúng tôi đã cập nhật gợi ý phù hợp cho bạn.', type: 'success' };
         },
         error: (error: HttpErrorResponse) => {
           if (error.status === 401) {
             this.dialogRef.close(false);
             this.auth.openLogin();
-            alert('Phien dang nhap da het han. Vui long dang nhap lai.');
             return;
           }
-
-          alert('Loi khi luu thong tin.');
+          this.modal = { title: 'Lỗi', message: 'Có lỗi xảy ra khi lưu thông tin.', type: 'error' };
         }
       });
+  }
+
+  onModalClosed() {
+    if (this.modal?.type === 'success') {
+      this.dialogRef.close(true);
+    }
+    this.modal = null;
   }
 }

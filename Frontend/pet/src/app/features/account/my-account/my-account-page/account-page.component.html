@@ -2,21 +2,25 @@
 
   <div class="container">
 
-    <!-- SIDEBAR -->
     <app-account-sidebar
       [activeTab]="tab()"
+      [isSeller]="authService.isSeller()"
       (tabChange)="setTab($event)"
     />
 
-    <!-- MAIN CONTENT -->
     <div class="content">
 
       <app-account-orders *ngIf="tab() === 'orders'" />
       <app-account-info *ngIf="tab() === 'info'" />
       <app-account-payment *ngIf="tab() === 'payment'" />
       <app-account-edit *ngIf="tab() === 'edit'" />
-      <!-- Thêm các component khác khi cần -->
-      <!-- <app-account-wallet *ngIf="tab() === 'wallet'" /> -->
+
+      <app-account-seller-register *ngIf="tab() === 'seller-register'" />
+
+      <div *ngIf="tab() === 'seller-channel'">
+        <!-- Kênh người bán -->
+      </div>
+
 
     </div>
 

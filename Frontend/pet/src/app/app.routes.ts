@@ -28,6 +28,7 @@ export const routes: Routes = [
       // Các route chỉ dành cho ADMIN
       { path: 'users', loadComponent: () => import('./features/admin/admin-users/admin-users.component').then(m => m.AdminUsersComponent), canActivate: [adminGuard] },
       { path: 'users/add', loadComponent: () => import('./features/admin/admin-users/create-user/admin-create-user.component').then(m => m.AdminCreateUserComponent), canActivate: [adminGuard] },
+      { path: 'users/view/:id', loadComponent: () => import('./features/admin/admin-users/edit-user/admin-edit-user.component').then(m => m.AdminEditUserComponent), canActivate: [adminGuard], data: { viewOnly: true } },
       { path: 'users/edit/:id', loadComponent: () => import('./features/admin/admin-users/edit-user/admin-edit-user.component').then(m => m.AdminEditUserComponent), canActivate: [adminGuard] },
       { path: 'users/analytics', loadComponent: () => import('./features/admin/placeholder/admin-placeholder.component').then(m => m.AdminPlaceholderComponent), data: { title: 'Phân tích khách hàng', icon: 'analytics' }, canActivate: [adminGuard] },
       { path: 'verifications', loadComponent: () => import('./features/admin/admin-verification/admin-verification.component').then(m => m.AdminVerificationComponent), canActivate: [adminGuard] },

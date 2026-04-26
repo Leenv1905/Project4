@@ -7,7 +7,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatExpansionModule } from '@angular/material/expansion';
 
 import { MatSidenav } from '@angular/material/sidenav';
 import { AuthService } from '../../core/services/auth.service';
@@ -36,7 +35,6 @@ interface NavItem {
     MatListModule,
     MatIconModule,
     MatButtonModule,
-    MatExpansionModule,
     UserItemsComponent
   ]
 })
@@ -152,6 +150,20 @@ export class AdminLayoutComponent {
   private checkAccess(item: NavItem, userRoles: string[]): boolean {
     if (!item.rolesAllowed || item.rolesAllowed.length === 0) return true;
     return item.rolesAllowed.some(role => userRoles.includes(role.toLowerCase()));
+  }
+
+  private openedItems = new Set<string>();
+
+  toggleItem(label: string) {
+    if (this.openedItems.has(label)) {
+      this.openedItems.delete(label);
+    } else {
+      this.openedItems.add(label);
+    }
+  }
+
+  isOpen(label: string): boolean {
+    return this.openedItems.has(label);
   }
 
   toggleSidenav() {

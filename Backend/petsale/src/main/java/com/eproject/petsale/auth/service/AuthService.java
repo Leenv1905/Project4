@@ -43,6 +43,7 @@ public class AuthService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
     @Autowired
     private UserMapperImpl userMapperImpl;
 
@@ -51,7 +52,6 @@ public class AuthService {
 
     @Autowired
     private EmailService emailService;
-
 
     @Autowired
     private SsoAccountRepository ssoAccountRepository;
@@ -73,21 +73,16 @@ public class AuthService {
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
 
-        // Cập nhật Role cho ManyToMany
-        Role role = roleRepository.findByName("USER");
-        if (role == null) {
-            // Tạo role mặc định nếu chưa có trong DB để tránh lỗi Null
-            role = new Role();
-            role.setName("USER");
-            roleRepository.save(role);
-        }
-        // Thêm role vào Set thay vì set đơn lẻ
-        user.getRoles().add(role);
+        // ✅ FIX: Xử lý Optional từ RoleRepository
+        Role role = roleRepository.findByName("ROLE_BUYER") // Thường là ROLE_BUYER hoặc ROLE_USER
+                .orElseGet(() -> {
+                    Role newRole = new Role();
+                    newRole.setName("ROLE_BUYER");
+                    return roleRepository.save(newRole);
+                });
 
+        user.getRoles().add(role);
         userRepository.save(user);
-        String currentRoles = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.joining(","));
 
         // Personalization
         if (request.getPersonalization() != null) {
@@ -101,9 +96,11 @@ public class AuthService {
             buyerProfileRepository.save(profile);
         }
 
+        String roleNames = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.joining(","));
 
-
-        String accessToken = jwtUtil.generateToken(user.getEmail(), currentRoles);
+        String accessToken = jwtUtil.generateToken(user.getEmail(), roleNames);
         String refreshToken = UUID.randomUUID().toString();
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
@@ -113,37 +110,23 @@ public class AuthService {
         res.setRefreshToken(refreshToken);
         res.setUserId(user.getId());
         res.setName(user.getName());
-
-        // Lấy tên role đầu tiên để trả về DTO (hoặc nối chuỗi các role)
-        String roleName = user.getRoles().stream()
-                .map(Role::getName)
-                .findFirst()
-                .orElse("USER");
-        res.setRole(roleName);
+        res.setRole(roleNames);
 
         return res;
     }
 
     public AuthResponse login(LoginRequest request) {
-
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AuthException("User not found"));
-
-        System.out.println("DEBUG: Login attempt for email: " + request.getEmail());
-        System.out.println("DEBUG: Incoming password: " + request.getPassword());
-        System.out.println("DEBUG: Stored hash: " + user.getPasswordHash());
 
         boolean checkPassword = passwordEncoder.matches(
                 request.getPassword(),
                 user.getPasswordHash());
 
         if (!checkPassword) {
-            System.out.println("DEBUG: Password match FAILED");
             throw new AuthException("Password incorrect");
         }
-        System.out.println("DEBUG: Password match SUCCESS");
 
-        // KIỂM TRA AN TOÀN: Tránh lỗi NullPointerException nếu user không có role
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
             throw new AuthException("User has no roles assigned");
         }
@@ -152,7 +135,6 @@ public class AuthService {
                 .map(Role::getName)
                 .collect(Collectors.joining(","));
 
-        // Truyền roleNames vừa lấy được từ DB vào Token
         String accessToken = jwtUtil.generateToken(user.getEmail(), roleNames);
         String refreshToken = UUID.randomUUID().toString();
         user.setRefreshToken(refreshToken);
@@ -169,7 +151,6 @@ public class AuthService {
     }
 
     public String refreshAccessToken(String refreshToken) {
-
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new AuthException("Refresh token missing");
         }
@@ -188,7 +169,6 @@ public class AuthService {
         if (refreshToken == null || refreshToken.isBlank()) {
             return;
         }
-
         userRepository.findByRefreshToken(refreshToken).ifPresent(user -> {
             user.setRefreshToken(null);
             userRepository.save(user);
@@ -211,11 +191,6 @@ public class AuthService {
         return response;
     }
 
-    public String getEmailFromAccessToken(String accessToken) {
-        jwtUtil.validateToken(accessToken);
-        return jwtUtil.extractEmail(accessToken);
-    }
-
     @Transactional
     public AuthResponse loginWithGoogle(String idToken) throws Exception {
         com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload payload = googleAuthService.verifyToken(idToken);
@@ -227,17 +202,19 @@ public class AuthService {
             User newUser = new User();
             newUser.setEmail(email);
             newUser.setName(name);
-            Role role = roleRepository.findByName("USER");
-            if (role == null) {
-                role = new Role();
-                role.setName("USER");
-                roleRepository.save(role);
-            }
+
+            // ✅ FIX: Xử lý Optional cho Google Login
+            Role role = roleRepository.findByName("ROLE_BUYER")
+                    .orElseGet(() -> {
+                        Role r = new Role();
+                        r.setName("ROLE_BUYER");
+                        return roleRepository.save(r);
+                    });
+
             newUser.getRoles().add(role);
             return userRepository.save(newUser);
         });
 
-        // Link SSO account if not linked
         if (ssoAccountRepository.findByProviderAndProviderUserId("GOOGLE", googleId).isEmpty()) {
             SsoAccount sso = new SsoAccount();
             sso.setProvider("GOOGLE");
@@ -271,16 +248,16 @@ public class AuthService {
                 .orElseThrow(() -> new AuthException("User not found"));
 
         String otp = String.format("%06d", new java.util.Random().nextInt(999999));
-        
+
         OtpVerification otpEntry = otpVerificationRepository.findByUserIdAndOtpType(user.getId(), "FORGOT_PASSWORD")
                 .orElse(new OtpVerification());
-        
+
         otpEntry.setUser(user);
         otpEntry.setOtpCode(otp);
         otpEntry.setOtpType("FORGOT_PASSWORD");
         otpEntry.setExpiresAt(java.time.LocalDateTime.now().plusMinutes(15));
         otpEntry.setVerified(false);
-        
+
         otpVerificationRepository.save(otpEntry);
         emailService.sendOtp(email, otp);
     }
@@ -299,8 +276,14 @@ public class AuthService {
 
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-        
+
         otpEntry.setVerified(true);
         otpVerificationRepository.save(otpEntry);
+    }
+    public String getEmailFromAccessToken(String accessToken) {
+        // Kiểm tra tính hợp lệ của token trước khi trích xuất
+        jwtUtil.validateToken(accessToken);
+        // Trích xuất email từ claims của token
+        return jwtUtil.extractEmail(accessToken);
     }
 }

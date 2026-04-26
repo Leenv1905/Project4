@@ -13,9 +13,14 @@ import java.time.LocalDateTime;
 @Setter
 public class BuyerProfile {
 
-
     @Id
+    @Column(name = "user_id")
     private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "daily_time")
     private Integer dailyTime;
@@ -34,9 +39,4 @@ public class BuyerProfile {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "id")
-    private User user;
 }

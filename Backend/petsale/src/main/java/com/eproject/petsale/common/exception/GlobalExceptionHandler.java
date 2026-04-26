@@ -46,6 +46,21 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(ExternalApiException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ApiErrorResponse handleExternalApiError(
+            ExternalApiException ex,
+            HttpServletRequest request
+    ) {
+        log.warn("External API error: {}", ex.getMessage());
+        return new ApiErrorResponse(
+                503,
+                "Service Unavailable",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrorResponse handleBadRequest(

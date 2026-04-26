@@ -1,5 +1,6 @@
 package com.eproject.petsale.pet.service;
 
+import com.eproject.petsale.common.mapper.PetPublicMapper;
 import com.eproject.petsale.pet.dto.PetImageDTO;
 import com.eproject.petsale.pet.dto.PetPublicResponse;
 import com.eproject.petsale.pet.dto.PetRequest;
@@ -15,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,15 +27,22 @@ public class PetService {
     private final PetRepository petRepository;
     private final UserRepository userRepository;
     private final com.eproject.petsale.personalization.repository.BuyerProfileRepository buyerProfileRepository;
+    private final com.eproject.petsale.common.service.R2StorageService r2StorageService;
 
     @Transactional
     public PetResponse createPet(PetRequest request) {
+        if (petRepository.existsByPetCode(request.getPetCode())) {
+            throw new RuntimeException("Mã chip " + request.getPetCode() + " đã tồn tại trên hệ thống. Vui lòng kiểm tra lại!");
+        }
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng: " + email));
 
         Pet pet = new Pet();
+        // Gán mã chip từ request (đã được @Valid ở Controller kiểm tra định dạng 15 số)
+        pet.setPetCode(request.getPetCode());
+
         pet.setName(request.getName());
         pet.setSpecies(request.getSpecies());
         pet.setBreed(request.getBreed());
@@ -53,20 +62,41 @@ public class PetService {
         requirement.setMinExperienceLevel(request.getMinExperienceLevel());
         pet.setRequirements(requirement);
 
-        if (request.getImages() != null) {
-            List<PetImage> images = request.getImages().stream().map(imgDto -> {
+        Pet savedPet = petRepository.save(pet);
+
+        // Upload ảnh sau khi đã có petId
+        if (request.getImages() != null && !request.getImages().isEmpty()) {
+            List<PetImage> uploadedImages = new ArrayList<>();
+            
+            for (int i = 0; i < request.getImages().size(); i++) {
+                PetImageDTO imgDto = request.getImages().get(i);
                 PetImage img = new PetImage();
-                img.setPet(pet);
-                img.setImageUrl(imgDto.getImageUrl());
-                img.setObjectKey(imgDto.getObjectKey());
+                img.setPet(savedPet);
+                
+                // Kiểm tra nếu là base64 thì upload lên storage
+                String imageUrl = imgDto.getImageUrl();
+                if (imageUrl != null && imageUrl.startsWith("data:image")) {
+                    // Upload base64 lên R2 storage
+                    com.eproject.petsale.common.service.R2StorageService.PetImageUploadResult result = 
+                        r2StorageService.uploadBase64Image(imageUrl, savedPet.getId());
+                    img.setImageUrl(result.imageUrl);
+                    img.setObjectKey(result.objectKey);
+                } else {
+                    // Nếu đã là URL thì dùng luôn
+                    img.setImageUrl(imageUrl);
+                }
+                
+                img.setOriginalImageUrl(imgDto.getOriginalImageUrl());
                 img.setPrimary(imgDto.isPrimary());
-                img.setDisplayOrder(imgDto.getDisplayOrder());
-                return img;
-            }).collect(Collectors.toList());
-            pet.setImages(images);
+                img.setDisplayOrder(i);
+                img.setAiProcessed(imgDto.isAiProcessed());
+                uploadedImages.add(img);
+            }
+            
+            savedPet.setImages(uploadedImages);
+            savedPet = petRepository.save(savedPet);
         }
 
-        Pet savedPet = petRepository.save(pet);
         return mapToResponse(savedPet);
     }
 
@@ -104,7 +134,7 @@ public class PetService {
         pet.setBreed(request.getBreed());
         pet.setDescription(request.getDescription());
         pet.setPrice(request.getPrice());
-        
+
         PetRequirement requirement = pet.getRequirements();
         if (requirement == null) {
             requirement = new PetRequirement();
@@ -127,7 +157,7 @@ public class PetService {
                 img.setPrimary(imgDto.isPrimary());
                 img.setDisplayOrder(imgDto.getDisplayOrder());
                 return img;
-            }).collect(Collectors.toList());
+            }).toList();
             pet.getImages().addAll(newImages);
         }
 
@@ -161,7 +191,7 @@ public class PetService {
         response.setOwnerId(pet.getUser().getId());
         response.setOwnerName(pet.getUser().getName());
         response.setIsVerified(pet.getIsVerified());
-        
+
         if (pet.getRequirements() != null) {
             response.setMinDailyTime(pet.getRequirements().getMinDailyTime());
             response.setMinLivingSpace(pet.getRequirements().getMinLivingSpace());

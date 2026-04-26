@@ -38,30 +38,22 @@ export class HomePage implements OnInit {
   http = inject(HttpClient);
 
   ngOnInit() {
-    this.checkProfile();
-  }
+    if (sessionStorage.getItem('buyer_profile_checked')) return;
 
-  private checkProfile() {
-    this.auth.loadCurrentUser().subscribe({
-      next: (user) => {
-        if (!user) {
-          return;
-        }
+    this.auth.authReady$.subscribe(() => {
+      const user = this.auth.user();
+      if (!user) return;
 
-        this.http.get<any>('http://localhost:8080/gupet/api/v1/buyer-profiles/me', { withCredentials: true })
-          .subscribe({
-            next: (res) => {
-              if (!res || !res.data) {
-                this.showSurvey();
-              }
-            },
-            error: (error: HttpErrorResponse) => {
-              if (error.status !== 401) {
-                this.showSurvey();
-              }
-            }
-          });
-      }
+      sessionStorage.setItem('buyer_profile_checked', '1');
+      this.http.get<any>('http://localhost:8080/gupet/api/v1/buyer-profiles/me', { withCredentials: true })
+        .subscribe({
+          next: (res) => {
+            if (!res || !res.data) this.showSurvey();
+          },
+          error: (error: HttpErrorResponse) => {
+            if (error.status !== 401) this.showSurvey();
+          }
+        });
     });
   }
 

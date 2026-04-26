@@ -1,5 +1,4 @@
-export type Role = 'user' | 'shop' | 'admin' | 'operators';
-
+export type Role = string;
 export interface User {
   id: number;
   email: string;
@@ -13,4 +12,5 @@ export interface User {
   createdAt?: Date;
   status?: 'active' | 'inactive';
   enabled?: boolean;
+  avatarUrl?:string;
 }

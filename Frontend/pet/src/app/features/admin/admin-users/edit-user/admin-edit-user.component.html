@@ -1,6 +1,6 @@
 <div class="edit-user-page">
   <div class="header">
-    <h2>Chinh sua nguoi dung</h2>
+    <h2>{{ viewOnly ? 'Xem thong tin nguoi dung' : 'Chinh sua nguoi dung' }}</h2>
   </div>
 
   <div class="form-container">
@@ -10,48 +10,50 @@
         <p class="tip">Avatar cua nguoi dung</p>
 
         <div class="form-actions">
-          <button class="cancel-btn" (click)="cancel()">Huy</button>
-          <button class="update-btn" (click)="updateUser()" [disabled]="isSaving">Cap nhat</button>
+          <button class="cancel-btn" (click)="cancel()">{{ viewOnly ? 'Quay lai' : 'Huy' }}</button>
+          <button *ngIf="!viewOnly" class="update-btn" (click)="updateUser()" [disabled]="isSaving">Cap nhat</button>
         </div>
       </div>
 
       <div class="fields">
         <div class="form-group">
-          <label>Ho va ten <span class="required">*</span></label>
-          <input [(ngModel)]="editUser.name" placeholder="Nhap ho va ten" />
+          <label>Ho va ten <span *ngIf="!viewOnly" class="required">*</span></label>
+          <input [(ngModel)]="editUser.name" placeholder="Nhap ho va ten" [disabled]="viewOnly" />
         </div>
 
         <div class="form-group">
-          <label>Email <span class="required">*</span></label>
-          <input type="email" [(ngModel)]="editUser.email" placeholder="example@email.com" />
+          <label>Email <span *ngIf="!viewOnly" class="required">*</span></label>
+          <input type="email" [(ngModel)]="editUser.email" placeholder="example@email.com" [disabled]="viewOnly" />
         </div>
 
         <div class="form-group">
           <label>Vai tro</label>
-          <select [(ngModel)]="editUser.role">
+          <select [(ngModel)]="editUser.role" [disabled]="viewOnly">
             <option *ngFor="let role of roles" [value]="role">{{ role | titlecase }}</option>
           </select>
         </div>
 
         <div class="form-group">
           <label>So dien thoai</label>
-          <input [(ngModel)]="editUser.phone" placeholder="Nhap so dien thoai" />
+          <input [(ngModel)]="editUser.phone" placeholder="Nhap so dien thoai" [disabled]="viewOnly" />
         </div>
 
         <div class="form-group">
           <label>Dia chi</label>
-          <input [(ngModel)]="editUser.address" placeholder="Nhap dia chi" />
+          <input [(ngModel)]="editUser.address" placeholder="Nhap dia chi" [disabled]="viewOnly" />
         </div>
 
-        <div class="form-group">
-          <label>Mat khau moi (neu muon doi)</label>
-          <input type="password" [(ngModel)]="editUser.password" placeholder="De trong neu khong doi" />
-        </div>
+        <ng-container *ngIf="!viewOnly">
+          <div class="form-group">
+            <label>Mat khau moi (neu muon doi)</label>
+            <input type="password" [(ngModel)]="editUser.password" placeholder="De trong neu khong doi" />
+          </div>
 
-        <div class="form-group">
-          <label>Xac nhan mat khau moi</label>
-          <input type="password" [(ngModel)]="editUser.confirmPassword" placeholder="Nhap lai mat khau moi" />
-        </div>
+          <div class="form-group">
+            <label>Xac nhan mat khau moi</label>
+            <input type="password" [(ngModel)]="editUser.confirmPassword" placeholder="Nhap lai mat khau moi" />
+          </div>
+        </ng-container>
       </div>
     </div>
   </div>

@@ -33,12 +33,25 @@ export class AdminUsersComponent implements OnInit {
     this.loading = true;
     this.adminService.getUsers(this.page - 1, this.pageSize).subscribe({
       next: (res: any) => {
-        this.users = res.content || [];
-        this.total = res.totalElements || 0;
+        this.users = (res.content ?? []).map((u: User) => ({
+          id: u.id,
+          email: u.email,
+          name: u.name,
+          role: u.role,
+          phone: u.phone,
+          address: u.address,
+          avatar: u.avatarUrl,
+          enabled: u.enabled ?? false
+        }));
+        this.total = res.totalElements ?? 0;
         this.loading = false;
+        console.log('CONTENT RAW:', res.content);
+        console.log('KEYS:', Object.keys(res));
+        console.log("user",this.users)
       },
+
       error: (err) => {
-        console.error('Error loading users', err);
+        console.error('Error loading users:', err);
         this.loading = false;
       }
     });
@@ -49,12 +62,11 @@ export class AdminUsersComponent implements OnInit {
   }
 
   toggleUserStatus(user: User) {
-    const newStatus = !user.enabled;
-    this.adminService.updateUserStatus(user.id, newStatus).subscribe({
-      next: () => {
-        user.enabled = newStatus;
-      },
+    user.enabled = !user.enabled;
+    this.adminService.updateUserStatus(user.id, user.enabled).subscribe({
+      next: () => {},
       error: () => {
+        user.enabled = !user.enabled;
         this.toast.error('Không thể cập nhật trạng thái người dùng.');
       }
     });
@@ -65,7 +77,7 @@ export class AdminUsersComponent implements OnInit {
   }
 
   viewUser(id: number) {
-    this.router.navigate(['/admin/users/edit', id]);
+    this.router.navigate(['/admin/users/view', id]);
   }
 
   editUser(id: number) {

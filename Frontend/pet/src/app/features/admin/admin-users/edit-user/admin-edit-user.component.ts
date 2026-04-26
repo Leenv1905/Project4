@@ -40,8 +40,10 @@ export class AdminEditUserComponent implements OnInit {
 
   roles: Role[] = ['user', 'shop', 'admin', 'operators'];
   isSaving = false;
+  viewOnly = false;
 
   ngOnInit() {
+    this.viewOnly = !!this.route.snapshot.data['viewOnly'];
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (!id) {
       return;

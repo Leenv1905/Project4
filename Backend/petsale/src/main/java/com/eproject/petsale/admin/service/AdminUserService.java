@@ -111,18 +111,19 @@ public class AdminUserService {
     }
 
     private Role resolveRole(String roleName) {
+        // Chuẩn hóa tên Role (mặc định là ROLE_USER nếu rỗng)
         String normalizedRole = (roleName == null || roleName.isBlank())
-                ? "USER"
+                ? "ROLE_USER"
                 : roleName.trim().toUpperCase(Locale.ROOT);
 
-        Role role = roleRepository.findByName(normalizedRole);
-        if (role == null) {
-            role = new Role();
-            role.setName(normalizedRole);
-            role = roleRepository.save(role);
-        }
-
-        return role;
+        // Xử lý Optional từ repository
+        return roleRepository.findByName(normalizedRole)
+                .orElseGet(() -> {
+                    // Nếu không tìm thấy trong DB, tiến hành tạo mới
+                    Role newRole = new Role();
+                    newRole.setName(normalizedRole);
+                    return roleRepository.save(newRole);
+                });
     }
 
     private AdminUserResponse mapToResponse(User user) {
@@ -133,7 +134,7 @@ public class AdminUserService {
         response.setPhone(user.getPhone());
         response.setAddress(user.getAddress());
         response.setAvatarUrl(user.getAvatarPath());
-        response.setEnabled(user.getEnabled());
+        response.setEnabled(user.getEnabled() != null ? user.getEnabled() : true);
         response.setRole(user.getRoles().stream()
                 .findFirst()
                 .map(Role::getName)

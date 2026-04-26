@@ -4,9 +4,7 @@ import lombok.Data;
 
 @Data
 public class CheckoutRequest {
-    private String address;
-    private String phone;
-    private String customerName;
+    private Long addressId;
     private String note;
     private String paymentMethod;
 }
