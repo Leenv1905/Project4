@@ -157,16 +157,15 @@ export class ShopService {
   totalItems = computed(() => this.filteredProducts().length);
 
   private mapApiToProduct(item: PetPublicApi): Product {
-    const species = (item.species || 'Khác') as Product['species'];
-
     return {
       id: Number(item.id),
+      petCode: item.petCode,
       name: item.name || 'Pet',
       description: '',
       price: Number(item.price || 0),
       images: item.imageUrl ? [item.imageUrl] : [],
       status: item.status || 'available',
-      species: species === 'Chó' || species === 'Mèo' ? species : 'Khác',
+      species: item.species || 'Khác',
       breed: item.breed || '',
       color: item.color || '',
       gender: item.gender || 'male',
@@ -176,7 +175,11 @@ export class ShopService {
       neutered: false,
       shopId: Number(item.shopId || 0),
       shopName: item.shopName || 'Pet Shop',
-      createdAt: item.createdAt ? new Date(item.createdAt) : new Date()
+      createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+      isVerified: item.isVerified,
+      trustScore: item.trustScore,
+      isHealthVerified: item.isHealthVerified,
+      isPedigreeVerified: item.isPedigreeVerified
     };
   }
 

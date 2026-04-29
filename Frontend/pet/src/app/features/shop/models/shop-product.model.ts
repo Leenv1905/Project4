@@ -1,19 +1,10 @@
 export interface ShopProduct {
-
   id: number;
-
+  petCode?: string;
   name: string;
-
   price: number;
-
   image: string;
-
   breed: string;
-
-  dogType: string;
-
+  species: string;
   shopName: string;
-
-  // isFeatured?: boolean;
-  // isNew?: boolean;
 }

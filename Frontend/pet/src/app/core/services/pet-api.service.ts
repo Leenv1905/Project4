@@ -23,11 +23,16 @@ interface PetApiResponse {
   ownerId?: number;
   ownerName?: string;
   images?: PetImageApi[];
-  minDailyTime?: number;
-  minLivingSpace?: number;
-  minActivityTime?: number;
-  minMonthlyBudget?: number;
-  minExperienceLevel?: number;
+  gender?: string;
+  color?: string;
+  weight?: number;
+  age?: number;
+  status?: string;
+  trustScore?: number;
+  isHealthVerified?: boolean;
+  isPedigreeVerified?: boolean;
+  isNeutered?: boolean;
+  isVaccinated?: boolean;
   isVerified?: boolean;
 }
 
@@ -151,16 +156,19 @@ export class PetApiService {
       status: 'available',
       species,
       breed: pet.breed || '',
-      color: '',
-      gender: 'male',
-      weight: 0,
-      age: undefined,
-      vaccinated: false,
-      neutered: false,
+      color: pet.color || '',
+      gender: pet.gender || 'male',
+      weight: pet.weight || 0,
+      age: pet.age,
+      vaccinated: Boolean(pet.isVaccinated),
+      neutered: Boolean(pet.isNeutered),
       shopId: Number(pet.ownerId || 0),
       shopName: pet.ownerName || 'Pet Shop',
       createdAt: pet.createdAt ? new Date(pet.createdAt) : new Date(),
-      isVerified: pet.isVerified
+      isVerified: pet.isVerified,
+      trustScore: pet.trustScore,
+      isHealthVerified: pet.isHealthVerified,
+      isPedigreeVerified: pet.isPedigreeVerified
     };
   }
 

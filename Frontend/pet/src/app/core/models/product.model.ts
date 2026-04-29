@@ -5,19 +5,19 @@ export interface Product {
   price: number;
   // originalPrice?: number;        // Giá gốc (nếu có khuyến mãi)
 
+  petCode?: string;
   images: string[];              // Mảng ảnh (ít nhất 1 ảnh)
   video?: string;                // Link video nếu có
 
-  status: 'available' | 'sold' | 'reserved' | 'not_for_sale';
+  status: string;
 
-  species: 'Chó' | 'Mèo' | 'Khác';   // Loài
+  species: string;                   // 'DOG', 'CAT', 'OTHER' ...
   breed: string;                     // Giống (Poodle, Husky, ...)
   color: string;                     // Màu lông
-  gender: 'male' | 'female';         // Giới tính
-  weight: number;                    // Cân nặng (kg) - thay cho dogType cũ
+  gender: string;                    // Giới tính
+  weight: number;                    // Cân nặng (kg)
 
-  age?: number;                      // Tuổi (tháng) (SAU THAY BẰNG birth_of_date)
-  // birth_of_date?: Date;               // Ngày sinh
+  age?: number;                      // Tuổi (tháng)
   vaccinated: boolean;               // Đã tiêm vaccine chưa
   neutered: boolean;                 // Đã triệt sản chưa
 
@@ -28,6 +28,8 @@ export interface Product {
   updatedAt?: Date;
   isVerified?: boolean;
   trustScore?: number;
+  isHealthVerified?: boolean;
+  isPedigreeVerified?: boolean;
 }
 
 // export interface Product {

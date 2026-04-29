@@ -192,13 +192,16 @@ public class PetService {
         response.setOwnerName(pet.getUser().getName());
         response.setIsVerified(pet.getIsVerified());
 
-        if (pet.getRequirements() != null) {
-            response.setMinDailyTime(pet.getRequirements().getMinDailyTime());
-            response.setMinLivingSpace(pet.getRequirements().getMinLivingSpace());
-            response.setMinActivityTime(pet.getRequirements().getMinActivityTime());
-            response.setMinMonthlyBudget(pet.getRequirements().getMinMonthlyBudget());
-            response.setMinExperienceLevel(pet.getRequirements().getMinExperienceLevel());
-        }
+        response.setAge(pet.getAge());
+        response.setColor(pet.getColor());
+        response.setGender(pet.getGender());
+        response.setStatus(pet.getStatus());
+        response.setWeight(pet.getWeight());
+        response.setTrustScore(pet.getTrustScore());
+        response.setIsHealthVerified(pet.getIsHealthVerified());
+        response.setIsPedigreeVerified(pet.getIsPedigreeVerified());
+        response.setIsNeutered(pet.getIsNeutered());
+        response.setIsVaccinated(pet.getIsVaccinated());
 
         if (pet.getImages() != null) {
             response.setImages(pet.getImages().stream().map(img -> {
@@ -254,11 +257,11 @@ public class PetService {
             response.setImageUrl(primary.getImageUrl());
         }
 
-        response.setStatus(pet.getStatus() != null ? pet.getStatus().toLowerCase() : "pending");
-        response.setGender("male");
-        response.setColor("");
-        response.setWeight(0.0);
-        response.setAge(null);
+        response.setStatus(pet.getStatus());
+        response.setGender(pet.getGender());
+        response.setColor(pet.getColor());
+        response.setWeight(pet.getWeight());
+        response.setAge(pet.getAge());
 
         return response;
     }

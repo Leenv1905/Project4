@@ -20,11 +20,16 @@ public class PetResponse {
     private LocalDateTime createdAt;
     private Long ownerId;
     private String ownerName;
-    private Integer minDailyTime;
-    private Integer minLivingSpace;
-    private Integer minActivityTime;
-    private Integer minMonthlyBudget;
-    private Integer minExperienceLevel;
+    private Integer age;
+    private String color;
+    private String gender;
+    private String status;
+    private Double weight;
+    private Integer trustScore;
+    private Boolean isHealthVerified;
+    private Boolean isPedigreeVerified;
+    private Boolean isNeutered;
+    private Boolean isVaccinated;
     private List<PetImageDTO> images;
     private Boolean isVerified;
 }
