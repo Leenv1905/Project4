@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PetApiService } from '../../../../../core/services/pet-api.service';
 import { NotificationModalComponent } from '../../../../../shared/notification-modal/notification-modal.component';
+import { LoadingModalComponent } from '../../../../../shared/loading-modal/loading-modal.component';
 
 @Component({
   standalone: true,
   selector: 'app-add-product',
-  imports: [CommonModule, FormsModule, NotificationModalComponent],
+  imports: [CommonModule, FormsModule, NotificationModalComponent, LoadingModalComponent],
   templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.scss']
 })
@@ -43,6 +44,8 @@ export class AddProductComponent {
   tempAiUrlRaw: string | null = null; // Để gửi cho BE khi đăng bán
   isAiLoading = false;
 
+  isLoading = false;
+
   // MODAL
   modal: { show: boolean; title: string; message: string; type: 'success' | 'error' | 'info'; onClose?: () => void } = {
     show: false, title: '', message: '', type: 'info'
@@ -60,24 +63,10 @@ export class AddProductComponent {
 
   validatePetCode(event: any) {
     let value = event.target.value.toUpperCase();
-    
-    // Chỉ cho phép chữ cái, số và dấu gạch ngang
-    value = value.replace(/[^A-Z0-9-]/g, '');
-    
-    // Format: PET-YYYYMMDD-XXXX
-    // Tự động thêm dấu gạch ngang ở vị trí phù hợp
-    if (value.length > 3 && value[3] !== '-') {
-      value = value.slice(0, 3) + '-' + value.slice(3);
+    value = value.replace(/[^A-Z0-9]/g, '');
+    if (value.length > 15) {
+      value = value.slice(0, 15);
     }
-    if (value.length > 12 && value[12] !== '-') {
-      value = value.slice(0, 12) + '-' + value.slice(12);
-    }
-    
-    // Giới hạn độ dài tối đa: PET-20260426-0001 = 17 ký tự
-    if (value.length > 17) {
-      value = value.slice(0, 17);
-    }
-    
     this.product.petCode = value;
     event.target.value = value;
   }
@@ -142,14 +131,9 @@ export class AddProductComponent {
   }
 
   publish() {
-    // Kiểm tra format: PET-YYYYMMDD-XXXX (17 ký tự)
-    const petCodePattern = /^PET-\d{8}-\d{4}$/;
-    
-    console.log('Pet Code hiện tại:', this.product.petCode);
-    console.log('Test regex:', petCodePattern.test(this.product.petCode));
-    
+    const petCodePattern = /^[A-Z0-9]{15}$/;
     if (!this.product.petCode || !petCodePattern.test(this.product.petCode)) {
-      this.showModal('Lỗi', 'Mã chip phải có định dạng: PET-YYYYMMDD-XXXX (ví dụ: PET-20260426-0001)', 'error');
+      this.showModal('Lỗi', 'Mã chip phải gồm đúng 15 ký tự chữ hoa và số (ví dụ: CZAREP8B1LVXNV3)', 'error');
       return;
     }
 
@@ -159,11 +143,16 @@ export class AddProductComponent {
     };
 
     console.log('Payload gửi BE:', JSON.stringify(payload, null, 2));
+    this.isLoading = true;
     this.petService.createPetWithRequest(payload).subscribe({
       next: () => {
+        this.isLoading = false;
         this.showModal('Thành công', 'Đăng bán thú cưng thành công!', 'success', () => this.backToProducts());
       },
-      error: (err) => this.showModal('Lỗi', err.error?.message || 'Lỗi lưu dữ liệu', 'error')
+      error: (err) => {
+        this.isLoading = false;
+        this.showModal('Lỗi', err.error?.message || 'Lỗi lưu dữ liệu', 'error');
+      }
     });
   }
 
@@ -181,5 +170,5 @@ export class AddProductComponent {
     this.showModal('Xác nhận', 'Bạn có chắc muốn hủy bỏ?', 'info', () => this.backToProducts());
   }
 
-  backToProducts() { this.router.navigate(['../'], { relativeTo: this.route }); }
+  backToProducts() { this.router.navigate(['/my-shop'], { queryParams: { tab: 'products' } }); }
 }

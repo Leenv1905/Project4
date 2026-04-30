@@ -1,32 +1,83 @@
 <div class="checkout">
-
   <div class="container">
 
     <!-- LEFT: FORM -->
     <div class="form">
-
       <h2>Thông tin nhận hàng</h2>
 
-      <input
-        placeholder="Họ và tên"
-        [(ngModel)]="form.customerName"
-        required />
+      <!-- ===== ĐỊA CHỈ ĐÃ LƯU ===== -->
+      <div class="address-section">
+        <div class="address-section-header">
+          <span class="address-section-title">Địa chỉ giao hàng</span>
+          <button class="btn-add-address" (click)="toggleNewAddressForm()">
+            {{ showNewAddressForm ? '✕ Hủy' : '+ Thêm địa chỉ mới' }}
+          </button>
+        </div>
 
-      <input
-        placeholder="Số điện thoại"
-        [(ngModel)]="form.phone"
-        required />
+        <!-- Đang tải -->
+        <p *ngIf="isLoadingAddresses" class="loading-text">Đang tải địa chỉ...</p>
 
-      <input
-        placeholder="Địa chỉ giao hàng"
-        [(ngModel)]="form.address"
-        required />
+        <!-- Danh sách địa chỉ đã lưu -->
+        <div *ngIf="!isLoadingAddresses && addresses.length > 0" class="address-list">
+          <label
+            *ngFor="let addr of addresses"
+            class="address-card"
+            [class.selected]="selectedAddressId === addr.id"
+            (click)="selectAddress(addr)">
+            <input type="radio" name="savedAddress"
+              [value]="addr.id"
+              [checked]="selectedAddressId === addr.id"
+              (change)="selectAddress(addr)" />
+            <div class="address-info">
+              <div class="address-name-row">
+                <span class="receiver-name">{{ addr.receiverName }}</span>
+                <span class="phone">{{ addr.phone }}</span>
+                <span *ngIf="addr.isDefault" class="default-badge">Mặc định</span>
+              </div>
+              <div class="address-text">{{ addr.address }}</div>
+            </div>
+          </label>
+        </div>
 
-      <textarea
-        placeholder="Ghi chú cho người bán (tùy chọn)"
-        [(ngModel)]="form.note">
-      </textarea>
+        <!-- Không có địa chỉ -->
+        <p *ngIf="!isLoadingAddresses && addresses.length === 0 && !showNewAddressForm"
+           class="no-address-hint">
+          Bạn chưa có địa chỉ nào. Hãy thêm địa chỉ giao hàng.
+        </p>
 
+        <!-- Form thêm địa chỉ mới -->
+        <div *ngIf="showNewAddressForm" class="new-address-form">
+          <h4>Địa chỉ mới</h4>
+          <input placeholder="Họ và tên người nhận *"
+            [(ngModel)]="newAddress.receiverName" />
+          <input placeholder="Số điện thoại *"
+            [(ngModel)]="newAddress.phone" />
+          <input placeholder="Địa chỉ giao hàng *"
+            [(ngModel)]="newAddress.address" />
+          <label class="default-checkbox">
+            <input type="checkbox" [(ngModel)]="newAddress.isDefault" />
+            Đặt làm địa chỉ mặc định
+          </label>
+          <button class="btn-save-address" (click)="saveNewAddress()" [disabled]="isSavingAddress">
+            {{ isSavingAddress ? 'Đang lưu...' : 'Lưu địa chỉ này' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== FORM NHẬN HÀNG (tự điền từ địa chỉ chọn) ===== -->
+      <div class="manual-form">
+        <input placeholder="Họ và tên *"
+          [(ngModel)]="form.customerName" required />
+        <input placeholder="Số điện thoại *"
+          [(ngModel)]="form.phone" required />
+        <input placeholder="Địa chỉ giao hàng *"
+          [(ngModel)]="form.address" required />
+        <textarea placeholder="Ghi chú cho người bán (tùy chọn)"
+          [(ngModel)]="form.note">
+        </textarea>
+      </div>
+
+      <!-- ===== THANH TOÁN ===== -->
       <h3>Phương thức thanh toán</h3>
       <div class="payment-methods">
         <label>
@@ -38,12 +89,10 @@
           Thanh toán qua VNPAY
         </label>
       </div>
-
     </div>
 
     <!-- RIGHT: SUMMARY -->
     <div class="summary">
-
       <h2>Đơn hàng của bạn ({{ selectedItems.length }} pet)</h2>
 
       <div class="order-items">
@@ -64,10 +113,9 @@
         <strong>{{ total() | number }} ₫</strong>
       </div>
 
-      <button class="place-order-btn" (click)="placeOrder()">
-        Đặt hàng và thanh toán
+      <button class="place-order-btn" (click)="placeOrder()" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Đang xử lý...' : 'Đặt hàng và thanh toán' }}
       </button>
-
     </div>
 
   </div>

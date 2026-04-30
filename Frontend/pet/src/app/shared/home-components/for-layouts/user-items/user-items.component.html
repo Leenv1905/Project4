@@ -38,14 +38,14 @@
       <mat-icon>person</mat-icon>
       <span>My Account</span>
     </button>
- 
+
     <button mat-menu-item
             *ngIf="isShop()"
             (click)="goToShop()">
       <mat-icon>store</mat-icon>
       <span>My Shop</span>
     </button>
- 
+
     <!-- Operator & Admin -->
     <button mat-menu-item
             *ngIf="isAdminOrOperator()"

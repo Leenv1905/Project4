@@ -1,0 +1,43 @@
+<!-- bỏ html/head/body, giữ nguyên UI -->
+
+<div class="bg-background font-body-md text-on-background min-h-screen flex flex-col">
+
+  <!-- TopAppBar -->
+  <header class="bg-white border-b px-6 h-16 flex justify-between items-center">
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-blue-800">qr_code_scanner</span>
+      <span class="text-lg font-bold text-blue-900">PetLogistics</span>
+    </div>
+  </header>
+
+  <main class="flex-1 p-6">
+
+    <!-- Scanner -->
+    <div class="relative aspect-video rounded-xl overflow-hidden bg-black">
+
+      <img
+        class="w-full h-full object-cover opacity-60"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6ZtySVKfPAocTI6usYhTakhpX8agtwH84xRkWfbKg_M03AydgW26gx_nFbdmFImr8eAVN5H2E4s1XJNKxm6ndszrR8_VaMDnxzZyhM7JouOP5IBH3S9XOOpuKHljlIUT_gDs_Q62hzDf3dQ3rPwLT0Sp2rrR3Uio2hgO3jcXE0MGLzdpZGSh_h5tCNhTpOv2KfT6hossFRojvYQ_BXc_wpBx-F0oCFrnfXZBcw3D3GPJwNv4kYdYz_6qNrsDDuv53mnsin4irdbY0"
+      />
+
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div class="w-64 h-64 border-2 border-blue-400 relative">
+
+          <!-- scan line -->
+          <div class="absolute left-0 right-0 h-1 bg-blue-400 animate-pulse"></div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Manual -->
+    <div class="bg-white p-6 rounded-xl mt-6 flex justify-between">
+      <input class="border px-4 py-2 rounded" placeholder="Enter ID"/>
+      <button class="bg-blue-800 text-white px-4 py-2 rounded">
+        Verify
+      </button>
+    </div>
+
+  </main>
+</div>

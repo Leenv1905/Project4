@@ -8,10 +8,11 @@ import { CategoriesSectionComponent } from '../../shared/home-components/for-fea
 import { CustomerReviewsSliderComponent } from '../../shared/home-components/for-features/customer-reviews-slider/customer-reviews-slider.component';
 import { LatestPostsComponent } from '../../shared/home-components/for-features/latest-posts/latest-posts.component';
 import { InstagramGalleryComponent } from '../../shared/home-components/for-features/instagram-gallery/instagram-gallery.component';
-import { inject, OnInit } from '@angular/core';
+import { inject, effect } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { HttpErrorResponse, HttpClient } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
+import { BuyerProfileService } from '../../core/services/buyer-profile.service';
 import { SurveyModalComponent } from './components/survey-modal/survey-modal.component';
 
 @Component({
@@ -32,31 +33,24 @@ import { SurveyModalComponent } from './components/survey-modal/survey-modal.com
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss']
 })
-export class HomePage implements OnInit {
+export class HomePage {
   dialog = inject(MatDialog);
   auth = inject(AuthService);
-  http = inject(HttpClient);
+  buyerProfile = inject(BuyerProfileService);
 
-  ngOnInit() {
-    if (sessionStorage.getItem('buyer_profile_checked')) return;
+  private _ = effect(() => {
+    const user = this.auth.user();
+    if (!user) return;
 
-    this.auth.authReady$.subscribe(() => {
-      const user = this.auth.user();
-      if (!user) return;
-
-      sessionStorage.setItem('buyer_profile_checked', '1');
-      this.http.get<any>('http://localhost:8080/gupet/api/v1/buyer-profiles/me', { withCredentials: true })
-        .subscribe({
-          next: (res) => {
-            if (!res || !res.data) this.showSurvey();
-          },
-          error: (error: HttpErrorResponse) => {
-            if (error.status !== 401) this.showSurvey();
-          }
-        });
+    this.buyerProfile.getMyProfile().subscribe({
+      next: (res) => {
+        if (!res || !res.data) this.showSurvey();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (error.status !== 401) this.showSurvey();
+      }
     });
-  }
-
+  });
   private showSurvey() {
     this.dialog.open(SurveyModalComponent, {
       width: '500px',

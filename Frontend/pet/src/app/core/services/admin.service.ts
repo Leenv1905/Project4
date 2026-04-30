@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
+import { environment } from '../../../environments/environment';
 
 export interface DashboardStats {
   totalRevenue: number;
@@ -30,7 +31,7 @@ export interface AdminUserPayload {
 })
 export class AdminService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/gupet/v1/api/admin';
+  private readonly apiUrl = `${environment.apiBaseUrl}/v1/api/admin`;
 
   getStats(): Observable<DashboardStats> {
     return this.http.get<DashboardStats>(`${this.apiUrl}/dashboard/stats`, { withCredentials: true });

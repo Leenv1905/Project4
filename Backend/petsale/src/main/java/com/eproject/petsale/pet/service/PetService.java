@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +30,14 @@ public class PetService {
     private final UserRepository userRepository;
     private final com.eproject.petsale.personalization.repository.BuyerProfileRepository buyerProfileRepository;
     private final com.eproject.petsale.common.service.R2StorageService r2StorageService;
+    private final RegistryClientService registryClientService;
 
     @Transactional
     public PetResponse createPet(PetRequest request) {
         if (petRepository.existsByPetCode(request.getPetCode())) {
             throw new RuntimeException("Mã chip " + request.getPetCode() + " đã tồn tại trên hệ thống. Vui lòng kiểm tra lại!");
         }
+
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = userRepository.findByEmail(email)
@@ -42,17 +46,40 @@ public class PetService {
         Pet pet = new Pet();
         // Gán mã chip từ request (đã được @Valid ở Controller kiểm tra định dạng 15 số)
         pet.setPetCode(request.getPetCode());
-
+        pet.setUser(currentUser);
         pet.setName(request.getName());
         pet.setSpecies(request.getSpecies());
         pet.setBreed(request.getBreed());
         pet.setDescription(request.getDescription());
         pet.setPrice(request.getPrice());
-        pet.setPetCode(generatePetCode(request.getSpecies()));
-        pet.setUser(currentUser);
-        pet.setIsVerified(false); // Mặc định là false
-        pet.setStatus("PENDING"); // Mặc định là PENDING cho đến khi được duyệt
+        // Lấy token từ cookie access_token (frontend gửi withCredentials)
+        String token = null;
+        ServletRequestAttributes attrs =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
+        if (attrs != null) {
+            jakarta.servlet.http.Cookie[] cookies = attrs.getRequest().getCookies();
+            if (cookies != null) {
+                for (jakarta.servlet.http.Cookie cookie : cookies) {
+                    if ("access_token".equals(cookie.getName())) {
+                        token = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
+// verify
+        boolean isVerified = false;
+        if (token != null) {
+            isVerified = registryClientService.checkPetVerification(
+                    request.getPetCode(),
+                    token
+            );
+        }
+
+        pet.setIsVerified(isVerified);
+        pet.setStatus(isVerified ? "AVAILABLE" : "PENDING");
         PetRequirement requirement = new PetRequirement();
         requirement.setPet(pet);
         requirement.setMinDailyTime(request.getMinDailyTime());
@@ -67,32 +94,32 @@ public class PetService {
         // Upload ảnh sau khi đã có petId
         if (request.getImages() != null && !request.getImages().isEmpty()) {
             List<PetImage> uploadedImages = new ArrayList<>();
-            
+
             for (int i = 0; i < request.getImages().size(); i++) {
                 PetImageDTO imgDto = request.getImages().get(i);
                 PetImage img = new PetImage();
                 img.setPet(savedPet);
-                
+
                 // Kiểm tra nếu là base64 thì upload lên storage
                 String imageUrl = imgDto.getImageUrl();
                 if (imageUrl != null && imageUrl.startsWith("data:image")) {
                     // Upload base64 lên R2 storage
-                    com.eproject.petsale.common.service.R2StorageService.PetImageUploadResult result = 
-                        r2StorageService.uploadBase64Image(imageUrl, savedPet.getId());
+                    com.eproject.petsale.common.service.R2StorageService.PetImageUploadResult result =
+                            r2StorageService.uploadBase64Image(imageUrl, savedPet.getId());
                     img.setImageUrl(result.imageUrl);
                     img.setObjectKey(result.objectKey);
                 } else {
                     // Nếu đã là URL thì dùng luôn
                     img.setImageUrl(imageUrl);
                 }
-                
+
                 img.setOriginalImageUrl(imgDto.getOriginalImageUrl());
                 img.setPrimary(imgDto.isPrimary());
                 img.setDisplayOrder(i);
                 img.setAiProcessed(imgDto.isAiProcessed());
                 uploadedImages.add(img);
             }
-            
+
             savedPet.setImages(uploadedImages);
             savedPet = petRepository.save(savedPet);
         }
@@ -217,11 +244,11 @@ public class PetService {
         return response;
     }
 
-    private String generatePetCode(String species) {
-        String prefix = species.toUpperCase().substring(0, Math.min(species.length(), 3));
-        String randomNum = String.valueOf((int) (Math.random() * 90000) + 10000);
-        return prefix + "-" + randomNum;
-    }
+//    private String generatePetCode(String species) {
+//        String prefix = species.toUpperCase().substring(0, Math.min(species.length(), 3));
+//        String randomNum = String.valueOf((int) (Math.random() * 90000) + 10000);
+//        return prefix + "-" + randomNum;
+//    }
 
     public List<PetPublicResponse> getAllPublicPets() {
         return petRepository.findByIsVerifiedTrueOrderByCreatedAtDesc()
@@ -291,21 +318,31 @@ public class PetService {
                 .collect(Collectors.toList());
     }
 
-    private double calculateMatchScore(com.eproject.petsale.personalization.entity.BuyerProfile profile, PetRequirement req) {
+    private double calculateMatchScore(
+            com.eproject.petsale.personalization.entity.BuyerProfile profile,
+            PetRequirement req
+    ) {
         if (req == null) return 50.0;
 
         double score = 100.0;
 
-        if (profile.getLivingSpace() < req.getMinLivingSpace()) {
+        if (req.getMinLivingSpace() != null &&
+                profile.getLivingSpace() < req.getMinLivingSpace()) {
             score -= 20;
         }
-        if (profile.getDailyTime() < req.getMinDailyTime()) {
+
+        if (req.getMinDailyTime() != null &&
+                profile.getDailyTime() < req.getMinDailyTime()) {
             score -= 20;
         }
-        if (profile.getExperienceLevel() < req.getMinExperienceLevel()) {
+
+        if (req.getMinExperienceLevel() != null &&
+                profile.getExperienceLevel() < req.getMinExperienceLevel()) {
             score -= 20;
         }
-        if (profile.getMonthlyBudget() < req.getMinMonthlyBudget()) {
+
+        if (req.getMinMonthlyBudget() != null &&
+                profile.getMonthlyBudget() < req.getMinMonthlyBudget()) {
             score -= 15;
         }
 

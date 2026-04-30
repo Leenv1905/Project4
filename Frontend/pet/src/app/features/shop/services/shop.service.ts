@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 
 import { ShopFilter } from '../models/shop-filter.model';
 import { PaginationState } from '../models/pagination.model';
@@ -36,7 +37,7 @@ interface PetPublicApi {
 })
 export class ShopService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/gupet/api/v1/pets/public';
+  private readonly apiUrl = `${environment.apiBaseUrl}/api/v1/pets/public`;
 
   constructor(
     private router: Router,
@@ -164,8 +165,8 @@ export class ShopService {
       description: '',
       price: Number(item.price || 0),
       images: item.imageUrl ? [item.imageUrl] : [],
-      status: item.status || 'available',
-      species: item.species || 'Khác',
+      status: ((item.status?.toLowerCase() || 'available') as Product['status']),
+      species: (item.species === 'Chó' || item.species === 'Mèo' ? item.species : 'Khác'),
       breed: item.breed || '',
       color: item.color || '',
       gender: item.gender || 'male',
@@ -201,7 +202,7 @@ export class ShopService {
   }
 
   getRecommendedPets(): Observable<Product[]> {
-    return this.http.get<PetPublicApi[]>('http://localhost:8080/gupet/api/v1/pets/recommendations', { withCredentials: true }).pipe(
+    return this.http.get<PetPublicApi[]>(`${environment.apiBaseUrl}/api/v1/pets/recommendations`, { withCredentials: true }).pipe(
       map(res => (res || []).map(i => this.mapApiToProduct(i)))
     );
   }

@@ -4,6 +4,7 @@ import { User } from '../models/user.model';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, filter, map, take, tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,7 @@ export class AuthService {
   isAdmin = computed(() => this.hasAnyRole(['admin']));
   isOperator = computed(() => this.hasAnyRole(['operators']));
   isShop = computed(() => this.hasAnyRole(['shop']));
-  isUser = computed(() => this.hasAnyRole(['user']));
+  isUser = computed(() => this.hasAnyRole(['user', 'ROLE_BUYER']));
   isStaff = computed(() => this.hasAnyRole(['admin', 'operators']));
   isSeller = computed(() => this.hasAnyRole(['seller']));
 
@@ -43,7 +44,7 @@ export class AuthService {
 
   private http = inject(HttpClient);
   router = inject(Router);
-  private apiUrl = 'http://localhost:8080/gupet/v1/auth/user';
+  private readonly apiUrl = `${environment.apiBaseUrl}/v1/auth/user`;
 
   constructor() {
     this.initUserFromStorage();
@@ -229,7 +230,7 @@ export class AuthService {
 
   private extractRoles(roleValue: any): string[] {
     if (!roleValue) return [];
-    
+
     // Nếu là string thì split
     if (typeof roleValue === 'string') {
       return roleValue
@@ -237,14 +238,14 @@ export class AuthService {
         .map((r) => this.normalizeRole(r))
         .filter(Boolean);
     }
-    
+
     // Nếu là array thì map và normalize từng phần tử
     if (Array.isArray(roleValue)) {
       return roleValue
         .map((r) => (typeof r === 'string' ? this.normalizeRole(r) : ''))
         .filter(Boolean);
     }
-    
+
     return [];
   }
 

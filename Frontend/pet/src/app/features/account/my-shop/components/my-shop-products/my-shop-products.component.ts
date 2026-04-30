@@ -1,8 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Product } from '../../../../../core/models/product.model';
-import { PetApiService } from '../../../../../core/services/pet-api.service';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Product} from '../../../../../core/models/product.model';
+import {PetApiService} from '../../../../../core/services/pet-api.service';
 
 @Component({
   standalone: true,
@@ -24,6 +24,7 @@ export class MyShopProductsComponent implements OnInit {
 
   page = 1;
   pageSize = 10;
+  imageUrl?: string;
 
   ngOnInit() {
     this.loadProducts();
@@ -46,7 +47,36 @@ export class MyShopProductsComponent implements OnInit {
     this.isLoading = true;
     this.petApi.listMyPets().subscribe({
       next: (products) => {
-        this.products = products;
+        this.products = products.map((p: any) => ({
+          ...p,
+
+          images: p.images?.length
+            ? p.images.map((img: any) => img.imageUrl)
+            : ['assets/images/default-pet.png'],
+
+          imageUrl: p.images?.[0] || 'assets/images/default-pet.png',
+
+          shopId: p.ownerId,
+          shopName: p.ownerName,
+
+          status: p.isVerified ? 'available' : 'sold',
+
+          color: p.color || '',
+          gender: p.gender ?? 'female',
+          weight: p.weight || 0,
+          vaccinated: p.vaccinated ?? false,
+          neutered: p.neutered ?? false,
+
+          // 👇 đảm bảo đúng kiểu Date (tránh undefined)
+          createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
+
+          // 👇 nếu có updatedAt từ BE thì map luôn
+          updatedAt: p.updatedAt ? new Date(p.updatedAt) : undefined,
+
+          // 👇 giữ lại để dùng sau
+          isVerified: p.isVerified
+        }));
+
         this.isLoading = false;
       },
       error: () => {
@@ -59,14 +89,14 @@ export class MyShopProductsComponent implements OnInit {
   addProduct() {
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab: 'add-product' }
+      queryParams: {tab: 'add-product'}
     });
   }
 
   editProduct(id: number) {
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab: 'edit-product', id }
+      queryParams: {tab: 'edit-product', id}
     });
   }
 

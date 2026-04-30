@@ -17,16 +17,16 @@
       <div class="card">
         <h3>Thông tin định danh</h3>
         <div class="form-group">
-          <label>Mã chip thú cưng (PET-YYYYMMDD-XXXX) *</label>
+          <label>Mã chip thú cưng *</label>
           <input
-            placeholder="Ví dụ: PET-20260426-0001"
+            placeholder="Ví dụ: CZAREP8B1LVXNV3"
             [(ngModel)]="product.petCode"
-            maxlength="17"
+            maxlength="15"
             (input)="validatePetCode($event)"
             class="pet-code-input"
           />
-          <small *ngIf="product.petCode?.length > 0 && product.petCode?.length < 17" class="error-text">
-            Mã chip chưa đủ định dạng (Hiện có: {{product.petCode.length}}/17 ký tự)
+          <small *ngIf="product.petCode?.length > 0 && product.petCode?.length < 15" class="error-text">
+            Mã chip chưa đủ định dạng (Hiện có: {{product.petCode.length}}/15 ký tự)
           </small>
         </div>
       </div>
@@ -119,6 +119,8 @@
     </div>
   </div>
 </div>
+
+<app-loading-modal [visible]="isLoading" message="Đang đăng bán thú cưng..." />
 
 <app-notification-modal
   *ngIf="modal.show"

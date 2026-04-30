@@ -57,3 +57,11 @@
 
   </div>
 </div>
+
+<app-notification-modal
+  *ngIf="modal()"
+  [title]="modal()!.title"
+  [message]="modal()!.message"
+  [type]="modal()!.type"
+  (closed)="onModalClosed()"
+/>

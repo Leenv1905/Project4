@@ -4,6 +4,7 @@ import { Observable, tap } from 'rxjs';
 import { Order } from '../models/order.model';
 import { OrderAction } from '../config/order-action.type';
 import { ORDER_ACTIONS } from '../config/order-action.config';
+import { environment } from '../../../environments/environment';
 
 export interface CheckoutRequestPayload {
   customerName: string;
@@ -18,7 +19,7 @@ export interface CheckoutRequestPayload {
 })
 export class OrderService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/gupet/api/v1/orders';
+  private readonly apiUrl = `${environment.apiBaseUrl}/api/v1/orders`;
 
   private _orders = signal<Order[]>([]);
   orders = this._orders.asReadonly();
@@ -65,7 +66,7 @@ export class OrderService {
   }
 
   createVNPayUrl(orderId: number): Observable<any> {
-    return this.http.post<any>(`http://localhost:8080/gupet/api/v1/payments/vnpay/create-url?orderId=${orderId}`, {}, { withCredentials: true });
+    return this.http.post<any>(`${environment.apiBaseUrl}/api/v1/payments/vnpay/create-url?orderId=${orderId}`, {}, { withCredentials: true });
   }
 
   loadMyOrders(): Observable<Order[]> {
@@ -79,7 +80,7 @@ export class OrderService {
   }
 
   loadShopOrders(): Observable<Order[]> {
-    return this.http.get<any[]>(`http://localhost:8080/gupet/api/v1/shop/orders`, { withCredentials: true }).pipe(
+    return this.http.get<any[]>(`${environment.apiBaseUrl}/api/v1/shop/orders`, { withCredentials: true }).pipe(
       tap((apiOrders) => {
         const mapped = (apiOrders || []).map((o) => this.mapApiOrderToOrderModel(o));
         this._orders.set(mapped);
@@ -89,7 +90,7 @@ export class OrderService {
   }
 
   updateShopOrderStatus(orderId: number, status: string): Observable<any> {
-    return this.http.put(`http://localhost:8080/gupet/api/v1/shop/orders/${orderId}/status`, { status }, { withCredentials: true });
+    return this.http.put(`${environment.apiBaseUrl}/api/v1/shop/orders/${orderId}/status`, { status }, { withCredentials: true });
   }
 
   createOrder(order: Order) {

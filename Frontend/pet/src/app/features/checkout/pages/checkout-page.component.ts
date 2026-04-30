@@ -7,6 +7,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { CartService } from '../../../core/services/cart.service';
 import { CheckoutService } from '../services/checkout.service';
+import { UserProfileService, UserAddress, CreateAddressPayload } from '../../../core/services/user-profile.service';
 
 @Component({
   standalone: true,
@@ -21,9 +22,20 @@ export class CheckoutPageComponent implements OnInit {
   route = inject(ActivatedRoute);
   router = inject(Router);
   snackBar = inject(MatSnackBar);
+  profileService = inject(UserProfileService);
 
   selectedItems: any[] = [];
   isSubmitting = false;
+
+  // Địa chỉ đã lưu
+  addresses: UserAddress[] = [];
+  selectedAddressId: number | null = null;
+  isLoadingAddresses = false;
+
+  // Form thêm địa chỉ mới
+  showNewAddressForm = false;
+  isSavingAddress = false;
+  newAddress: CreateAddressPayload = { receiverName: '', phone: '', address: '', isDefault: false };
 
   form = {
     customerName: '',
@@ -45,6 +57,60 @@ export class CheckoutPageComponent implements OnInit {
         }
       } else {
         this.selectedItems = [...this.cart.items()];
+      }
+    });
+
+    this.loadAddresses();
+  }
+
+  loadAddresses() {
+    this.isLoadingAddresses = true;
+    this.profileService.getMyAddresses().subscribe({
+      next: (list) => {
+        this.isLoadingAddresses = false;
+        this.addresses = list;
+        const def = list.find(a => a.isDefault) || list[0];
+        if (def) this.selectAddress(def);
+      },
+      error: () => { this.isLoadingAddresses = false; }
+    });
+  }
+
+  selectAddress(addr: UserAddress) {
+    this.selectedAddressId = addr.id;
+    this.form.customerName = addr.receiverName;
+    this.form.phone = addr.phone;
+    this.form.address = addr.address;
+    this.showNewAddressForm = false;
+  }
+
+  toggleNewAddressForm() {
+    this.showNewAddressForm = !this.showNewAddressForm;
+    if (this.showNewAddressForm) {
+      this.selectedAddressId = null;
+      this.newAddress = { receiverName: '', phone: '', address: '', isDefault: false };
+    }
+  }
+
+  saveNewAddress() {
+    if (!this.newAddress.receiverName || !this.newAddress.phone || !this.newAddress.address) {
+      this.snackBar.open('Vui lòng nhập đầy đủ thông tin địa chỉ', 'Đóng', { duration: 3000 });
+      return;
+    }
+    this.isSavingAddress = true;
+    this.profileService.createAddress(this.newAddress).subscribe({
+      next: (saved) => {
+        this.isSavingAddress = false;
+        this.addresses = this.newAddress.isDefault
+          ? [...this.addresses.map(a => ({ ...a, isDefault: false })), saved]
+          : [...this.addresses, saved];
+        this.selectAddress(saved);
+        this.showNewAddressForm = false;
+        this.snackBar.open('Đã lưu địa chỉ mới', 'Đóng', { duration: 2000 });
+      },
+      error: () => {
+        this.isSavingAddress = false;
+        this.snackBar.open('Không thể lưu địa chỉ', 'Đóng', { duration: 3000 });
       }
     });
   }

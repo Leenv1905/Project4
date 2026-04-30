@@ -65,7 +65,7 @@
       <td><input type="checkbox"></td>
 
       <td class="product">
-        <img [src]="p.images[0]" alt="{{p.name}}">
+        <img [src]="p.imageUrl" alt="{{p.name}}">
         <div>
           <div class="name">{{ p.name }}</div>
           <div class="desc">{{ p.description | slice:0:60 }}...</div>

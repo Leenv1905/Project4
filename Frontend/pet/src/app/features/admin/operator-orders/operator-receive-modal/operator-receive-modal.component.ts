@@ -53,8 +53,8 @@ export class OperatorReceiveModalComponent {
   isCodeValid = signal(false);
   isWrongPet = signal(false);
 
-  private readonly CORRECT_CODE = 'PET-A123';
-  private readonly WRONG_CODE = 'PET-B456';
+  private readonly CORRECT_CODE = 'CZAREP8B1LVXNV3';
+  private readonly WRONG_CODE = 'SPSWISFWICYSUMI';
 
   constructor(
     public dialogRef: MatDialogRef<OperatorReceiveModalComponent>,
@@ -63,23 +63,26 @@ export class OperatorReceiveModalComponent {
     this.orderId = data.orderId;
   }
 
+  private readonly CHIP_PATTERN = /^[A-Z0-9]{15}$/;
+
   checkCode() {
     const code = this.verificationCode().trim().toUpperCase();
 
-    if (code === this.CORRECT_CODE) {
-      this.isCodeValid.set(true);
+    if (!code) {
+      this.isCodeValid.set(false);
       this.isWrongPet.set(false);
-      this.petInfo.set({
-        name: 'Buddy',
-        species: 'Chó',
-        breed: 'Golden Retriever',
-        variety: 'Thuần chủng',
-        vaccination: 'Đã tiêm đầy đủ (Dại, Parvo, Distemper, Leptospirosis) - Lần cuối: 15/01/2025',
-        healthStatus: 'Xuất sắc - Không có bệnh lý, cân nặng 28kg, đã triệt sản',
-        chipId: 'PET-A123'
-      });
+      this.petInfo.set(null);
+      return;
     }
-    else if (code === this.WRONG_CODE) {
+
+    if (!this.CHIP_PATTERN.test(code)) {
+      this.isCodeValid.set(false);
+      this.isWrongPet.set(false);
+      this.petInfo.set(null);
+      return;
+    }
+
+    if (code === this.WRONG_CODE) {
       this.isCodeValid.set(false);
       this.isWrongPet.set(true);
       this.petInfo.set({
@@ -89,28 +92,34 @@ export class OperatorReceiveModalComponent {
         variety: 'Thuần chủng',
         vaccination: 'Đã tiêm 4 mũi cơ bản',
         healthStatus: 'Tốt, đã triệt sản',
-        chipId: 'PET-B456'
-      });
-    }
-    else if (code.length > 0) {
-      // Mã không theo định dạng
-      this.isCodeValid.set(false);
-      this.isWrongPet.set(false);
-      this.petInfo.set({
-        name: 'Không xác định',
-        species: 'Không xác định',
-        breed: 'Không xác định',
-        variety: 'Không xác định',
-        vaccination: 'Không xác định',
-        healthStatus: 'Không xác định',
         chipId: code
       });
+      return;
     }
-    else {
-      this.isCodeValid.set(false);
-      this.isWrongPet.set(false);
-      this.petInfo.set(null);
-    }
+
+    this.isCodeValid.set(true);
+    this.isWrongPet.set(false);
+    this.petInfo.set(
+      code === this.CORRECT_CODE
+        ? {
+            name: 'Buddy',
+            species: 'Chó',
+            breed: 'Golden Retriever',
+            variety: 'Thuần chủng',
+            vaccination: 'Đã tiêm đầy đủ (Dại, Parvo, Distemper, Leptospirosis) - Lần cuối: 15/01/2025',
+            healthStatus: 'Xuất sắc - Không có bệnh lý, cân nặng 28kg, đã triệt sản',
+            chipId: code
+          }
+        : {
+            name: 'Không xác định',
+            species: 'Không xác định',
+            breed: 'Không xác định',
+            variety: 'Không xác định',
+            vaccination: 'Không xác định',
+            healthStatus: 'Không xác định',
+            chipId: code
+          }
+    );
   }
 
   canReceive(): boolean {

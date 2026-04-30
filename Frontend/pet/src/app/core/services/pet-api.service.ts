@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Product } from '../models/product.model';
 import { PetRequest } from '../models/pet.model';
+import { environment } from '../../../environments/environment';
 
 interface PetImageApi {
   imageUrl?: string;
@@ -60,7 +61,7 @@ interface PetApiRequest {
 })
 export class PetApiService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/gupet/api/v1/pets';
+  private readonly apiUrl = `${environment.apiBaseUrl}/api/v1/pets`;
   private readonly fallbackImage = '/assets/cho1.jpg';
 
   // ===== CRUD Operations =====
@@ -147,28 +148,33 @@ export class PetApiService {
 
     const species = pet.species === 'Chó' || pet.species === 'Mèo' ? pet.species : 'Khác';
 
+    const statusRaw = (pet.status || 'available').toLowerCase();
+    const validStatuses = ['available', 'sold', 'reserved', 'not_for_sale'];
+    const status = (validStatuses.includes(statusRaw) ? statusRaw : 'available') as Product['status'];
+
     return {
       id: Number(pet.id),
+      petCode: pet.petCode,
       name: pet.name || 'Pet',
       description: pet.description || '',
       price: Number(pet.price || 0),
       images: images.length > 0 ? images : [this.fallbackImage],
-      status: 'available',
+      status,
       species,
       breed: pet.breed || '',
-      color: pet.color || '',
-      gender: pet.gender || 'male',
-      weight: pet.weight || 0,
-      age: pet.age,
-      vaccinated: Boolean(pet.isVaccinated),
-      neutered: Boolean(pet.isNeutered),
+      color: pet.color ?? '',
+      gender: pet.gender === 'female' ? 'female' : 'male',
+      weight: pet.weight ?? 0,
+      age: pet.age ?? undefined,
+      vaccinated: pet.isVaccinated ?? false,
+      neutered: pet.isNeutered ?? false,
       shopId: Number(pet.ownerId || 0),
       shopName: pet.ownerName || 'Pet Shop',
       createdAt: pet.createdAt ? new Date(pet.createdAt) : new Date(),
       isVerified: pet.isVerified,
-      trustScore: pet.trustScore,
-      isHealthVerified: pet.isHealthVerified,
-      isPedigreeVerified: pet.isPedigreeVerified
+      trustScore: pet.trustScore ?? undefined,
+      isHealthVerified: pet.isHealthVerified ?? undefined,
+      isPedigreeVerified: pet.isPedigreeVerified ?? undefined
     };
   }
 

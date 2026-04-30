@@ -1,0 +1,125 @@
+<!-- TOP NAV -->
+<header class="bg-white border-b shadow fixed top-0 w-full h-16 flex justify-between items-center px-6 z-40">
+  <div class="flex items-center gap-8">
+    <span class="text-lg font-bold text-blue-900">PetLogistics</span>
+
+    <nav class="hidden md:flex gap-6">
+      <a class="text-blue-800 font-semibold">Active Missions</a>
+      <a class="text-slate-500 font-medium">Pending Verifications</a>
+      <a class="text-slate-500 font-medium">History</a>
+    </nav>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <button><span class="material-symbols-outlined">notifications</span></button>
+    <button><span class="material-symbols-outlined">settings</span></button>
+
+    <div class="h-8 w-8 rounded-full bg-slate-200 overflow-hidden">
+      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP8cGKA93PtAQR4PVkKsFzXfERuf3SvSAJU3HzfM_aySuB5YfM52-xLEhYxlTILiJOb5PsbL_rJiL2cmDtLljoFsnfQUdmvUPC5s0dKZnnw-HoA5JatkrH_QuZYHTKRImpCZ9SWZsr_0uEn9wJKHcNSUBMCdp4RQ9_GPNBKNrTOZhE3RDzB-MNiFNDQQgLICJHaNTKufdTtacISE42xZu19dJmeUxlAufLuFNq7BUcnbl9RCD6plAjNpAcVc5tDDUap3zDPRIO-Kwk"/>
+    </div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="fixed left-0 top-16 w-64 h-full bg-slate-50 border-r hidden md:flex flex-col">
+  <div class="p-4">
+    <h2 class="font-bold text-blue-900">Verification Terminal</h2>
+    <p class="text-xs text-slate-400">V04-Alpha</p>
+  </div>
+
+  <nav class="flex-1 px-2">
+    <a class="block p-2">Pending Verifications</a>
+    <a class="block p-2 font-bold text-blue-800 bg-blue-50">Active Missions</a>
+    <a class="block p-2">History</a>
+  </nav>
+
+  <div class="p-4">
+    <button class="w-full bg-blue-800 text-white py-2 rounded">
+      Start New Mission
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="md:ml-64 pt-20 p-6">
+
+  <!-- STEP BAR -->
+  <div class="bg-white p-2 flex rounded shadow mb-6">
+    <div class="flex-1 bg-blue-50 p-3 rounded">Step 1: Profile Review</div>
+    <div class="flex-1 p-3 text-gray-400">Step 2: Chip</div>
+    <div class="flex-1 p-3 text-gray-400">Step 3: Certification</div>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid lg:grid-cols-12 gap-6">
+
+    <!-- LEFT -->
+    <div class="lg:col-span-7 space-y-6">
+
+      <!-- PROFILE -->
+      <div class="bg-white p-6 rounded shadow">
+        <div class="flex gap-6">
+
+          <img class="w-32 h-32 rounded"
+               src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUzxyUepGLjR4w7B7uGDhdRKx7vKCjQzgbePJAAT2I6LUvAey0U99cAmdzKBks_hidZTs88Cm7h7CMHWSxPGfBugD6pJn1ngyaDeTd_SXiZBSa-omrPY6zYJVecr5doWMTYHgIhTgxWNL8m5noYUghQhL0OJqCKVVBqRWJPwWnqwbpy_wadbESlMev50PgISBZVp9ckSwMXdpDp6gN0tpEmpSVVwAZ1J4jOGRP0DxEcXs9u81E5SBf4U7a3Ao5PeLMbk8tRSEAm7xQ"/>
+
+          <div>
+            <h1 class="text-xl font-bold">Cooper</h1>
+            <p>Beagle • 2 Years</p>
+            <p class="text-green-600">Low Risk</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MEDICAL -->
+      <div class="bg-white p-5 rounded shadow">
+        <h3 class="font-bold mb-4">Medical History</h3>
+
+        <div>Rabies - OK</div>
+        <div>Bordetella - OK</div>
+        <div>Heartworm - OK</div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="lg:col-span-5 space-y-6">
+
+      <!-- SCAN CARD -->
+      <div class="bg-blue-900 text-white p-6 rounded shadow">
+
+        <h2 class="text-lg font-bold mb-4">Chip Verification</h2>
+
+        <button class="w-full bg-green-400 text-black py-3 rounded mb-3">
+          Start Chip Scan
+        </button>
+
+        <button class="w-full bg-white/20 py-2 rounded">
+          Manual Input
+        </button>
+
+      </div>
+
+      <!-- CHECKLIST -->
+      <div class="bg-white p-6 rounded shadow">
+        <h3 class="font-bold mb-4">Checklist</h3>
+
+        <label class="block"><input type="checkbox" checked> Profile Match</label>
+        <label class="block"><input type="checkbox" checked> Age Valid</label>
+        <label class="block"><input type="checkbox"> Document Check</label>
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+<!-- MOBILE NAV -->
+<footer class="md:hidden fixed bottom-0 w-full bg-white border-t flex justify-around h-16">
+  <button>Queue</button>
+  <button class="text-blue-800">Missions</button>
+  <button>History</button>
+  <button>Profile</button>
+</footer>

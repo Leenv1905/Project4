@@ -1,12 +1,12 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Product } from '../../../core/models/product.model';
-import { CartService } from '../../../core/services/cart.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { ShopService } from '../../shop/services/shop.service';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ActivatedRoute, Router} from '@angular/router';
+import {MatIconModule} from '@angular/material/icon';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
+import {Product} from '../../../core/models/product.model';
+import {CartService} from '../../../core/services/cart.service';
+import {AuthService} from '../../../core/services/auth.service';
+import {ShopService} from '../../shop/services/shop.service';
 
 @Component({
   standalone: true,
@@ -61,7 +61,7 @@ export class ProductDetailComponent implements OnInit {
 
   addToCart() {
     if (!this.auth.isAuthenticated()) {
-      this.snackBar.open('Vui lòng đăng nhập để thực hiện chức năng này', 'Đóng', { duration: 5000 });
+      this.snackBar.open('Vui lòng đăng nhập để thực hiện chức năng này', 'Đóng', {duration: 5000});
       this.auth.openLogin();
       return;
     }
@@ -81,20 +81,20 @@ export class ProductDetailComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         if (res.success) {
-          this.snackBar.open('Đã thêm vào giỏ hàng!', 'Đóng', { duration: 3000 });
+          this.snackBar.open('Đã thêm vào giỏ hàng!', 'Đóng', {duration: 3000});
         } else {
-          this.snackBar.open(res.message, 'Đóng', { duration: 5000 });
+          this.snackBar.open(res.message, 'Đóng', {duration: 5000});
         }
       },
       error: () => {
-        this.snackBar.open('Lỗi khi thêm vào giỏ hàng', 'Đóng', { duration: 5000 });
+        this.snackBar.open('Lỗi khi thêm vào giỏ hàng', 'Đóng', {duration: 5000});
       }
     });
   }
 
   buyNow() {
     if (!this.auth.isAuthenticated()) {
-      this.snackBar.open('Vui lòng đăng nhập để thực hiện chức năng này', 'Đóng', { duration: 5000 });
+      this.snackBar.open('Vui lòng đăng nhập để thực hiện chức năng này', 'Đóng', {duration: 5000});
       this.auth.openLogin();
       return;
     }
@@ -104,6 +104,9 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
+    const goToCheckout = () =>
+      this.router.navigate(['/checkout'], { queryParams: { mode: 'single', productId: product.id } });
+
     this.cart.addToCart({
       productId: product.id,
       name: product.name,
@@ -112,35 +115,27 @@ export class ProductDetailComponent implements OnInit {
       image: product.images[0] || '',
       shopName: product.shopName
     }).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.router.navigate(['/checkout']);
-        } else {
-          this.snackBar.open(res.message, 'Đóng', { duration: 5000 });
-        }
-      },
-      error: () => {
-        this.snackBar.open('Lỗi khi xử lý mua ngay', 'Đóng', { duration: 5000 });
-      }
+      next: () => goToCheckout(),
+      error: () => goToCheckout()
     });
   }
 
   getStatusLabel(status: string): string {
     switch (status) {
       case 'available':
-        return 'Con hang';
+        return 'Còn hàng';
       case 'sold':
-        return 'Da ban';
+        return 'Đã bán';
       case 'reserved':
-        return 'Da dat truoc';
+        return 'Đã đặt trước';
       case 'not_for_sale':
-        return 'Khong ban';
+        return 'Không bán';
       default:
         return status;
     }
   }
 
   getGenderLabel(gender: 'male' | 'female'): string {
-    return gender === 'male' ? 'Duc' : 'Cai';
+    return gender === 'male' ? 'Đực' : 'Cái';
   }
 }

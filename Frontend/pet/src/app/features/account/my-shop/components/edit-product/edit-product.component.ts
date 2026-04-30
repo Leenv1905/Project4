@@ -4,11 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Product } from '../../../../../core/models/product.model';
 import { PetApiService } from '../../../../../core/services/pet-api.service';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { NotificationModalComponent } from '../../../../../shared/notification-modal/notification-modal.component';
+import { LoadingModalComponent } from '../../../../../shared/loading-modal/loading-modal.component';
 
 @Component({
   standalone: true,
   selector: 'app-edit-product',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationModalComponent, LoadingModalComponent],
   templateUrl: './edit-product.component.html',
   styleUrls: ['../add-product/add-product.component.scss']
 })
@@ -16,48 +19,54 @@ export class EditProductComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly petApi = inject(PetApiService);
+  readonly auth = inject(AuthService);
 
-  product: Partial<Product> = {
-    name: '',
-    description: '',
-    price: 0,
-    species: 'Chó',
-    breed: '',
-    color: '',
-    gender: 'male',
-    weight: 0,
-    age: 0,
-    vaccinated: true,
-    neutered: false,
-    status: 'available'
-  };
-
+  product: Partial<Product> = {};
   images: string[] = [];
   productId: number | null = null;
   isSaving = false;
+  isLoadingData = false;
+  private navigateAfterModal = false;
+
+  modal: { show: boolean; title: string; message: string; type: 'success' | 'error' | 'info'; } = {
+    show: false, title: '', message: '', type: 'info'
+  };
+
+  showModal(title: string, message: string, type: 'success' | 'error' | 'info') {
+    this.modal = { show: true, title, message, type };
+  }
+
+  closeModal() {
+    this.modal = { ...this.modal, show: false };
+    if (this.navigateAfterModal) {
+      this.navigateAfterModal = false;
+      this.backToProducts();
+    }
+  }
 
   ngOnInit() {
     const id = Number(this.route.snapshot.queryParamMap.get('id'));
-    if (!id) {
-      return;
-    }
+    if (!id) return;
 
     this.productId = id;
+    this.isLoadingData = true;
     this.petApi.getPetById(id).subscribe({
       next: (product) => {
+        this.isLoadingData = false;
         this.product = { ...product };
         this.images = [...product.images];
       },
-      error: () => alert('Khong tai duoc thong tin san pham.')
+      error: () => {
+        this.isLoadingData = false;
+        this.showModal('Lỗi', 'Không tải được thông tin thú cưng.', 'error');
+      }
     });
   }
 
   uploadImages(event: Event) {
     const input = event.target as HTMLInputElement | null;
     const files = input?.files;
-    if (!files) {
-      return;
-    }
+    if (!files) return;
 
     Array.from(files).forEach((file) => {
       const reader = new FileReader();
@@ -71,15 +80,12 @@ export class EditProductComponent implements OnInit {
   }
 
   backToProducts() {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { tab: 'products' }
-    });
+    this.router.navigate(['/my-shop'], { queryParams: { tab: 'products' } });
   }
 
   updateProduct() {
     if (!this.productId || !this.product.name || !this.product.breed || !this.product.price || this.product.price <= 0) {
-      alert('Vui long nhap day du ten, giong va gia ban.');
+      this.showModal('Thiếu thông tin', 'Vui lòng nhập đầy đủ tên, giống và giá bán.', 'error');
       return;
     }
 
@@ -87,11 +93,12 @@ export class EditProductComponent implements OnInit {
     this.petApi.updatePet(this.productId, this.product, this.images).subscribe({
       next: () => {
         this.isSaving = false;
-        this.backToProducts();
+        this.navigateAfterModal = true;
+        this.showModal('Thành công', 'Cập nhật thú cưng thành công!', 'success');
       },
-      error: () => {
+      error: (err) => {
         this.isSaving = false;
-        alert('Khong the cap nhat san pham.');
+        this.showModal('Lỗi', err?.error?.message || 'Không thể cập nhật thú cưng.', 'error');
       }
     });
   }

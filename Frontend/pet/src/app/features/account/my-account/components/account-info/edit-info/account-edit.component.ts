@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../../../core/services/auth.service';
 import { UserProfileService } from '../../../../../../core/services/user-profile.service';
+import { NotificationModalComponent } from '../../../../../../shared/notification-modal/notification-modal.component';
 
 @Component({
   standalone: true,
   selector: 'app-account-edit',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationModalComponent],
   templateUrl: './account-edit.component.html',
   styleUrls: ['./account-edit.component.scss']
 })
@@ -27,6 +28,8 @@ export class AccountEditComponent implements OnInit {
 
   readonly avatarPreview = signal('https://i.pravatar.cc/150?u=user123');
   readonly isSaving = signal(false);
+  modal = signal<{ title: string; message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  private navigateAfterModal = false;
 
   ngOnInit() {
     this.profileService.getMyProfile().subscribe({
@@ -61,7 +64,7 @@ export class AccountEditComponent implements OnInit {
   saveChanges() {
     const form = this.editForm();
     if (!form.name || !form.phone || !form.address) {
-      alert('Vui long nhap day du cac truong bat buoc.');
+      this.modal.set({ title: 'Thiếu thông tin', message: 'Vui lòng nhập đầy đủ các trường bắt buộc.', type: 'error' });
       return;
     }
 
@@ -81,13 +84,22 @@ export class AccountEditComponent implements OnInit {
           address: profile.address,
           avatar: profile.avatarUrl
         });
-        this.router.navigate(['/account'], { queryParams: { tab: 'info' } });
+        this.navigateAfterModal = true;
+        this.modal.set({ title: 'Thành công', message: 'Cập nhật thông tin cá nhân thành công.', type: 'success' });
       },
       error: () => {
         this.isSaving.set(false);
-        alert('Khong the cap nhat thong tin ca nhan.');
+        this.modal.set({ title: 'Lỗi', message: 'Không thể cập nhật thông tin cá nhân.', type: 'error' });
       }
     });
+  }
+
+  onModalClosed() {
+    this.modal.set(null);
+    if (this.navigateAfterModal) {
+      this.navigateAfterModal = false;
+      this.router.navigate(['/account'], { queryParams: { tab: 'info' } });
+    }
   }
 
   cancel() {

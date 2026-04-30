@@ -1,25 +1,26 @@
 export interface Product {
-  id: number;
+  id: number;petCode?: string;
   name: string;
   description: string;
   price: number;
-  // originalPrice?: number;        // Giá gốc (nếu có khuyến mãi)
 
-  petCode?: string;
-  images: string[];              // Mảng ảnh (ít nhất 1 ảnh)
-  video?: string;                // Link video nếu có
+  images: string[];
 
-  status: string;
+  imageUrl?: string; // 👈 thêm dòng này (ảnh chính)
 
-  species: string;                   // 'DOG', 'CAT', 'OTHER' ...
-  breed: string;                     // Giống (Poodle, Husky, ...)
-  color: string;                     // Màu lông
-  gender: string;                    // Giới tính
-  weight: number;                    // Cân nặng (kg)
+  video?: string;
 
-  age?: number;                      // Tuổi (tháng)
-  vaccinated: boolean;               // Đã tiêm vaccine chưa
-  neutered: boolean;                 // Đã triệt sản chưa
+  status: 'available' | 'sold' | 'reserved' | 'not_for_sale';
+
+  species: 'Chó' | 'Mèo' | 'Khác';
+  breed: string;
+  color: string;
+  gender: 'male' | 'female';
+  weight: number;
+
+  age?: number;
+  vaccinated: boolean;
+  neutered: boolean;
 
   shopId: number;
   shopName: string;
@@ -31,25 +32,3 @@ export interface Product {
   isHealthVerified?: boolean;
   isPedigreeVerified?: boolean;
 }
-
-// export interface Product {
-//
-//   id: number;
-//
-//   name: string;
-//
-//   description: string;
-//
-//   price: number;
-//
-//   images: string[];
-//
-//   video?: string;
-//
-//   breed: string;
-//
-//   dogType: string;
-//
-//   shopName: string;
-//
-// }

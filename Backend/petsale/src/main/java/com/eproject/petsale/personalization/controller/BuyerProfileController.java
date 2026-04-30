@@ -2,6 +2,7 @@ package com.eproject.petsale.personalization.controller;
 
 import com.eproject.petsale.common.response.ApiSuccessResponse;
 import com.eproject.petsale.personalization.dto.BuyerProfileRequest;
+import com.eproject.petsale.personalization.dto.BuyerProfileResponse;
 import com.eproject.petsale.personalization.entity.BuyerProfile;
 import com.eproject.petsale.personalization.service.BuyerProfileService;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,8 @@ public class BuyerProfileController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiSuccessResponse<BuyerProfile>> getMyProfile() {
-        BuyerProfile profile = buyerProfileService.getMyProfile();
+    public ResponseEntity<ApiSuccessResponse<BuyerProfileResponse>> getMyProfile() {
+        BuyerProfileResponse profile = buyerProfileService.getMyProfile();
         return ResponseEntity.ok(new ApiSuccessResponse<>(200, "My profile", profile));
     }
 }

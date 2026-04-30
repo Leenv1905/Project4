@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 export interface VerificationTask {
   id: number;
@@ -21,7 +22,7 @@ export interface VerificationTask {
 })
 export class VerificationService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/gupet/api/v1/verifications';
+  private readonly apiUrl = `${environment.apiBaseUrl}/api/v1/verifications`;
 
   assignTask(petId: number, operatorId: number): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/assign`, { petId, operatorId }, { withCredentials: true });

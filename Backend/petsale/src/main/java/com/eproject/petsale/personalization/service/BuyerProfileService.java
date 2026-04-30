@@ -1,6 +1,8 @@
 package com.eproject.petsale.personalization.service;
 
+import com.eproject.petsale.common.mapper.BuyerProfileMapper;
 import com.eproject.petsale.personalization.dto.BuyerProfileRequest;
+import com.eproject.petsale.personalization.dto.BuyerProfileResponse;
 import com.eproject.petsale.personalization.entity.BuyerProfile;
 import com.eproject.petsale.personalization.repository.BuyerProfileRepository;
 import com.eproject.petsale.user.entity.User;
@@ -18,6 +20,7 @@ public class BuyerProfileService {
 
     private final BuyerProfileRepository buyerProfileRepository;
     private final UserRepository userRepository;
+    private final BuyerProfileMapper buyerProfileMapper;
 
     @Transactional
     public void saveProfile(BuyerProfileRequest request) {
@@ -39,11 +42,17 @@ public class BuyerProfileService {
         buyerProfileRepository.save(profile);
     }
 
-    public BuyerProfile getMyProfile() {
+    public BuyerProfileResponse getMyProfile() {
+        // 1. Lấy email từ Security Context
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return buyerProfileRepository.findById(user.getId()).orElse(null);
+        // 2. Tìm User
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        // 3. Tìm Profile và map sang Response
+        return buyerProfileRepository.findById(user.getId())
+                .map(buyerProfileMapper::toResponse) // Gọi MapStruct để chuyển đổi
+                .orElse(null);
     }
 }

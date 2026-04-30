@@ -1,6 +1,7 @@
 package com.eproject.petsale.personalization.entity;
 
 import com.eproject.petsale.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ public class BuyerProfile {
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     @Column(name = "daily_time")

@@ -5,8 +5,9 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatIconModule } from '@angular/material/icon';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../../core/services/auth.service';
+import { BuyerProfileService } from '../../../../core/services/buyer-profile.service';
 import { NotificationModalComponent } from '../../../../shared/notification-modal/notification-modal.component';
 
 @Component({
@@ -21,52 +22,52 @@ import { NotificationModalComponent } from '../../../../shared/notification-moda
     MatIconModule,
     NotificationModalComponent
   ],
-  template: `
+    template: `
     <div class="survey-container" style="padding: 20px; max-width: 500px;">
-      <h2 style="text-align: center; color: #ff6b6b;">Tim kiem thu cung phu hop cho ban</h2>
+      <h2 style="text-align: center; color: #ff6b6b;">Tìm kiếm thú cưng phù hợp cho bạn</h2>
       <p style="text-align: center; color: #666; margin-bottom: 30px;">
-        Vui long tra loi mot vai cau hoi de chung toi goi y lua chon tot hon.
+        Vui lòng trả lời một vài câu hỏi để chúng tôi gợi ý lựa chọn tốt nhất.
       </p>
 
       <div class="steps">
         <div *ngIf="step === 1" class="step-content">
-          <h3>1. Ban co bao nhieu thoi gian moi ngay cho thu cung?</h3>
+          <h3>1. Bạn có bao nhiêu thời gian mỗi ngày cho thú cưng?</h3>
           <div class="options">
             <mat-slider min="0" max="24" step="1" discrete>
               <input matSliderThumb [(ngModel)]="dailyTime">
             </mat-slider>
-            <p>{{ dailyTime }} gio / ngay</p>
+            <p>{{ dailyTime }} giờ / ngày</p>
           </div>
         </div>
 
         <div *ngIf="step === 2" class="step-content">
-          <h3>2. Khong gian song cua ban nhu the nao?</h3>
+          <h3>2. Không gian sống của bạn như thế nào?</h3>
           <div class="choice-grid">
-            <button class="choice-btn" [class.selected]="livingSpace === 1" (click)="livingSpace = 1">Can ho nho</button>
-            <button class="choice-btn" [class.selected]="livingSpace === 2" (click)="livingSpace = 2">Nha pho vua</button>
-            <button class="choice-btn" [class.selected]="livingSpace === 3" (click)="livingSpace = 3">Biet thu co san vuon</button>
+            <button class="choice-btn" [class.selected]="livingSpace === 1" (click)="livingSpace = 1">Căn hộ nhỏ</button>
+            <button class="choice-btn" [class.selected]="livingSpace === 2" (click)="livingSpace = 2">Nhà phố vừa</button>
+            <button class="choice-btn" [class.selected]="livingSpace === 3" (click)="livingSpace = 3">Biệt thự có sân vườn</button>
           </div>
         </div>
 
         <div *ngIf="step === 3" class="step-content">
-          <h3>3. Kinh nghiem nuoi thu cung cua ban?</h3>
+          <h3>3. Kinh nghiệm nuôi thú cưng của bạn?</h3>
           <div class="choice-grid">
-            <button class="choice-btn" [class.selected]="experienceLevel === 1" (click)="experienceLevel = 1">Chua co kinh nghiem</button>
-            <button class="choice-btn" [class.selected]="experienceLevel === 2" (click)="experienceLevel = 2">Da tung nuoi</button>
-            <button class="choice-btn" [class.selected]="experienceLevel === 3" (click)="experienceLevel = 3">Rat nhieu kinh nghiem</button>
+            <button class="choice-btn" [class.selected]="experienceLevel === 1" (click)="experienceLevel = 1">Chưa có kinh nghiệm</button>
+            <button class="choice-btn" [class.selected]="experienceLevel === 2" (click)="experienceLevel = 2">Đã từng nuôi</button>
+            <button class="choice-btn" [class.selected]="experienceLevel === 3" (click)="experienceLevel = 3">Rất nhiều kinh nghiệm</button>
           </div>
         </div>
 
         <div *ngIf="step === 4" class="step-content">
-          <h3>4. Ngan sach hang thang cho thu cung (VND)?</h3>
-          <input type="number" [(ngModel)]="monthlyBudget" class="full-width" placeholder="Vi du: 1000000">
+          <h3>4. Ngân sách hàng tháng cho thú cưng (VNĐ)?</h3>
+          <input type="number" [(ngModel)]="monthlyBudget" class="full-width" placeholder="Ví dụ: 1000000">
         </div>
       </div>
 
       <div class="actions" style="margin-top: 30px; display: flex; justify-content: space-between;">
-        <button mat-button (click)="prev()" [disabled]="step === 1">Quay lai</button>
-        <button mat-flat-button color="primary" (click)="next()" *ngIf="step < 4">Tiep tuc</button>
-        <button mat-flat-button color="warn" (click)="submit()" *ngIf="step === 4">Hoan tat</button>
+        <button mat-button (click)="prev()" [disabled]="step === 1">Quay lại</button>
+        <button mat-flat-button color="primary" (click)="next()" *ngIf="step < 4">Tiếp tục</button>
+        <button mat-flat-button color="warn" (click)="submit()" *ngIf="step === 4">Hoàn tất</button>
       </div>
     </div>
 
@@ -118,7 +119,7 @@ export class SurveyModalComponent {
   monthlyBudget = 500000;
   modal: { title: string; message: string; type: 'success' | 'error' | 'info' } | null = null;
 
-  private readonly http = inject(HttpClient);
+  private readonly buyerProfile = inject(BuyerProfileService);
   private readonly auth = inject(AuthService);
   private readonly dialogRef = inject(MatDialogRef<SurveyModalComponent>);
 
@@ -139,8 +140,7 @@ export class SurveyModalComponent {
       monthlyBudget: this.monthlyBudget
     };
 
-    this.http.post('http://localhost:8080/gupet/api/v1/buyer-profiles', payload, { withCredentials: true })
-      .subscribe({
+    this.buyerProfile.createProfile(payload).subscribe({
         next: () => {
           this.modal = { title: 'Cảm ơn bạn!', message: 'Chúng tôi đã cập nhật gợi ý phù hợp cho bạn.', type: 'success' };
         },

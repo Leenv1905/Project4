@@ -21,6 +21,14 @@
 
     <!-- LEFT -->
     <div class="left">
+      <div class="card" *ngIf="!auth.isUser()">
+        <h3>Thông tin định danh</h3>
+        <div class="form-group">
+          <label>Mã chip</label>
+          <input [value]="product.petCode || ''" disabled class="pet-code-input" />
+        </div>
+      </div>
+
       <div class="card">
         <h3>Thông tin cơ bản</h3>
 
@@ -108,3 +116,14 @@
 
   </div>
 </div>
+
+<app-loading-modal [visible]="isSaving || isLoadingData"
+  [message]="isSaving ? 'Đang cập nhật thú cưng...' : 'Đang tải thông tin...'" />
+
+<app-notification-modal
+  *ngIf="modal.show"
+  [title]="modal.title"
+  [message]="modal.message"
+  [type]="modal.type"
+  (closed)="closeModal()"
+/>

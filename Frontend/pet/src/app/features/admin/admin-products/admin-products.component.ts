@@ -1,9 +1,9 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Product } from '../../../core/models/product.model';
-import { PetApiService } from '../../../core/services/pet-api.service';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {Router} from '@angular/router';
+import {Product} from '../../../core/models/product.model';
+import {PetApiService} from '../../../core/services/pet-api.service';
 
 @Component({
   standalone: true,
@@ -89,13 +89,13 @@ export class AdminProductsComponent implements OnInit {
   getStatusLabel(status: string): string {
     switch (status) {
       case 'available':
-        return 'Con hang';
+        return 'Còn hàng';
       case 'sold':
-        return 'Da ban';
+        return 'Đã bán';
       case 'reserved':
-        return 'Dat truoc';
+        return 'Đặt trước';
       case 'not_for_sale':
-        return 'Da block';
+        return 'Đã block';
       default:
         return status;
     }

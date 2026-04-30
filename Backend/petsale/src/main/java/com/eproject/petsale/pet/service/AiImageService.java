@@ -106,15 +106,9 @@ public class AiImageService {
     }
 
     private String buildPrompt(String style) {
-        String base = "A high-quality product photo of a pet, preserving the original image style, clearly showing its unique features such as breed, fur color, size, and facial details, suitable for an online marketplace listing, allowing changes in pose and background while maintaining consistency with the original style";
+        String base = "Đưa lại ảnh phù hợp với giống loài này để tôi làm ảnh rao bán thú cưng,";
 
-        if (style == null || style.isBlank()) {
-            return base + ", consistent with original style, natural pose, clean or context-appropriate background, professional lighting, highly detailed";
-        }
-
-        return base + ", preserving original style, allowing pose and background customization, rendered in "
-                + style.trim()
-                + " style without overriding the original style, professional lighting, clean or context-appropriate background, highly detailed";
+        return base;
     }
 
     private Resource convertToPngResource(MultipartFile file) throws IOException {

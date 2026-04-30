@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { CartItem } from '../models/cart-item.model';
+import { environment } from '../../../environments/environment';
 
 interface BackendCartItem {
   id: number;
@@ -25,7 +26,7 @@ interface BackendCartResponse {
 })
 export class CartService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/gupet/api/v1/cart';
+  private readonly apiUrl = `${environment.apiBaseUrl}/api/v1/cart`;
 
   private _items = signal<CartItem[]>([]);
   items = this._items.asReadonly();

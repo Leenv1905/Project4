@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface UserProfile {
   id: number;
@@ -25,13 +26,29 @@ export interface RegisterSellerPayload {
   taxCode?: string;
 }
 
+export interface UserAddress {
+  id: number;
+  receiverName: string;
+  phone: string;
+  address: string;
+  isDefault: boolean;
+  createdAt?: string;
+}
+
+export interface CreateAddressPayload {
+  receiverName: string;
+  phone: string;
+  address: string;
+  isDefault: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class UserProfileService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/gupet/v1/api/users/me';
-  private readonly baseUrl = 'http://localhost:8080/gupet/v1/api/users';
+  private readonly apiUrl = `${environment.apiBaseUrl}/v1/api/users/me`;
+  private readonly baseUrl = `${environment.apiBaseUrl}/v1/api/users`;
 
   getMyProfile(): Observable<UserProfile> {
     return this.http.get<UserProfile>(this.apiUrl, { withCredentials: true });
@@ -43,5 +60,13 @@ export class UserProfileService {
 
   registerSeller(payload: RegisterSellerPayload): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/register-seller`, payload, { withCredentials: true });
+  }
+
+  getMyAddresses(): Observable<UserAddress[]> {
+    return this.http.get<UserAddress[]>(`${this.baseUrl}/addresses`, { withCredentials: true });
+  }
+
+  createAddress(payload: CreateAddressPayload): Observable<UserAddress> {
+    return this.http.post<UserAddress>(`${this.baseUrl}/addresses`, payload, { withCredentials: true });
   }
 }
