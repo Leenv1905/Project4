@@ -24,19 +24,19 @@ export class AuthService {
 
   canAccessAdmin = computed(() => {
     const roles = this.normalizedRoles();
-    return roles.includes('admin') || roles.includes('operators');
+    return roles.includes('admin') || roles.includes('operator');
   });
 
   canAccessHome = computed(() => {
     const roles = this.normalizedRoles();
-    return roles.some((r) => ['user', 'shop', 'admin', 'operators'].includes(r));
+    return roles.some((r) => ['user', 'buyer', 'seller', 'shop', 'admin', 'operator'].includes(r));
   });
 
   isAdmin = computed(() => this.hasAnyRole(['admin']));
-  isOperator = computed(() => this.hasAnyRole(['operators']));
-  isShop = computed(() => this.hasAnyRole(['shop']));
-  isUser = computed(() => this.hasAnyRole(['user', 'ROLE_BUYER']));
-  isStaff = computed(() => this.hasAnyRole(['admin', 'operators']));
+  isOperator = computed(() => this.hasAnyRole(['operator']));
+  isShop = computed(() => this.hasAnyRole(['seller', 'shop']));
+  isUser = computed(() => this.hasAnyRole(['user', 'buyer', 'role_buyer']));
+  isStaff = computed(() => this.hasAnyRole(['admin', 'operator']));
   isSeller = computed(() => this.hasAnyRole(['seller']));
 
   private _showLoginModal = signal(false);

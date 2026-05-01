@@ -1,17 +1,17 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { CartService } from '../../../core/services/cart.service';
 
 @Component({
   standalone: true,
   selector: 'app-cart-page',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './cart-page.component.html',
   styleUrls: ['./cart-page.component.scss']
 })
-export class CartPageComponent {
+export class CartPageComponent implements OnInit {
 
   cart = inject(CartService);
   router = inject(Router);
@@ -20,6 +20,10 @@ export class CartPageComponent {
   total = this.cart.total;
 
   addToCartMessage = '';
+
+  ngOnInit() {
+    this.cart.loadCart().subscribe();
+  }
 
   addToCartSuccess(item: any) {
     this.addToCartMessage = `Đã thêm "${item.name}" vào giỏ hàng`;

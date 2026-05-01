@@ -37,13 +37,16 @@ public class UserController {
 
 
     @GetMapping("/me")
-    public ResponseEntity<?> getMyProfile() {
+    public ResponseEntity<?> getMyProfile(Authentication authentication) {
 
         var profile = userService.getMyProfile();
 
         if (profile == null) {
             throw new IllegalArgumentException("User profile not found");
         }
+
+        List<UserAddress> addresses = userAddressRepository.findByUserEmail(authentication.getName());
+        profile.setAddresses(userAddressMapper.toResponseList(addresses));
 
         return ResponseEntity.ok(profile);
     }
@@ -71,10 +74,7 @@ public class UserController {
 
         String email = authentication.getName();
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        List<UserAddress> addresses = userAddressRepository.findByUserId(user.getId());
+        List<UserAddress> addresses = userAddressRepository.findByUserEmail(email);
 
         return userAddressMapper.toResponseList(addresses);
     }

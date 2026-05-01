@@ -15,8 +15,13 @@ import { CommonModule } from '@angular/common';
         <div class="modal-body">
           <p>{{ message }}</p>
         </div>
-        <div class="modal-footer">
-          <button class="btn-confirm" (click)="close()">Xác nhận</button>
+        <div class="modal-footer" [class.two-btn]="showCancel">
+          <button *ngIf="showCancel" class="btn-cancel" (click)="close()">
+            {{ cancelLabel }}
+          </button>
+          <button class="btn-confirm" [ngClass]="type" (click)="confirm()">
+            {{ confirmLabel }}
+          </button>
         </div>
       </div>
     </div>
@@ -24,12 +29,22 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./notification-modal.component.scss']
 })
 export class NotificationModalComponent {
-  @Input() title: string = 'Thông báo';
-  @Input() message: string = '';
-  @Input() type: 'success' | 'error' | 'info' = 'success';
+  @Input() title = 'Thông báo';
+  @Input() message = '';
+  @Input() type: 'success' | 'error' | 'info' = 'info';
+  @Input() showCancel = false;
+  @Input() confirmLabel = 'Xác nhận';
+  @Input() cancelLabel = 'Huỷ bỏ';
+
   @Output() closed = new EventEmitter<void>();
+  @Output() confirmed = new EventEmitter<void>();
 
   close() {
+    this.closed.emit();
+  }
+
+  confirm() {
+    this.confirmed.emit();
     this.closed.emit();
   }
 }

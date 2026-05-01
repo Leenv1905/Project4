@@ -13,6 +13,7 @@ public class VerificationTaskResponse {
     private String status;
     private LocalDateTime assignedAt;
     private LocalDateTime completedAt;
+    private String scannedChipCode;
     private String scannedChipImageUrl;
     private String locationGps;
     private String healthNote;

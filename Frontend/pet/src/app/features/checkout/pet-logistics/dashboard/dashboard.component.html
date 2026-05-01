@@ -3,22 +3,17 @@
   <!-- SIDEBAR -->
   <aside class="w-64 bg-slate-50 border-r p-4 hidden md:block">
     <h2 class="font-bold text-lg mb-4">Verification Terminal</h2>
-
     <nav class="space-y-2">
-      <a class="block px-3 py-2 bg-blue-100 text-blue-700 rounded">
-        Pending Verifications
+      <a [routerLink]="['/operator/tasks/verify']" class="block px-3 py-2 bg-blue-100 text-blue-700 rounded">
+        Nhiệm vụ của tôi
       </a>
-      <a class="block px-3 py-2 hover:bg-gray-100 rounded">
-        Active Missions
+      <a [routerLink]="['/operator/tasks/verify/scanner']" class="block px-3 py-2 hover:bg-gray-100 rounded">
+        Quét Microchip
       </a>
-      <a class="block px-3 py-2 hover:bg-gray-100 rounded">
-        History
+      <a [routerLink]="['/operator/tasks/verify/report']" class="block px-3 py-2 hover:bg-gray-100 rounded">
+        Lịch sử đã gửi
       </a>
     </nav>
-
-    <button class="mt-6 w-full bg-blue-700 text-white py-2 rounded">
-      Start New Mission
-    </button>
   </aside>
 
   <!-- MAIN -->
@@ -27,116 +22,90 @@
     <!-- HEADER -->
     <div class="flex justify-between items-end mb-6">
       <div>
-        <h1 class="text-2xl font-bold">Verification Dashboard</h1>
-        <p class="text-gray-500 text-sm">
-          System monitoring and pet health certification queue
-        </p>
+        <h1 class="text-2xl font-bold">Bảng điều khiển xác minh</h1>
+        <p class="text-gray-500 text-sm">Danh sách nhiệm vụ xác minh thú cưng được giao cho bạn</p>
       </div>
-      <span class="text-sm text-gray-400">
-        Refreshed: Just now
-      </span>
+      <button class="text-sm text-blue-600 hover:underline" (click)="loadTasks()">Làm mới</button>
     </div>
 
     <!-- STATS -->
     <div class="grid md:grid-cols-3 gap-4 mb-6">
-
       <div class="bg-white p-4 rounded shadow">
-        <p class="text-sm text-gray-500">TOTAL PENDING</p>
-        <h3 class="text-xl font-bold">124 Animals</h3>
+        <p class="text-sm text-gray-500">CHỜ XÁC MINH</p>
+        <h3 class="text-xl font-bold">{{ pendingCount }} nhiệm vụ</h3>
       </div>
-
       <div class="bg-white p-4 rounded shadow">
-        <p class="text-sm text-gray-500">TODAY'S TASKS</p>
-        <h3 class="text-xl font-bold">18 Verified</h3>
+        <p class="text-sm text-gray-500">ĐÃ GỬI BÁO CÁO</p>
+        <h3 class="text-xl font-bold">{{ submittedCount }} nhiệm vụ</h3>
       </div>
-
       <div class="bg-white p-4 rounded shadow">
-        <p class="text-sm text-gray-500">COMPLETED</p>
-        <h3 class="text-xl font-bold">2,840 Total</h3>
+        <p class="text-sm text-gray-500">TỔNG CỘNG</p>
+        <h3 class="text-xl font-bold">{{ tasks.length }} nhiệm vụ</h3>
       </div>
-
     </div>
 
-    <!-- SEARCH + ACTION -->
+    <!-- SEARCH -->
     <div class="flex justify-between mb-4 gap-4 flex-wrap">
-
       <input
         class="border px-4 py-2 rounded w-full md:w-96"
-        placeholder="Search Order ID, Seller, or Breed..."
+        placeholder="Tìm theo tên, mã pet, giống..."
         [(ngModel)]="keyword"
       />
+    </div>
 
-      <div class="flex gap-2">
-        <button class="border px-4 py-2 rounded">Filter</button>
-        <button class="border px-4 py-2 rounded">Export</button>
-      </div>
+    <!-- LOADING -->
+    <div *ngIf="isLoading" class="text-center py-12 text-gray-400">
+      Đang tải dữ liệu...
+    </div>
 
+    <!-- EMPTY -->
+    <div *ngIf="!isLoading && tasks.length === 0" class="text-center py-12 text-gray-400">
+      <p class="text-lg">Bạn chưa có nhiệm vụ nào được giao.</p>
     </div>
 
     <!-- TABLE -->
-    <div class="bg-white rounded shadow overflow-x-auto">
-
+    <div *ngIf="!isLoading && tasks.length > 0" class="bg-white rounded shadow overflow-x-auto">
       <table class="w-full text-left">
-
         <thead class="bg-gray-100 text-sm">
-        <tr>
-          <th class="p-3">ORDER ID</th>
-          <th class="p-3">SELLER NAME</th>
-          <th class="p-3">PET BREED</th>
-          <th class="p-3">LOCATION</th>
-          <th class="p-3">DATE</th>
-          <th class="p-3">STATUS</th>
-          <th class="p-3 text-right">ACTION</th>
-        </tr>
+          <tr>
+            <th class="p-3">MÃ PET</th>
+            <th class="p-3">TÊN</th>
+            <th class="p-3">GIỐNG</th>
+            <th class="p-3">CHỦ SỞ HỮU</th>
+            <th class="p-3">NGÀY GIAO</th>
+            <th class="p-3">TRẠNG THÁI</th>
+            <th class="p-3 text-right">HÀNH ĐỘNG</th>
+          </tr>
         </thead>
-
         <tbody>
-        <tr *ngFor="let item of orders" class="border-t">
-
-          <td class="p-3 font-semibold text-blue-700">
-            {{ item.id }}
-          </td>
-
-          <td class="p-3">
-            {{ item.seller }}
-          </td>
-
-          <td class="p-3">
-            {{ item.breed }}
-          </td>
-
-          <td class="p-3">
-            {{ item.location }}
-          </td>
-
-          <td class="p-3">
-            {{ item.date }}
-          </td>
-
-          <td class="p-3">
-              <span
-                class="px-2 py-1 rounded text-xs"
-                [ngClass]="{
-                  'bg-red-100 text-red-600': item.status === 'Urgent',
-                  'bg-blue-100 text-blue-600': item.status === 'Scheduled',
-                  'bg-gray-100 text-gray-600': item.status === 'Pending'
-                }"
-              >
-                {{ item.status }}
+          <tr *ngFor="let task of filteredTasks" class="border-t hover:bg-gray-50">
+            <td class="p-3 font-semibold text-blue-700">{{ task.pet?.petCode }}</td>
+            <td class="p-3">{{ task.pet?.name }}</td>
+            <td class="p-3">{{ task.pet?.breed }}</td>
+            <td class="p-3">{{ task.pet?.ownerName || '—' }}</td>
+            <td class="p-3 text-sm text-gray-500">{{ task.assignedAt | date:'dd/MM/yyyy' }}</td>
+            <td class="p-3">
+              <span class="px-2 py-1 rounded text-xs" [ngClass]="getStatusClass(task.status)">
+                {{ getStatusLabel(task.status) }}
               </span>
-          </td>
-
-          <td class="p-3 text-right">
-            <button class="bg-blue-700 text-white px-4 py-2 rounded">
-              Start Verification
-            </button>
-          </td>
-
-        </tr>
+            </td>
+            <td class="p-3 text-right">
+              <button
+                *ngIf="task.status === 'PENDING'"
+                class="bg-blue-700 text-white px-4 py-2 rounded text-sm"
+                (click)="goToDetail(task)">
+                Xác minh
+              </button>
+              <button
+                *ngIf="task.status !== 'PENDING'"
+                class="bg-gray-200 text-gray-600 px-4 py-2 rounded text-sm"
+                (click)="goToDetail(task)">
+                Xem chi tiết
+              </button>
+            </td>
+          </tr>
         </tbody>
-
       </table>
-
     </div>
 
   </main>

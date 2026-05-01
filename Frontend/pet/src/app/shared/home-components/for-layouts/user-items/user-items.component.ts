@@ -53,7 +53,11 @@ export class UserItemsComponent {
   }
 
   goToAdmin() {
-    this.router.navigate(['/admin']);
+    if (this.auth.isAdmin()) {
+      this.router.navigate(['/admin']);
+    } else {
+      this.router.navigate(['/operator/tasks/verify']);
+    }
   }
 
   login() {

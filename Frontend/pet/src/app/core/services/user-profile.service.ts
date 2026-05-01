@@ -1,30 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
-
-export interface UserProfile {
-  id: number;
-  email: string;
-  name: string;
-  phone?: string;
-  address?: string;
-  avatarUrl?: string;
-}
-
-export interface UpdateUserProfilePayload {
-  name: string;
-  phone?: string;
-  address?: string;
-  avatarUrl?: string;
-}
-
-export interface RegisterSellerPayload {
-  displayName: string;
-  sellerType: 'INDIVIDUAL' | 'SHOP' | 'FARM';
-  bio?: string;
-  taxCode?: string;
-}
 
 export interface UserAddress {
   id: number;
@@ -42,6 +19,30 @@ export interface CreateAddressPayload {
   isDefault: boolean;
 }
 
+export interface UserProfile {
+  id: number;
+  email: string;
+  name: string;
+  phone?: string;
+  address?: string;
+  avatarUrl?: string;
+  addresses?: UserAddress[];
+}
+
+export interface UpdateUserProfilePayload {
+  name: string;
+  phone?: string;
+  address?: string;
+  avatarUrl?: string;
+}
+
+export interface RegisterSellerPayload {
+  displayName: string;
+  sellerType: 'INDIVIDUAL' | 'SHOP' | 'FARM';
+  bio?: string;
+  taxCode?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -49,6 +50,8 @@ export class UserProfileService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/v1/api/users/me`;
   private readonly baseUrl = `${environment.apiBaseUrl}/v1/api/users`;
+
+  private addressesCache$: Observable<UserAddress[]> | null = null;
 
   getMyProfile(): Observable<UserProfile> {
     return this.http.get<UserProfile>(this.apiUrl, { withCredentials: true });
@@ -63,7 +66,14 @@ export class UserProfileService {
   }
 
   getMyAddresses(): Observable<UserAddress[]> {
-    return this.http.get<UserAddress[]>(`${this.baseUrl}/addresses`, { withCredentials: true });
+    if (!this.addressesCache$) {
+      this.addressesCache$ = this.http.get<UserAddress[]>(`${this.baseUrl}/addresses`, { withCredentials: true }).pipe(shareReplay(1));
+    }
+    return this.addressesCache$;
+  }
+
+  invalidateAddressCache() {
+    this.addressesCache$ = null;
   }
 
   createAddress(payload: CreateAddressPayload): Observable<UserAddress> {

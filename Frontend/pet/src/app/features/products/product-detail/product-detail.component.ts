@@ -67,7 +67,7 @@ export class ProductDetailComponent implements OnInit {
     }
 
     const product = this.product();
-    if (!product || product.status !== 'available') {
+    if (!product || product.status?.toLowerCase() !== 'available') {
       return;
     }
 
@@ -100,23 +100,23 @@ export class ProductDetailComponent implements OnInit {
     }
 
     const product = this.product();
-    if (!product || product.status !== 'available') {
+    if (!product || product.status?.toLowerCase() !== 'available') {
       return;
     }
 
-    const goToCheckout = () =>
-      this.router.navigate(['/checkout'], { queryParams: { mode: 'single', productId: product.id } });
-
-    this.cart.addToCart({
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: 1,
-      image: product.images[0] || '',
-      shopName: product.shopName
-    }).subscribe({
-      next: () => goToCheckout(),
-      error: () => goToCheckout()
+    // Không thêm vào giỏ hàng — truyền thông tin sản phẩm qua router state
+    this.router.navigate(['/checkout'], {
+      queryParams: { mode: 'single', productId: product.id },
+      state: {
+        buyNowItem: {
+          productId: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: 1,
+          image: product.images[0] || '',
+          shopName: product.shopName || ''
+        }
+      }
     });
   }
 

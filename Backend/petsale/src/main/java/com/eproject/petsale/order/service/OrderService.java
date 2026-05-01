@@ -16,6 +16,7 @@ import com.eproject.petsale.order.entity.OrderItem;
 import com.eproject.petsale.order.repository.OrderItemRepository;
 import com.eproject.petsale.order.repository.OrderRepository;
 import com.eproject.petsale.pet.service.RegistryClientService;
+import com.eproject.petsale.registry.service.VerificationService;
 import com.eproject.petsale.user.entity.User;
 import com.eproject.petsale.user.entity.UserAddress;
 import com.eproject.petsale.user.repository.UserAddressRepository;
@@ -46,6 +47,7 @@ public class OrderService {
     private final OrderEventRepository orderEventRepository;
     private final UserAddressRepository userAddressRepository;
     private final RegistryClientService registryClientService;
+    private final VerificationService verificationService;
 
     @Transactional
     public List<OrderResponse> checkout(CheckoutRequest request){        // 1. Get buyer and their cart
@@ -60,14 +62,25 @@ public class OrderService {
         if (request.getAddressId() != null) {
             address = userAddressRepository.findById(request.getAddressId())
                     .orElseThrow(() -> new RuntimeException("Address not found"));
+            if (!address.getUser().getId().equals(buyer.getId())) {
+                throw new RuntimeException("Invalid address");
+            }
         } else {
-            address = userAddressRepository.findByUserId(buyerId).stream()
+            java.util.Optional<UserAddress> defaultAddr = userAddressRepository.findByUserId(buyerId).stream()
                     .filter(UserAddress::getIsDefault)
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("No default address"));
-        }
-        if (!address.getUser().getId().equals(buyer.getId())) {
-            throw new RuntimeException("Invalid address");
+                    .findFirst();
+            if (defaultAddr.isPresent()) {
+                address = defaultAddr.get();
+            } else if (request.getAddress() != null && !request.getAddress().isBlank()) {
+                // Dùng địa chỉ nhập thủ công từ form
+                address = new UserAddress();
+                address.setReceiverName(request.getCustomerName() != null ? request.getCustomerName() : buyer.getName());
+                address.setPhone(request.getPhone() != null ? request.getPhone() : buyer.getPhone());
+                address.setAddress(request.getAddress());
+                address.setUser(buyer);
+            } else {
+                throw new RuntimeException("No default address");
+            }
         }
         if (cart.getItems() == null || cart.getItems().isEmpty()) {
             throw new RuntimeException("Cart is empty");
@@ -85,6 +98,7 @@ public class OrderService {
             List<CartItem> shopItems = entry.getValue();
 
             Order order = new Order();
+            order.setOrderCode(generateOrderCode());
             order.setBuyer(buyer);
             order.setShop(shop);
             order.setAddress(address.getAddress());
@@ -130,6 +144,11 @@ public class OrderService {
             );
 
             orderEventRepository.save(event);
+
+            // Tự động phân công xác minh cho từng pet trong order
+            for (CartItem cartItem : shopItems) {
+                verificationService.autoAssignForPet(cartItem.getPet());
+            }
 
             newOrders.add(savedOrder);
         }
@@ -266,10 +285,20 @@ public class OrderService {
     private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User user = (User) authentication.getPrincipal();
-        // principal: user đang đăng nhập
+        Object principal = authentication.getPrincipal();
 
-        return user.getId();
+        if (principal instanceof String email) {
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            return user.getId();
+        }
+
+        if (principal instanceof User user) {
+            return user.getId();
+        }
+
+        throw new RuntimeException("Invalid principal");
     }
 
     @Transactional
@@ -318,5 +347,8 @@ public class OrderService {
         orderRepository.save(order);
 
         return order.getStatus();
+    }
+    private String generateOrderCode() {
+        return "ORD-" + java.util.UUID.randomUUID().toString().substring(0, 8);
     }
 }

@@ -27,6 +27,9 @@ export class CheckoutPageComponent implements OnInit {
   selectedItems: any[] = [];
   isSubmitting = false;
 
+  // Sản phẩm từ "Mua ngay" — chưa có trong giỏ hàng, cần thêm trước khi đặt
+  private buyNowItem: any = null;
+
   // Địa chỉ đã lưu
   addresses: UserAddress[] = [];
   selectedAddressId: number | null = null;
@@ -46,17 +49,38 @@ export class CheckoutPageComponent implements OnInit {
   };
 
   ngOnInit() {
+    const state = history.state as { buyNowItem?: any };
+
     this.route.queryParams.subscribe((params) => {
       const mode = params['mode'];
       const productId = Number(params['productId']);
 
       if (mode === 'single' && productId) {
-        const item = this.cart.items().find((i) => i.productId === productId);
-        if (item) {
-          this.selectedItems = [item];
+        if (state?.buyNowItem) {
+          // Đến từ "Mua ngay" — sản phẩm chưa trong giỏ
+          this.buyNowItem = state.buyNowItem;
+          this.selectedItems = [state.buyNowItem];
+        } else {
+          // Đến từ giỏ hàng — item đã có trong cart signal
+          const item = this.cart.items().find((i) => i.productId === productId);
+          if (item) {
+            this.selectedItems = [item];
+          } else {
+            // Cart signal chưa kịp load — subscribe để đợi
+            this.cart.loadCart().subscribe(() => {
+              const found = this.cart.items().find((i) => i.productId === productId);
+              if (found) this.selectedItems = [found];
+            });
+          }
         }
       } else {
-        this.selectedItems = [...this.cart.items()];
+        if (this.cart.items().length > 0) {
+          this.selectedItems = [...this.cart.items()];
+        } else {
+          this.cart.loadCart().subscribe(() => {
+            this.selectedItems = [...this.cart.items()];
+          });
+        }
       }
     });
 
@@ -68,13 +92,27 @@ export class CheckoutPageComponent implements OnInit {
     this.profileService.getMyAddresses().subscribe({
       next: (list) => {
         this.isLoadingAddresses = false;
-        this.addresses = list;
-        const def = list.find(a => a.isDefault) || list[0];
-        if (def) this.selectAddress(def);
+        this.addresses = list || [];
+        const def = (list || []).find(a => a.isDefault) || (list || [])[0];
+        if (def) {
+          this.selectAddress(def);
+        } else {
+          this.profileService.getMyProfile().subscribe({
+            next: (profile) => {
+              if (profile?.address) {
+                this.form.customerName = profile.name || '';
+                this.form.phone = profile.phone || '';
+                this.form.address = profile.address;
+              }
+            }
+          });
+        }
       },
       error: () => { this.isLoadingAddresses = false; }
     });
   }
+
+  trackAddress(_index: number, addr: UserAddress) { return addr.id; }
 
   selectAddress(addr: UserAddress) {
     this.selectedAddressId = addr.id;
@@ -104,6 +142,7 @@ export class CheckoutPageComponent implements OnInit {
         this.addresses = this.newAddress.isDefault
           ? [...this.addresses.map(a => ({ ...a, isDefault: false })), saved]
           : [...this.addresses, saved];
+        this.profileService.invalidateAddressCache();
         this.selectAddress(saved);
         this.showNewAddressForm = false;
         this.snackBar.open('Đã lưu địa chỉ mới', 'Đóng', { duration: 2000 });
@@ -116,7 +155,7 @@ export class CheckoutPageComponent implements OnInit {
   }
 
   total = computed(() =>
-    this.selectedItems.reduce((sum, item) => sum + item.price, 0)
+    this.selectedItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0)
   );
 
   placeOrder() {
@@ -132,7 +171,27 @@ export class CheckoutPageComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    this.checkout.placeOrder(this.form).subscribe({
+    if (this.buyNowItem) {
+      // "Mua ngay" — thêm vào giỏ trước rồi mới checkout
+      this.cart.addToCart(this.buyNowItem).subscribe({
+        next: () => this.doPlaceOrder(),
+        error: () => {
+          this.isSubmitting = false;
+          this.snackBar.open('Không thể thêm sản phẩm vào giỏ hàng', 'Đóng', { duration: 3000 });
+        }
+      });
+    } else {
+      this.doPlaceOrder();
+    }
+  }
+
+  private doPlaceOrder() {
+    const payload = {
+      ...this.form,
+      addressId: this.selectedAddressId ?? undefined
+    };
+
+    this.checkout.placeOrder(payload).subscribe({
       next: (createdOrder) => {
         this.isSubmitting = false;
 
@@ -141,16 +200,16 @@ export class CheckoutPageComponent implements OnInit {
           return;
         }
 
-        if (this.selectedItems.length === 1) {
+        // Xoá khỏi giỏ hàng FE
+        if (this.buyNowItem) {
+          this.cart.clearCart();
+        } else if (this.selectedItems.length === 1) {
           this.cart.removeItem(this.selectedItems[0].productId);
         } else {
           this.cart.clearCart();
         }
 
         if (this.form.paymentMethod === 'VNPAY') {
-          // Assuming we take the first order ID if multiple shops
-          // Realistically VNPay should process 1 order or a combined cart order
-          // Here we pick the first order's ID for VNPay redirect
           const orderId = Array.isArray(createdOrder) ? createdOrder[0]?.id : createdOrder.id;
           if (orderId) {
             this.checkout.createVNPayUrl(orderId).subscribe({
@@ -172,9 +231,7 @@ export class CheckoutPageComponent implements OnInit {
         }
 
         const idToNavigate = Array.isArray(createdOrder) ? createdOrder[0]?.id : createdOrder.id;
-        this.router.navigate(['/success'], {
-          queryParams: { id: idToNavigate }
-        });
+        this.router.navigate(['/success'], { queryParams: { id: idToNavigate } });
       },
       error: (err) => {
         this.isSubmitting = false;

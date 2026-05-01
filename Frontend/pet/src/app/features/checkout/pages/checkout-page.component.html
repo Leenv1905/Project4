@@ -20,7 +20,7 @@
         <!-- Danh sách địa chỉ đã lưu -->
         <div *ngIf="!isLoadingAddresses && addresses.length > 0" class="address-list">
           <label
-            *ngFor="let addr of addresses"
+            *ngFor="let addr of addresses; trackBy: trackAddress"
             class="address-card"
             [class.selected]="selectedAddressId === addr.id"
             (click)="selectAddress(addr)">

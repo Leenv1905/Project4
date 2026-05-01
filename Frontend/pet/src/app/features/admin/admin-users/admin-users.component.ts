@@ -1,6 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../core/services/admin.service';
@@ -14,7 +16,7 @@ import { User } from '../../../core/models/user.model';
   templateUrl: './admin-users.component.html',
   styleUrls: ['./admin-users.component.scss']
 })
-export class AdminUsersComponent implements OnInit {
+export class AdminUsersComponent implements OnInit, OnDestroy {
   private readonly adminService = inject(AdminService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
@@ -24,9 +26,17 @@ export class AdminUsersComponent implements OnInit {
   page = 1;
   pageSize = 10;
   loading = false;
+  private navSub!: Subscription;
 
   ngOnInit(): void {
     this.loadUsers();
+    this.navSub = this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd && e.urlAfterRedirects === '/admin/users')
+    ).subscribe(() => this.loadUsers());
+  }
+
+  ngOnDestroy(): void {
+    this.navSub?.unsubscribe();
   }
 
   loadUsers() {

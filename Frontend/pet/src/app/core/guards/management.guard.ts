@@ -16,7 +16,7 @@ export const managementGuard: CanActivateFn = () => {
         router.navigate(['/']);
         return false;
       }
-      if (auth.hasAnyRole(['admin', 'operators'])) return true;
+      if (auth.hasAnyRole(['admin', 'operator'])) return true;
       toast.error('Bạn không có quyền truy cập khu vực quản lý');
       router.navigate(['/']);
       return false;

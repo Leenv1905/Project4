@@ -10,4 +10,5 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByBuyerIdOrderByCreatedAtDesc(Long buyerId);
     List<Order> findByShopIdOrderByCreatedAtDesc(Long shopId);
+    List<Order> findByOrderItems_Pet_Id(Long petId);
 }

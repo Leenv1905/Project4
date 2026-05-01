@@ -117,9 +117,16 @@ export class CartService {
 
     if (!target?.cartItemId) return;
 
+    // Optimistic update: xóa khỏi signal ngay để UI cập nhật liền
+    this._items.set(current.filter((i) => i.productId !== productId));
+    this.saveLocal();
+
     this.http.delete(`${this.apiUrl}/${target.cartItemId}`, { withCredentials: true }).pipe(
-      tap(() => this.loadCart().subscribe()),
-      catchError(() => of(null))
+      catchError(() => {
+        // Rollback nếu server lỗi
+        this.loadCart().subscribe();
+        return of(null);
+      })
     ).subscribe();
   }
 

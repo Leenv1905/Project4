@@ -52,37 +52,36 @@ export class AdminLayoutComponent {
       label: 'Dashboard',
       icon: 'dashboard',
       route: '/admin',
-      rolesAllowed: ['admin', 'operators']
+      rolesAllowed: ['admin', 'operator']
     },
     {
       label: 'Đơn hàng',
       icon: 'shopping_cart',
-      rolesAllowed: ['admin', 'operators'],
+      rolesAllowed: ['admin', 'operator'],
       children: [
-        { label: 'Danh sách đơn hàng', icon: 'list', route: '/admin/operators', rolesAllowed: ['admin', 'operators'] },
-        { label: 'Chờ tiếp nhận', icon: 'pending', route: '/admin/orders/pending', rolesAllowed: ['admin', 'operators'] },
-        { label: 'Đơn trả / hủy', icon: 'undo', route: '/admin/orders/returns', rolesAllowed: ['admin', 'operators'] },
-        { label: 'Cài đặt vận chuyển', icon: 'local_shipping', route: '/admin/shipping-settings', rolesAllowed: ['admin', 'operators'] }
+        { label: 'Danh sách đơn hàng', icon: 'list', route: '/admin/operators', rolesAllowed: ['admin', 'operator'] },
+        { label: 'Chờ tiếp nhận', icon: 'pending', route: '/admin/orders/pending', rolesAllowed: ['admin', 'operator'] },
+        { label: 'Đơn trả / hủy', icon: 'undo', route: '/admin/orders/returns', rolesAllowed: ['admin', 'operator'] }
       ]
     },
     {
       label: 'Sản phẩm',
       icon: 'inventory_2',
-      rolesAllowed: ['admin', 'operators'],
+      rolesAllowed: ['admin', 'operator'],
       children: [
-        { label: 'Danh sách sản phẩm', icon: 'list_alt', route: '/admin/products', rolesAllowed: ['admin', 'operators'] },
-        { label: 'Xác minh (O2O)', icon: 'verified_user', route: '/admin/verifications', rolesAllowed: ['admin'] },
-        { label: 'Phân tích sản phẩm AI', icon: 'psychology', route: '/admin/products/analytics', rolesAllowed: ['admin', 'operators'] }
+        { label: 'Danh sách sản phẩm', icon: 'list_alt', route: '/admin/products', rolesAllowed: ['admin', 'operator'] },
+        { label: 'Xác minh chip (O2O)', icon: 'verified_user', route: '/admin/verifications', rolesAllowed: ['admin'] }
       ]
     },
+    // ── Chỉ dành cho ADMIN ──────────────────────────────────────
     {
-      label: 'Operator',
+      label: 'Quản lý Operator',
       icon: 'engineering',
       rolesAllowed: ['admin'],
       children: [
         { label: 'Danh sách Operator', icon: 'people', route: '/admin/operators/list', rolesAllowed: ['admin'] },
-        { label: 'Thêm Operator', icon: 'person_add', route: '/admin/operators/add', rolesAllowed: ['admin'] },
-        { label: 'Phân quyền', icon: 'admin_panel_settings', route: '/admin/operators/roles', rolesAllowed: ['admin'] }
+        { label: 'Thêm Operator mới', icon: 'person_add', route: '/admin/operators/add', rolesAllowed: ['admin'] },
+        { label: 'Giao việc xác minh', icon: 'assignment_ind', route: '/admin/operators/assign', rolesAllowed: ['admin'] }
       ]
     },
     {
@@ -91,7 +90,7 @@ export class AdminLayoutComponent {
       rolesAllowed: ['admin'],
       children: [
         { label: 'Danh sách người dùng', icon: 'people_outline', route: '/admin/users', rolesAllowed: ['admin'] },
-        { label: 'Phân tích khách hàng', icon: 'analytics', route: '/admin/users/analytics', rolesAllowed: ['admin'] }
+        { label: 'Thêm người dùng', icon: 'person_add', route: '/admin/users/add', rolesAllowed: ['admin'] }
       ]
     },
     {
@@ -104,23 +103,18 @@ export class AdminLayoutComponent {
         { label: 'Kênh thanh toán', icon: 'payments', route: '/admin/finance/payment', rolesAllowed: ['admin'] }
       ]
     },
+    // ── Chung ───────────────────────────────────────────────────
     {
-      label: 'Nhiệm vụ xác minh',
-      icon: 'assignment',
-      route: '/operator/tasks',
-      rolesAllowed: ['operators']
-    },
-    {
-      label: 'Cài đặt chung',
+      label: 'Cài đặt',
       icon: 'settings',
       route: '/admin/settings',
-      rolesAllowed: ['admin', 'operators']
+      rolesAllowed: ['admin', 'operator']
     },
     {
       label: 'Quay lại Website',
       icon: 'home',
       route: '/',
-      rolesAllowed: [] // Không giới hạn quyền để debug
+      rolesAllowed: []
     }
   ];
 

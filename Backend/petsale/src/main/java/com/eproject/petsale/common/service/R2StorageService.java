@@ -65,6 +65,22 @@ public class R2StorageService {
         return new PetImageUploadResult(objectKey, completeImageUrl);
     }
 
+    public PetImageUploadResult uploadToFolder(MultipartFile file, String folder) throws IOException {
+        String extension = getFileExtension(file.getOriginalFilename());
+        String objectKey = folder + "/" + UUID.randomUUID().toString() + extension;
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .contentType(file.getContentType())
+                .build();
+
+        s3Client.putObject(putObjectRequest,
+                RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+
+        return new PetImageUploadResult(objectKey, publicUrl + "/" + objectKey);
+    }
+
     public void deleteFile(String objectKey) {
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)

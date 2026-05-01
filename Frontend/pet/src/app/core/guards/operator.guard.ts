@@ -16,7 +16,7 @@ export const operatorGuard: CanActivateFn = () => {
         router.navigate(['/']);
         return false;
       }
-      if (auth.hasAnyRole(['operators'])) return true;
+      if (auth.hasAnyRole(['operator'])) return true;
       toast.error('Yêu cầu quyền Nhân viên (Operator)');
       router.navigate(['/']);
       return false;

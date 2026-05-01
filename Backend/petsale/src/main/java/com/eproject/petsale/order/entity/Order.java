@@ -19,12 +19,13 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "shipping_address", nullable = false)
     private String address;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "customer_name")
+    @Column(name = "shipping_receiver", nullable = false)
     private String customerName;
 
     @Column(name = "fulfillment_status")
@@ -39,7 +40,9 @@ public class Order {
     @Column(name = "payment_method")
     private String paymentMethod;
 
+    @Column(name = "shipping_phone", nullable = false)
     private String phone;
+
     private String status;
 
     @Column(name = "total_amount", nullable = false)
@@ -48,12 +51,15 @@ public class Order {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "order_code", nullable = false, unique = true)
+    private String orderCode;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id", nullable = false)
     private User buyer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shop_id", nullable = false)
+    @JoinColumn(name = "seller_id", nullable = false)
     private User shop;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

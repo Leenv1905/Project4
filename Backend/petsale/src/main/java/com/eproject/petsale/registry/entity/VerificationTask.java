@@ -38,6 +38,9 @@ public class VerificationTask {
     @Column(length = 20)
     private String status; // PENDING, SUBMITTED, APPROVED, REJECTED
 
+    @Column(name = "scanned_chip_code")
+    private String scannedChipCode;
+
     @Column(name = "scanned_chip_image_url")
     private String scannedChipImageUrl;
 

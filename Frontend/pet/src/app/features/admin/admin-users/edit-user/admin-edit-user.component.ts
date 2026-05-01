@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,6 +18,7 @@ export class AdminEditUserComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly adminService = inject(AdminService);
   private readonly toast = inject(ToastService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   editUser: {
     id?: number;
@@ -27,6 +28,7 @@ export class AdminEditUserComponent implements OnInit {
     phone: string;
     address: string;
     avatar: string;
+    enabled?: boolean;
     password?: string;
     confirmPassword?: string;
   } = {
@@ -38,7 +40,7 @@ export class AdminEditUserComponent implements OnInit {
     avatar: 'https://i.pravatar.cc/150?u=edituser'
   };
 
-  roles: Role[] = ['user', 'shop', 'admin', 'operators'];
+  roles: Role[] = ['user', 'shop', 'admin', 'operator'];
   isSaving = false;
   viewOnly = false;
 
@@ -58,8 +60,10 @@ export class AdminEditUserComponent implements OnInit {
           role: user.role,
           phone: user.phone || '',
           address: user.address || '',
-          avatar: user.avatar || `https://i.pravatar.cc/150?u=${user.email}`
+          avatar: user.avatarUrl || user.avatar || `https://i.pravatar.cc/150?u=${user.email}`,
+          enabled: user.enabled
         };
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Load user failed', err);

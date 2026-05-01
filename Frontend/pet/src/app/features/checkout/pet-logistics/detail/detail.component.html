@@ -1,125 +1,320 @@
-<!-- TOP NAV -->
-<header class="bg-white border-b shadow fixed top-0 w-full h-16 flex justify-between items-center px-6 z-40">
-  <div class="flex items-center gap-8">
-    <span class="text-lg font-bold text-blue-900">PetLogistics</span>
+<!-- MODAL XÁC NHẬN HUỶ ĐƠN -->
+<app-notification-modal
+  *ngIf="showCancelModal"
+  title="Huỷ đơn hàng"
+  message="Bạn có chắc chắn muốn huỷ đơn hàng này không? Hành động này không thể hoàn tác."
+  type="error"
+  [showCancel]="true"
+  confirmLabel="Xác nhận huỷ"
+  cancelLabel="Quay lại"
+  (confirmed)="confirmCancel()"
+  (closed)="showCancelModal = false">
+</app-notification-modal>
 
-    <nav class="hidden md:flex gap-6">
-      <a class="text-blue-800 font-semibold">Active Missions</a>
-      <a class="text-slate-500 font-medium">Pending Verifications</a>
-      <a class="text-slate-500 font-medium">History</a>
-    </nav>
-  </div>
+<!-- LOADING -->
+<div *ngIf="isLoading" class="flex items-center justify-center min-h-screen text-gray-400">
+  Đang tải nhiệm vụ...
+</div>
 
-  <div class="flex items-center gap-4">
-    <button><span class="material-symbols-outlined">notifications</span></button>
-    <button><span class="material-symbols-outlined">settings</span></button>
+<!-- NOT FOUND -->
+<div *ngIf="!isLoading && !task" class="flex flex-col items-center justify-center min-h-screen text-gray-400">
+  <p class="text-lg mb-4">Không tìm thấy nhiệm vụ này.</p>
+  <a routerLink="/operator/tasks/verify" class="text-blue-600 hover:underline">← Quay lại danh sách</a>
+</div>
 
-    <div class="h-8 w-8 rounded-full bg-slate-200 overflow-hidden">
-      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP8cGKA93PtAQR4PVkKsFzXfERuf3SvSAJU3HzfM_aySuB5YfM52-xLEhYxlTILiJOb5PsbL_rJiL2cmDtLljoFsnfQUdmvUPC5s0dKZnnw-HoA5JatkrH_QuZYHTKRImpCZ9SWZsr_0uEn9wJKHcNSUBMCdp4RQ9_GPNBKNrTOZhE3RDzB-MNiFNDQQgLICJHaNTKufdTtacISE42xZu19dJmeUxlAufLuFNq7BUcnbl9RCD6plAjNpAcVc5tDDUap3zDPRIO-Kwk"/>
+<!-- DETAIL -->
+<div *ngIf="task" class="min-h-screen bg-gray-50">
+
+  <!-- TOP NAV -->
+  <header class="bg-white border-b shadow h-16 flex justify-between items-center px-6">
+    <div class="flex items-center gap-4">
+      <a routerLink="/operator/tasks/verify" class="text-blue-700 hover:underline text-sm">← Danh sách</a>
+      <span class="text-lg font-bold text-blue-900">Chi tiết xác minh</span>
     </div>
-  </div>
-</header>
+    <span class="px-3 py-1 rounded-full text-sm font-medium"
+      [ngClass]="{
+        'bg-yellow-100 text-yellow-700': task.status === 'PENDING',
+        'bg-blue-100 text-blue-600': task.status === 'SUBMITTED',
+        'bg-green-100 text-green-600': task.status === 'APPROVED',
+        'bg-red-100 text-red-600': task.status === 'REJECTED'
+      }">
+      {{ task.status === 'PENDING' ? 'Chờ xác minh'
+       : task.status === 'SUBMITTED' ? 'Đã gửi'
+       : task.status === 'APPROVED' ? 'Đã duyệt'
+       : 'Bị từ chối' }}
+    </span>
+  </header>
 
-<!-- SIDEBAR -->
-<aside class="fixed left-0 top-16 w-64 h-full bg-slate-50 border-r hidden md:flex flex-col">
-  <div class="p-4">
-    <h2 class="font-bold text-blue-900">Verification Terminal</h2>
-    <p class="text-xs text-slate-400">V04-Alpha</p>
-  </div>
+  <div class="max-w-3xl mx-auto p-6">
 
-  <nav class="flex-1 px-2">
-    <a class="block p-2">Pending Verifications</a>
-    <a class="block p-2 font-bold text-blue-800 bg-blue-50">Active Missions</a>
-    <a class="block p-2">History</a>
-  </nav>
+    <!-- ====== KẾT QUẢ XÁC MINH (sau khi submit) ====== -->
+    <div *ngIf="verificationResult" class="mb-6">
+      <!-- APPROVED -->
+      <div *ngIf="verificationResult === 'APPROVED'" class="bg-green-50 border border-green-300 rounded-xl p-8 text-center shadow">
+        <div class="text-6xl mb-4">✅</div>
+        <h2 class="text-2xl font-bold text-green-700 mb-2">Xác minh thành công!</h2>
+        <p class="text-green-600 mb-1">Mã chip khớp với hồ sơ thú cưng trong hệ thống.</p>
+        <p class="text-gray-600 text-sm mb-6">Đơn hàng đã được xác nhận và chuyển sang trạng thái giao hàng.</p>
+        <button (click)="backToList()"
+          class="bg-green-600 text-white px-8 py-2.5 rounded font-bold hover:bg-green-700 transition-colors">
+          ← Quay lại danh sách
+        </button>
+      </div>
+      <!-- REJECTED -->
+      <div *ngIf="verificationResult === 'REJECTED'" class="bg-red-50 border border-red-300 rounded-xl p-8 text-center shadow">
+        <div class="text-6xl mb-4">❌</div>
+        <h2 class="text-2xl font-bold text-red-700 mb-2">Xác minh thất bại!</h2>
+        <p class="text-red-600 mb-1">Mã chip không khớp với hồ sơ thú cưng trong hệ thống.</p>
+        <p class="text-gray-600 text-sm mb-6">Đơn hàng đã bị huỷ tự động.</p>
+        <button (click)="backToList()"
+          class="bg-red-600 text-white px-8 py-2.5 rounded font-bold hover:bg-red-700 transition-colors">
+          ← Quay lại danh sách
+        </button>
+      </div>
+    </div>
 
-  <div class="p-4">
-    <button class="w-full bg-blue-800 text-white py-2 rounded">
-      Start New Mission
-    </button>
-  </div>
-</aside>
+    <!-- ====== STEP BAR (chỉ hiện khi PENDING và chưa có kết quả) ====== -->
+    <div *ngIf="task.status === 'PENDING' && !verificationResult" class="flex items-center mb-8">
+      <div class="flex-1 flex flex-col items-center">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
+          [ngClass]="currentStep >= 1 ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-500'">1</div>
+        <p class="text-xs mt-1 font-medium" [ngClass]="currentStep >= 1 ? 'text-blue-700' : 'text-gray-400'">Hồ sơ</p>
+      </div>
+      <div class="flex-1 h-1 mx-1" [ngClass]="currentStep >= 2 ? 'bg-blue-700' : 'bg-gray-200'"></div>
+      <div class="flex-1 flex flex-col items-center">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
+          [ngClass]="currentStep >= 2 ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-500'">2</div>
+        <p class="text-xs mt-1 font-medium" [ngClass]="currentStep >= 2 ? 'text-blue-700' : 'text-gray-400'">Quét Chip</p>
+      </div>
+      <div class="flex-1 h-1 mx-1" [ngClass]="currentStep >= 3 ? 'bg-blue-700' : 'bg-gray-200'"></div>
+      <div class="flex-1 flex flex-col items-center">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
+          [ngClass]="currentStep >= 3 ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-500'">3</div>
+        <p class="text-xs mt-1 font-medium" [ngClass]="currentStep >= 3 ? 'text-blue-700' : 'text-gray-400'">Xác minh</p>
+      </div>
+    </div>
 
-<!-- MAIN -->
-<main class="md:ml-64 pt-20 p-6">
+    <!-- ====== STEP 1: Xem hồ sơ ====== -->
+    <div *ngIf="task.status === 'PENDING' && !verificationResult && currentStep === 1">
+      <div class="bg-white p-6 rounded shadow mb-4">
+        <h2 class="font-bold text-lg mb-4 text-blue-900">Bước 1: Xem thông tin hồ sơ</h2>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div><p class="text-gray-500">Tên thú cưng</p><p class="font-semibold">{{ task.pet?.name }}</p></div>
+          <div><p class="text-gray-500">Mã đăng ký</p><p class="font-semibold font-mono text-blue-700">{{ task.pet?.petCode }}</p></div>
+          <div><p class="text-gray-500">Giống</p><p class="font-semibold">{{ task.pet?.breed }}</p></div>
+          <div><p class="text-gray-500">Chủ sở hữu</p><p class="font-semibold">{{ task.pet?.ownerName || '—' }}</p></div>
+          <div><p class="text-gray-500">Giá trị</p><p class="font-semibold">{{ task.pet?.price | number }} đ</p></div>
+          <div><p class="text-gray-500">Ngày giao việc</p><p class="font-semibold">{{ task.assignedAt | date:'dd/MM/yyyy HH:mm' }}</p></div>
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <button class="bg-blue-700 text-white px-8 py-2.5 rounded font-bold hover:bg-blue-800 transition-colors"
+          (click)="goToStep2()">
+          Tiếp theo: Quét Chip →
+        </button>
+      </div>
+    </div>
 
-  <!-- STEP BAR -->
-  <div class="bg-white p-2 flex rounded shadow mb-6">
-    <div class="flex-1 bg-blue-50 p-3 rounded">Step 1: Profile Review</div>
-    <div class="flex-1 p-3 text-gray-400">Step 2: Chip</div>
-    <div class="flex-1 p-3 text-gray-400">Step 3: Certification</div>
-  </div>
+    <!-- ====== STEP 2: Quét Chip ====== -->
+    <div *ngIf="task.status === 'PENDING' && !verificationResult && currentStep === 2">
+      <div class="bg-white p-6 rounded shadow mb-4">
+        <h2 class="font-bold text-lg mb-5 text-blue-900">Bước 2: Quét Chip Microchip</h2>
 
-  <!-- GRID -->
-  <div class="grid lg:grid-cols-12 gap-6">
+        <!-- Chip Code -->
+        <div class="mb-5">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Mã Microchip <span class="text-red-500">*</span>
+          </label>
+          <input
+            class="w-full border rounded px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-400"
+            [(ngModel)]="chipCode"
+            placeholder="Nhập mã chip đọc được, ví dụ: 941000012345678"
+            maxlength="20"
+          />
+          <p class="text-xs text-gray-400 mt-1">Nhập chính xác mã số ghi trên chip thú cưng</p>
+        </div>
 
-    <!-- LEFT -->
-    <div class="lg:col-span-7 space-y-6">
+        <!-- File Upload -->
+        <div class="mb-5">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Ảnh/Video minh chứng quét chip <span class="text-red-500">*</span>
+          </label>
+          <label
+            class="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-lg cursor-pointer transition-colors"
+            [ngClass]="chipFile ? 'border-green-400 bg-green-50' : 'border-blue-300 bg-blue-50 hover:bg-blue-100'">
+            <div *ngIf="!chipFile" class="flex flex-col items-center text-blue-500">
+              <svg class="w-9 h-9 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+              </svg>
+              <p class="text-sm font-medium">Nhấn để chọn file</p>
+              <p class="text-xs text-gray-400 mt-1">PNG, JPG, MP4, MOV...</p>
+            </div>
+            <div *ngIf="chipFile" class="flex flex-col items-center text-green-700">
+              <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <p class="text-sm font-semibold">{{ chipFile.name }}</p>
+              <p class="text-xs text-gray-500 mt-0.5">{{ (chipFile.size / 1024 / 1024).toFixed(2) }} MB</p>
+            </div>
+            <input type="file" class="hidden" accept="image/*,video/*" (change)="onFileChange($event)" />
+          </label>
+        </div>
 
-      <!-- PROFILE -->
-      <div class="bg-white p-6 rounded shadow">
-        <div class="flex gap-6">
+        <!-- Preview -->
+        <div *ngIf="chipPreviewUrl" class="mb-5">
+          <p class="text-sm font-medium text-gray-600 mb-2">Xem trước:</p>
+          <img *ngIf="isImageFile()" [src]="chipPreviewUrl" alt="Chip preview" class="max-h-40 rounded border object-contain" />
+          <video *ngIf="isVideoFile()" [src]="chipPreviewUrl" controls class="max-h-40 rounded border w-full"></video>
+        </div>
 
-          <img class="w-32 h-32 rounded"
-               src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUzxyUepGLjR4w7B7uGDhdRKx7vKCjQzgbePJAAT2I6LUvAey0U99cAmdzKBks_hidZTs88Cm7h7CMHWSxPGfBugD6pJn1ngyaDeTd_SXiZBSa-omrPY6zYJVecr5doWMTYHgIhTgxWNL8m5noYUghQhL0OJqCKVVBqRWJPwWnqwbpy_wadbESlMev50PgISBZVp9ckSwMXdpDp6gN0tpEmpSVVwAZ1J4jOGRP0DxEcXs9u81E5SBf4U7a3Ao5PeLMbk8tRSEAm7xQ"/>
+        <!-- GPS -->
+        <div class="mb-5">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Tọa độ GPS <span class="text-red-500">*</span>
+          </label>
+          <button
+            class="w-full py-2.5 rounded border-2 font-medium transition-colors"
+            [ngClass]="task.locationGps ? 'border-green-400 text-green-700 bg-green-50' : 'border-blue-400 text-blue-700 bg-blue-50 hover:bg-blue-100'"
+            (click)="getGPS()">
+            {{ task.locationGps ? '✓ Đã lấy tọa độ GPS' : '📍 Lấy tọa độ GPS hiện tại' }}
+          </button>
+          <p *ngIf="task.locationGps" class="text-xs text-green-600 mt-1 font-mono">{{ task.locationGps }}</p>
+        </div>
 
-          <div>
-            <h1 class="text-xl font-bold">Cooper</h1>
-            <p>Beagle • 2 Years</p>
-            <p class="text-green-600">Low Risk</p>
-          </div>
-
+        <!-- Note -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Ghi chú sức khỏe</label>
+          <textarea
+            class="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            rows="3" [(ngModel)]="healthNote"
+            placeholder="Ví dụ: Bé khỏe mạnh, hoạt bát...">
+          </textarea>
         </div>
       </div>
 
-      <!-- MEDICAL -->
-      <div class="bg-white p-5 rounded shadow">
-        <h3 class="font-bold mb-4">Medical History</h3>
+      <div class="flex justify-between items-center">
+        <button class="px-6 py-2.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium"
+          (click)="currentStep = 1">
+          ← Quay lại
+        </button>
 
-        <div>Rabies - OK</div>
-        <div>Bordetella - OK</div>
-        <div>Heartworm - OK</div>
+        <div class="flex gap-3">
+          <!-- Huỷ đơn hàng -->
+          <button
+            class="px-5 py-2.5 rounded font-semibold border-2 border-red-400 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+            [disabled]="isCancellingOrder"
+            (click)="cancelOrder()">
+            {{ isCancellingOrder ? 'Đang huỷ...' : '🚫 Huỷ đơn hàng' }}
+          </button>
+
+          <!-- Tiếp theo -->
+          <button
+            class="px-8 py-2.5 rounded font-bold text-white transition-colors"
+            [ngClass]="canProceedToStep3() && !isUploadingChip ? 'bg-blue-700 hover:bg-blue-800' : 'bg-gray-300 cursor-not-allowed'"
+            [disabled]="!canProceedToStep3() || isUploadingChip"
+            (click)="goToStep3()">
+            {{ isUploadingChip ? 'Đang tải lên...' : 'Tiếp theo →' }}
+          </button>
+        </div>
       </div>
-
+      <p *ngIf="!canProceedToStep3()" class="text-xs text-red-500 text-right mt-2">
+        * Vui lòng nhập mã chip, chọn file minh chứng và lấy GPS
+      </p>
     </div>
 
-    <!-- RIGHT -->
-    <div class="lg:col-span-5 space-y-6">
+    <!-- ====== STEP 3: Xác minh ====== -->
+    <div *ngIf="task.status === 'PENDING' && !verificationResult && currentStep === 3">
+      <div class="bg-white p-6 rounded shadow mb-4">
+        <h2 class="font-bold text-lg mb-4 text-blue-900">Bước 3: Xác minh & Gửi báo cáo</h2>
+        <p class="text-sm text-gray-500 mb-5">
+          Hệ thống sẽ tự động so sánh mã chip với cơ sở dữ liệu và xác nhận/huỷ đơn hàng.
+        </p>
 
-      <!-- SCAN CARD -->
-      <div class="bg-blue-900 text-white p-6 rounded shadow">
-
-        <h2 class="text-lg font-bold mb-4">Chip Verification</h2>
-
-        <button class="w-full bg-green-400 text-black py-3 rounded mb-3">
-          Start Chip Scan
-        </button>
-
-        <button class="w-full bg-white/20 py-2 rounded">
-          Manual Input
-        </button>
-
+        <div class="space-y-4 text-sm">
+          <div class="pb-4 border-b">
+            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Thú cưng</p>
+            <span class="font-semibold">{{ task.pet?.name }}</span>
+            <span class="text-gray-400 mx-2">·</span>
+            <span class="font-mono text-blue-700">{{ task.pet?.petCode }}</span>
+          </div>
+          <div class="pb-4 border-b">
+            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Mã Chip đã nhập</p>
+            <p class="font-mono font-bold text-lg text-blue-900">{{ task.scannedChipCode }}</p>
+          </div>
+          <div class="pb-4 border-b">
+            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">File minh chứng</p>
+            <p class="text-green-600 font-medium">✓ Đã tải lên</p>
+            <a [href]="task.scannedChipImageUrl" target="_blank" class="text-blue-500 text-xs hover:underline font-mono break-all">
+              {{ task.scannedChipImageUrl }}
+            </a>
+          </div>
+          <div class="pb-4 border-b">
+            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Tọa độ GPS</p>
+            <p class="font-mono">{{ task.locationGps }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Ghi chú</p>
+            <p>{{ task.healthNote || '(Không có)' }}</p>
+          </div>
+        </div>
       </div>
 
-      <!-- CHECKLIST -->
-      <div class="bg-white p-6 rounded shadow">
-        <h3 class="font-bold mb-4">Checklist</h3>
-
-        <label class="block"><input type="checkbox" checked> Profile Match</label>
-        <label class="block"><input type="checkbox" checked> Age Valid</label>
-        <label class="block"><input type="checkbox"> Document Check</label>
+      <div class="flex justify-between">
+        <button class="px-6 py-2.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium"
+          (click)="currentStep = 2">
+          ← Quay lại
+        </button>
+        <button
+          class="px-8 py-2.5 rounded font-bold text-white transition-colors"
+          [ngClass]="!isSubmitting ? 'bg-blue-700 hover:bg-blue-800' : 'bg-gray-300 cursor-not-allowed'"
+          [disabled]="isSubmitting"
+          (click)="submit()">
+          {{ isSubmitting ? 'Đang xác minh...' : '🔍 Xác minh & Gửi báo cáo' }}
+        </button>
       </div>
+    </div>
 
+    <!-- ====== VIEW-ONLY (status !== PENDING) ====== -->
+    <div *ngIf="task.status !== 'PENDING' && !verificationResult">
+      <div class="bg-white p-6 rounded shadow mb-4">
+        <h2 class="font-bold text-lg mb-4 text-blue-900">Thông tin thú cưng</h2>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div><p class="text-gray-500">Tên</p><p class="font-semibold">{{ task.pet?.name }}</p></div>
+          <div><p class="text-gray-500">Mã đăng ký</p><p class="font-semibold font-mono text-blue-700">{{ task.pet?.petCode }}</p></div>
+          <div><p class="text-gray-500">Giống</p><p class="font-semibold">{{ task.pet?.breed }}</p></div>
+          <div><p class="text-gray-500">Chủ sở hữu</p><p class="font-semibold">{{ task.pet?.ownerName || '—' }}</p></div>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded shadow mb-4">
+        <h2 class="font-bold text-lg mb-4 text-blue-900">Thông tin đã gửi</h2>
+        <div class="space-y-4 text-sm">
+          <div><p class="text-gray-500">Mã Chip</p><p class="font-mono font-semibold text-blue-800">{{ task.scannedChipCode || '—' }}</p></div>
+          <div>
+            <p class="text-gray-500 mb-1">File minh chứng</p>
+            <a *ngIf="task.scannedChipImageUrl" [href]="task.scannedChipImageUrl" target="_blank"
+              class="text-blue-600 hover:underline font-mono text-xs break-all">{{ task.scannedChipImageUrl }}</a>
+            <span *ngIf="!task.scannedChipImageUrl" class="text-gray-400">—</span>
+          </div>
+          <div><p class="text-gray-500">GPS</p><p class="font-mono">{{ task.locationGps || '—' }}</p></div>
+          <div><p class="text-gray-500">Ghi chú</p><p>{{ task.healthNote || '—' }}</p></div>
+          <div *ngIf="task.adminFeedback"><p class="text-gray-500">Phản hồi</p><p class="text-green-700 font-medium">{{ task.adminFeedback }}</p></div>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded shadow text-center">
+        <div class="text-4xl mb-2">
+          {{ task.status === 'APPROVED' ? '✅' : task.status === 'REJECTED' ? '❌' : '⏳' }}
+        </div>
+        <p class="font-semibold text-gray-700">
+          {{ task.status === 'APPROVED' ? 'Đã xác minh thành công'
+           : task.status === 'REJECTED' ? 'Xác minh thất bại — Đơn đã huỷ'
+           : 'Đã gửi, đang xử lý' }}
+        </p>
+        <p *ngIf="task.completedAt" class="text-xs text-gray-400 mt-1">
+          {{ task.completedAt | date:'dd/MM/yyyy HH:mm' }}
+        </p>
+      </div>
     </div>
 
   </div>
-
-</main>
-
-<!-- MOBILE NAV -->
-<footer class="md:hidden fixed bottom-0 w-full bg-white border-t flex justify-around h-16">
-  <button>Queue</button>
-  <button class="text-blue-800">Missions</button>
-  <button>History</button>
-  <button>Profile</button>
-</footer>
+</div>

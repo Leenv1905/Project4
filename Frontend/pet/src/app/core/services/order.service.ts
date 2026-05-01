@@ -7,6 +7,7 @@ import { ORDER_ACTIONS } from '../config/order-action.config';
 import { environment } from '../../../environments/environment';
 
 export interface CheckoutRequestPayload {
+  addressId?: number | null;
   customerName: string;
   phone: string;
   address: string;
@@ -46,7 +47,10 @@ export class OrderService {
         image: i?.petImage || i?.image || ''
       })),
       totalAmount: Number(apiOrder?.totalAmount || 0),
-      status: (apiOrder?.status || 'pending').toLowerCase(),
+      status: (apiOrder?.status || 'pending').toLowerCase() as any,
+      fulfillmentStatus: (apiOrder?.fulfillmentStatus || '').toLowerCase() || undefined,
+      paymentMethod: apiOrder?.paymentMethod || undefined,
+      paymentStatus: apiOrder?.paymentStatus || undefined,
       createdAt: apiOrder?.createdAt ? new Date(apiOrder.createdAt) : new Date(),
       customerName: apiOrder?.customerName || '',
       phone: apiOrder?.phone || '',

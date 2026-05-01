@@ -59,7 +59,6 @@ export class OrderDetailComponent {
     this.showVerificationModal.set(false);
   }
 
-  // Helper cho class status
   getStatusClass(status: OrderStatus): string {
     switch (status) {
       case 'pending':    return 'pending';
@@ -71,9 +70,28 @@ export class OrderDetailComponent {
     }
   }
 
-  // ================== SAU NÀY SỬ DỤNG ==================
-  // onScanQR() { ... }   // kết nối camera / QR scanner
-  // onConnectNFT() { ... } // kết nối wallet NFT
+  // Trả về index bước hiện tại (0-based) dựa trên status + fulfillmentStatus từ BE
+  // Bước: 0=Đặt hàng, 1=Chờ xác minh, 2=Đã xác minh, 3=Đang giao, 4=Giao thành công
+  getTimelineStep(order: { status: string; fulfillmentStatus?: string }): number {
+    const s = (order.status || '').toLowerCase();
+    const f = (order.fulfillmentStatus || '').toLowerCase();
+
+    if (['delivery_completed', 'customer_confirmed', 'completed'].includes(s)) return 4;
+    if (['delivery_started'].includes(s) || f === 'shipping') return 3;
+    if (['confirmed', 'shop_confirmed', 'warehouse_received',
+         'inspection_passed', 'delivery_failed'].includes(s)) return 2;
+    // CREATED + waiting_verify = step 1 (default stop)
+    return 1;
+  }
+
+  isCancelled(order: { status: string }): boolean {
+    const s = (order.status || '').toLowerCase();
+    return ['cancelled', 'inspection_failed'].includes(s);
+  }
+  isVerificationFailed(order: { status: string }): boolean {
+    const s = (order.status || '').toLowerCase();
+    return ['inspection_failed'].includes(s);
+  }
 }
 
 

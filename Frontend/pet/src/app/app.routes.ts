@@ -33,8 +33,9 @@ export const routes: Routes = [
       { path: 'users/analytics', loadComponent: () => import('./features/admin/placeholder/admin-placeholder.component').then(m => m.AdminPlaceholderComponent), data: { title: 'Phân tích khách hàng', icon: 'analytics' }, canActivate: [adminGuard] },
       { path: 'verifications', loadComponent: () => import('./features/admin/admin-verification/admin-verification.component').then(m => m.AdminVerificationComponent), canActivate: [adminGuard] },
 
-      { path: 'operators/list', loadComponent: () => import('./features/admin/placeholder/admin-placeholder.component').then(m => m.AdminPlaceholderComponent), data: { title: 'Danh sách Operator', icon: 'people' }, canActivate: [adminGuard] },
-      { path: 'operators/add', loadComponent: () => import('./features/admin/placeholder/admin-placeholder.component').then(m => m.AdminPlaceholderComponent), data: { title: 'Thêm Operator', icon: 'person_add' }, canActivate: [adminGuard] },
+      { path: 'operators/list', loadComponent: () => import('./features/admin/admin-operators/admin-operators.component').then(m => m.AdminOperatorsComponent), canActivate: [adminGuard] },
+      { path: 'operators/add', loadComponent: () => import('./features/admin/admin-users/create-user/admin-create-user.component').then(m => m.AdminCreateUserComponent), canActivate: [adminGuard] },
+      { path: 'operators/assign', loadComponent: () => import('./features/admin/admin-assign-tasks/admin-assign-tasks.component').then(m => m.AdminAssignTasksComponent), canActivate: [adminGuard] },
       { path: 'operators/roles', loadComponent: () => import('./features/admin/placeholder/admin-placeholder.component').then(m => m.AdminPlaceholderComponent), data: { title: 'Phân quyền', icon: 'admin_panel_settings' }, canActivate: [adminGuard] },
 
       { path: 'finance/revenue', loadComponent: () => import('./features/admin/placeholder/admin-placeholder.component').then(m => m.AdminPlaceholderComponent), data: { title: 'Doanh thu', icon: 'monetization_on' }, canActivate: [adminGuard] },

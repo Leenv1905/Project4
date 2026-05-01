@@ -1,59 +1,104 @@
-<div class="edit-user-page">
+<!-- ===== VIEW MODE ===== -->
+<div *ngIf="viewOnly" class="edit-user-page">
   <div class="header">
-    <h2>{{ viewOnly ? 'Xem thong tin nguoi dung' : 'Chinh sua nguoi dung' }}</h2>
+    <h2>Thông tin người dùng</h2>
   </div>
 
   <div class="form-container">
     <div class="form-grid">
       <div class="avatar-section">
         <img [src]="editUser.avatar" alt="Avatar" class="avatar-preview">
-        <p class="tip">Avatar cua nguoi dung</p>
+        <div class="role-badge" [ngClass]="'role-' + editUser.role">
+          {{ editUser.role | titlecase }}
+        </div>
+        <div class="form-actions">
+          <button class="cancel-btn" (click)="cancel()">Quay lại</button>
+        </div>
+      </div>
+
+      <div class="view-fields">
+        <div class="info-row">
+          <span class="info-label">Họ và tên</span>
+          <span class="info-value">{{ editUser.name || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-value">{{ editUser.email || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Số điện thoại</span>
+          <span class="info-value">{{ editUser.phone || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Địa chỉ</span>
+          <span class="info-value">{{ editUser.address || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Vai trò</span>
+          <span class="info-value">{{ editUser.role | titlecase }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EDIT MODE ===== -->
+<div *ngIf="!viewOnly" class="edit-user-page">
+  <div class="header">
+    <h2>Chỉnh sửa người dùng</h2>
+  </div>
+
+  <div class="form-container">
+    <div class="form-grid">
+      <div class="avatar-section">
+        <img [src]="editUser.avatar" alt="Avatar" class="avatar-preview">
+        <p class="tip">Ảnh đại diện người dùng</p>
 
         <div class="form-actions">
-          <button class="cancel-btn" (click)="cancel()">{{ viewOnly ? 'Quay lai' : 'Huy' }}</button>
-          <button *ngIf="!viewOnly" class="update-btn" (click)="updateUser()" [disabled]="isSaving">Cap nhat</button>
+          <button class="cancel-btn" (click)="cancel()">Huỷ</button>
+          <button class="update-btn" (click)="updateUser()" [disabled]="isSaving">
+            {{ isSaving ? 'Đang lưu...' : 'Cập nhật' }}
+          </button>
         </div>
       </div>
 
       <div class="fields">
         <div class="form-group">
-          <label>Ho va ten <span *ngIf="!viewOnly" class="required">*</span></label>
-          <input [(ngModel)]="editUser.name" placeholder="Nhap ho va ten" [disabled]="viewOnly" />
+          <label>Họ và tên <span class="required">*</span></label>
+          <input [(ngModel)]="editUser.name" placeholder="Nhập họ và tên" />
         </div>
 
         <div class="form-group">
-          <label>Email <span *ngIf="!viewOnly" class="required">*</span></label>
-          <input type="email" [(ngModel)]="editUser.email" placeholder="example@email.com" [disabled]="viewOnly" />
+          <label>Email <span class="required">*</span></label>
+          <input type="email" [(ngModel)]="editUser.email" placeholder="example@email.com" />
         </div>
 
         <div class="form-group">
-          <label>Vai tro</label>
-          <select [(ngModel)]="editUser.role" [disabled]="viewOnly">
+          <label>Vai trò</label>
+          <select [(ngModel)]="editUser.role">
             <option *ngFor="let role of roles" [value]="role">{{ role | titlecase }}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>So dien thoai</label>
-          <input [(ngModel)]="editUser.phone" placeholder="Nhap so dien thoai" [disabled]="viewOnly" />
+          <label>Số điện thoại</label>
+          <input [(ngModel)]="editUser.phone" placeholder="Nhập số điện thoại" />
         </div>
 
         <div class="form-group">
-          <label>Dia chi</label>
-          <input [(ngModel)]="editUser.address" placeholder="Nhap dia chi" [disabled]="viewOnly" />
+          <label>Địa chỉ</label>
+          <input [(ngModel)]="editUser.address" placeholder="Nhập địa chỉ" />
         </div>
 
-        <ng-container *ngIf="!viewOnly">
-          <div class="form-group">
-            <label>Mat khau moi (neu muon doi)</label>
-            <input type="password" [(ngModel)]="editUser.password" placeholder="De trong neu khong doi" />
-          </div>
+        <div class="form-group">
+          <label>Mật khẩu mới <span class="optional">(để trống nếu không đổi)</span></label>
+          <input type="password" [(ngModel)]="editUser.password" placeholder="Mật khẩu mới" />
+        </div>
 
-          <div class="form-group">
-            <label>Xac nhan mat khau moi</label>
-            <input type="password" [(ngModel)]="editUser.confirmPassword" placeholder="Nhap lai mat khau moi" />
-          </div>
-        </ng-container>
+        <div class="form-group">
+          <label>Xác nhận mật khẩu</label>
+          <input type="password" [(ngModel)]="editUser.confirmPassword" placeholder="Nhập lại mật khẩu mới" />
+        </div>
       </div>
     </div>
   </div>

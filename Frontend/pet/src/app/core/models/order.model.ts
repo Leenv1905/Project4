@@ -1,9 +1,9 @@
 export type OrderStatus =
-  | 'pending'      // user vừa đặt
-  | 'confirmed'    // shop đã duyệt
-  | 'shipping'     // operator giao
-  | 'completed'    // user nhận
-  | 'cancelled';
+  | 'pending' | 'confirmed' | 'shipping' | 'completed' | 'cancelled'
+  | 'created' | 'shop_confirmed' | 'warehouse_received'
+  | 'inspection_passed' | 'inspection_failed'
+  | 'delivery_started' | 'delivery_completed' | 'delivery_failed'
+  | 'customer_confirmed';
 
 export interface OrderItem {
   productId: number;
@@ -13,23 +13,19 @@ export interface OrderItem {
   quantity: number;
 }
 
+export type FulfillmentStatus = string;
+
 export interface Order {
   id: number;
   items: OrderItem[];
   totalAmount: number;
   status: OrderStatus;
-  fulfillmentStatus?: FulfillmentStatus;
+  fulfillmentStatus?: string;
+  paymentMethod?: string;
+  paymentStatus?: string;
   createdAt: Date;
   customerName: string;
   phone: string;
   address: string;
   note?: string;
 }
-// MODEL cho fulfillment (giao hàng - vận hành - operator)
-export type FulfillmentStatus =
-  | 'pending'            // chờ operator xử lý
-  | 'received'           // đã nhận từ shop
-  | 'delivering'         // đang giao
-  | 'delivered'          // giao thành công
-  | 'return_pending'     // hủy giao → chờ hoàn
-  | 'returned';          // đã hoàn về shop

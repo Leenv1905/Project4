@@ -30,10 +30,12 @@ export class CheckoutService {
 
   // ✅ place order via backend checkout API
   placeOrder(form: {
+    addressId?: number | null;
     customerName: string;
     phone: string;
     address: string;
     note?: string;
+    paymentMethod?: string;
   }): Observable<Order | null> {
     return this.orderService.checkout(form).pipe(
       map((createdOrders) => {

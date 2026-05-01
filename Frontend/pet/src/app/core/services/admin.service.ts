@@ -64,4 +64,8 @@ export class AdminService {
   deleteUser(userId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/users/${userId}`, { withCredentials: true });
   }
+
+  getUsersByRole(role: string, page = 0, size = 100): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/users?page=${page}&size=${size}&role=${role}`, { withCredentials: true });
+  }
 }

@@ -1,84 +1,55 @@
-<!-- TopAppBar -->
-<header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:shadow-none docked full-width top-0 z-40 flex justify-between items-center w-full px-6 h-16">
-  <div class="flex items-center gap-4">
-    <span class="material-symbols-outlined text-blue-800 dark:text-blue-400">qr_code_scanner</span>
-    <span class="text-lg font-bold text-blue-900 dark:text-blue-100 font-inter antialiased tracking-tight">PetLogistics</span>
+<div class="min-h-screen bg-gray-900 text-white flex flex-col">
+
+  <!-- HEADER -->
+  <header class="bg-white/10 border-b border-white/20 h-16 flex items-center px-6 gap-4">
+    <a routerLink="/operator/tasks/verify" class="text-white/70 hover:text-white text-sm">← Quay lại</a>
+    <span class="font-bold text-lg">Quét Microchip</span>
+    <span *ngIf="task" class="text-sm text-white/60 ml-auto">Pet: {{ task.pet?.name }} ({{ task.pet?.petCode }})</span>
+  </header>
+
+  <!-- KHÔNG CÓ TASK -->
+  <div *ngIf="!task" class="flex-1 flex flex-col items-center justify-center p-6">
+    <p class="text-white/60 mb-4">Không có nhiệm vụ được chọn.</p>
+    <a routerLink="/operator/tasks/verify" class="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-600">
+      Chọn nhiệm vụ
+    </a>
   </div>
-  <div class="flex items-center gap-4">
-    <button class="hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors p-2 rounded-full">
-      <span class="material-symbols-outlined text-slate-500 dark:text-slate-400">notifications</span>
-    </button>
-    <button class="hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors p-2 rounded-full">
-      <span class="material-symbols-outlined text-slate-500 dark:text-slate-400">settings</span>
-    </button>
-    <div class="w-8 h-8 rounded-full overflow-hidden border border-slate-200">
-      <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFCTC-4uRx2Nth7iINSBGj2g9JqAUu9yPxLJs0zz5Qa5yg_Qh5Lg99vyxBqjuZ-rsroiwaXF9JOW6dL-XivDwxfB62cIg8boxfdQd5J89XNGGZWUoCDbKAAdiLA26Esea8CD8E9MGnAIYpuPEhpylhJvibEj20A38HC_KktxuwZmpXxo5nrKMJiJl5fh_xxJChXNx08pTkdQBBp0liWNE41LFlpVDMUgVHv3kqoFlliuPHu-Rc--LMMSwLpYSlVnSwQNMWQ2dHQAf2"/>
-    </div>
-  </div>
-</header>
 
-<div class="flex flex-1 overflow-hidden">
+  <!-- SCANNER UI -->
+  <div *ngIf="task" class="flex-1 flex flex-col p-6 gap-6 max-w-lg mx-auto w-full">
 
-  <!-- SIDEBAR -->
-  <aside class="bg-slate-50 dark:bg-slate-950 h-screen w-64 border-r border-slate-200 dark:border-slate-800 fixed left-0 top-0 hidden md:flex flex-col h-full py-4 pt-20 z-30">
-    <div class="px-6 mb-8">
-      <h2 class="text-blue-900 dark:text-blue-100 font-black tracking-tighter text-base">Verification Terminal</h2>
-      <p class="text-slate-500 text-[10px] font-mono">V04-Alpha</p>
-    </div>
-
-    <nav class="flex-1 space-y-1 px-3">
-      <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg">
-        <span class="material-symbols-outlined">assignment_late</span>
-        <span>Pending Verifications</span>
-      </a>
-
-      <a class="flex items-center gap-3 px-4 py-3 text-blue-800 font-bold border-r-4 border-blue-800 bg-blue-50 rounded-l-lg">
-        <span class="material-symbols-outlined">local_shipping</span>
-        <span>Active Missions</span>
-      </a>
-
-      <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg">
-        <span class="material-symbols-outlined">history</span>
-        <span>History</span>
-      </a>
-    </nav>
-  </aside>
-
-  <!-- MAIN -->
-  <main class="flex-1 md:ml-64 p-6 overflow-y-auto">
-
-    <h1 class="text-2xl font-bold mb-4">Microchip Scanning</h1>
-
-    <!-- SCANNER -->
-    <div class="relative aspect-video bg-black rounded-xl overflow-hidden mb-6">
-
-      <img class="w-full h-full object-cover opacity-60"
-           src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6ZtySVKfPAocTI6usYhTakhpX8agtwH84xRkWfbKg_M03AydgW26gx_nFbdmFImr8eAVN5H2E4s1XJNKxm6ndszrR8_VaMDnxzZyhM7JouOP5IBH3S9XOOpuKHljlIUT_gDs_Q62hzDf3dQ3rPwLT0Sp2rrR3Uio2hgO3jcXE0MGLzdpZGSh_h5tCNhTpOv2KfT6hossFRojvYQ_BXc_wpBx-F0oCFrnfXZBcw3D3GPJwNv4kYdYz_6qNrsDDuv53mnsin4irdbY0"/>
-
+    <!-- CAMERA VIEW (decorative) -->
+    <div class="relative aspect-video bg-black rounded-xl overflow-hidden">
       <div class="absolute inset-0 flex items-center justify-center">
-        <div class="w-64 h-64 border-2 border-white"></div>
+        <div class="w-64 h-64 border-2 border-blue-400 relative">
+          <div class="absolute left-0 right-0 h-0.5 bg-blue-400 animate-pulse top-1/2"></div>
+          <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-blue-300"></div>
+          <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-blue-300"></div>
+          <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-blue-300"></div>
+          <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-blue-300"></div>
+        </div>
       </div>
-
+      <p class="absolute bottom-3 w-full text-center text-white/50 text-xs">Nhập URL ảnh/video bên dưới</p>
     </div>
 
-    <!-- INPUT -->
-    <div class="bg-white p-6 rounded-xl border flex justify-between items-center">
-
-      <input class="border px-4 py-2 rounded" placeholder="Enter ID Number"/>
-
-      <button class="bg-blue-800 text-white px-4 py-2 rounded">
-        Verify
+    <!-- INPUT URL -->
+    <div class="bg-white rounded-xl p-5">
+      <label class="block text-gray-700 font-medium text-sm mb-2">
+        URL ảnh / video quét Microchip <span class="text-red-500">*</span>
+      </label>
+      <input
+        class="w-full border rounded px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4"
+        [(ngModel)]="chipUrl"
+        placeholder="https://storage.example.com/chip-video.mp4"
+      />
+      <button
+        class="w-full bg-blue-800 text-white py-3 rounded font-medium hover:bg-blue-700 disabled:opacity-50"
+        [disabled]="!chipUrl.trim() || isSubmitting"
+        (click)="confirm()">
+        Xác nhận và quay lại chi tiết
       </button>
-
     </div>
 
-  </main>
+  </div>
 
 </div>
-
-<!-- MOBILE -->
-<footer class="md:hidden fixed bottom-0 w-full bg-white border-t flex justify-around h-16">
-  <button>Scan</button>
-  <button>Missions</button>
-  <button>History</button>
-</footer>

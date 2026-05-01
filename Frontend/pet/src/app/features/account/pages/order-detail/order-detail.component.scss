@@ -333,7 +333,32 @@ th {
     background: #166534;
   }
 }
+.event.inactive {
+  opacity: 0.35;
+}
 
+.event.inactive .dot {
+  background: #d1d5db;
+  border-color: #d1d5db;
+}
+
+.event.inactive strong,
+.event.inactive p {
+  color: #9ca3af;
+}
+.event.failed {
+  opacity: 1;
+}
+
+.event.failed .dot {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.event.failed strong,
+.event.failed p {
+  color: #ef4444;
+}
 //.order-detail {
 //  padding: 24px;
 //}

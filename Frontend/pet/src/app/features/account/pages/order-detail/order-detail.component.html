@@ -1,5 +1,5 @@
-<div class="order-detail" *ngIf="order() as order; else notFound">
-
+<ng-container *ngIf="order() as order; else notFound">
+  <div class="order-detail">
   <!-- HEADER -->
   <div class="header">
     <div>
@@ -64,35 +64,97 @@
       <!-- TIMELINE -->
       <div class="card">
         <h3>Tiến trình đơn hàng</h3>
-        <div class="timeline">
-          <div class="event" [class.active]="order.status !== 'pending'">
+
+        <!-- Đơn bị huỷ -->
+        <div *ngIf="isCancelled(order)" class="timeline">
+          <div class="event"
+               [class.active]="getTimelineStep(order) >= 1"
+               [class.inactive]="getTimelineStep(order) < 1">
             <div class="dot"></div>
             <div>
               <strong>Đặt hàng thành công</strong>
               <p>{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
             </div>
           </div>
-          <div class="event" [class.active]="['confirmed','shipping','completed'].includes(order.status)">
-            <div class="dot"></div>
+          <div class="event" style="color:#ef4444">
+            <div class="dot" style="background:#ef4444;border-color:#ef4444"></div>
             <div>
-              <strong>Shop đã xác nhận</strong>
-              <p>Đơn hàng đang được chuẩn bị</p>
+              <strong>Đơn hàng đã bị huỷ</strong>
+              <p>Thú cưng không đạt xác minh hoặc đơn bị huỷ</p>
             </div>
           </div>
-          <div class="event" [class.active]="['shipping','completed'].includes(order.status)">
+        </div>
+
+        <!-- Luồng bình thường -->
+        <div *ngIf="!isCancelled(order)" class="timeline">
+
+          <!-- Bước 1: Đặt hàng -->
+          <div class="event active">
+            <div class="dot"></div>
+            <div>
+              <strong>Đặt hàng thành công</strong>
+              <p>{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+          </div>
+
+          <!-- Bước 2: Chờ xác minh (mặc định dừng ở đây) -->
+          <div class="event active">
+            <div class="dot"></div>
+            <div>
+              <strong>Chờ xác minh thú cưng</strong>
+              <p *ngIf="getTimelineStep(order) === 1" class="flex items-center gap-1 text-yellow-600 font-medium">
+                <span class="inline-block w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                Đang chờ nhân viên xác minh chip thú cưng...
+              </p>
+              <p *ngIf="getTimelineStep(order) > 1">Hoàn tất</p>
+            </div>
+          </div>
+
+          <!-- Bước 3: Đã xác minh -->
+          <div class="event"
+               [class.active]="getTimelineStep(order) >= 2 && !isVerificationFailed(order)"
+               [class.inactive]="getTimelineStep(order) < 2"
+               [class.failed]="isVerificationFailed(order)">
+
+            <div class="dot"></div>
+
+            <div>
+              <strong>
+                {{ isVerificationFailed(order) ? 'Xác minh thất bại' : 'Xác minh thành công' }}
+              </strong>
+
+              <p *ngIf="isVerificationFailed(order)" class="text-red-500">
+                Thú cưng không đạt xác minh. Đơn hàng đã bị huỷ.
+              </p>
+
+              <p *ngIf="!isVerificationFailed(order)">
+                Thú cưng đã được xác minh chip &amp; hồ sơ hợp lệ
+              </p>
+            </div>
+          </div>
+          <!-- Bước 4: Đang giao hàng -->
+          <div class="event"
+               [class.active]="getTimelineStep(order) >= 3"
+               [class.inactive]="getTimelineStep(order) < 3">
             <div class="dot"></div>
             <div>
               <strong>Đang giao hàng</strong>
-              <p>Vận chuyển đang giao đến bạn</p>
+              <p *ngIf="getTimelineStep(order) === 3" class="text-blue-600 font-medium">Vận chuyển đang trên đường đến bạn...</p>
+              <p *ngIf="getTimelineStep(order) !== 3">Vận chuyển đến địa chỉ nhận hàng</p>
             </div>
           </div>
-          <div class="event" [class.active]="order.status === 'completed'">
+
+          <!-- Bước 5: Giao thành công -->
+          <div class="event"
+               [class.active]="getTimelineStep(order) >= 4"
+               [class.inactive]="getTimelineStep(order) < 4">
             <div class="dot"></div>
             <div>
-              <strong>Đã giao thành công</strong>
-              <p>Cảm ơn bạn đã mua hàng!</p>
+              <strong>Giao hàng thành công</strong>
+              <p>Cảm ơn bạn đã tin tưởng GUPet!</p>
             </div>
           </div>
+
         </div>
       </div>
     </div>
@@ -121,7 +183,7 @@
       <!-- PAYMENT -->
       <div class="card">
         <h3>Phương thức thanh toán</h3>
-        <p>Thanh toán khi nhận hàng (COD)</p>
+        <p>{{ order.paymentMethod === 'VNPAY' ? 'Thanh toán VNPay' : 'Thanh toán khi nhận hàng (COD)' }}</p>
       </div>
 
       <!-- VERIFICATION + CONFIRM (CHỈ HIỂN THỊ KHI ĐANG GIAO) -->
@@ -137,6 +199,7 @@
     </div>
   </div>
 </div>
+</ng-container>
 
 <!-- Modal chung -->
 <app-verification-modal
