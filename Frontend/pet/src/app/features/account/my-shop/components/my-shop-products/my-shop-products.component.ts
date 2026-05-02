@@ -21,7 +21,7 @@ export class MyShopProductsComponent implements OnInit {
   deleteProduct: Product | null = null;
   openMenu: number | null = null;
   isLoading = false;
-
+  showSuccessModal = false;
   page = 1;
   pageSize = 10;
   imageUrl?: string;
@@ -47,36 +47,7 @@ export class MyShopProductsComponent implements OnInit {
     this.isLoading = true;
     this.petApi.listMyPets().subscribe({
       next: (products) => {
-        this.products = products.map((p: any) => ({
-          ...p,
-
-          images: p.images?.length
-            ? p.images.map((img: any) => img.imageUrl)
-            : ['assets/images/default-pet.png'],
-
-          imageUrl: p.images?.[0] || 'assets/images/default-pet.png',
-
-          shopId: p.ownerId,
-          shopName: p.ownerName,
-
-          status: p.isVerified ? 'available' : 'sold',
-
-          color: p.color || '',
-          gender: p.gender ?? 'female',
-          weight: p.weight || 0,
-          vaccinated: p.vaccinated ?? false,
-          neutered: p.neutered ?? false,
-
-          // 👇 đảm bảo đúng kiểu Date (tránh undefined)
-          createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
-
-          // 👇 nếu có updatedAt từ BE thì map luôn
-          updatedAt: p.updatedAt ? new Date(p.updatedAt) : undefined,
-
-          // 👇 giữ lại để dùng sau
-          isVerified: p.isVerified
-        }));
-
+        this.products = products;
         this.isLoading = false;
       },
       error: () => {
@@ -84,6 +55,22 @@ export class MyShopProductsComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+  notification = {
+    show: false,
+    title: '',
+    message: '',
+    type: 'info' as 'success' | 'error' | 'info'
+  };
+  getStatusLabel(status: string): string {
+    const map: Record<string, string> = {
+      available: 'Còn hàng',
+      sold: 'Đã bán',
+      pending: 'Chờ duyệt',
+      reserved: 'Đặt trước',
+      not_for_sale: 'Ngừng bán'
+    };
+    return map[status] || status;
   }
 
   addProduct() {
@@ -117,17 +104,35 @@ export class MyShopProductsComponent implements OnInit {
   }
 
   confirmDelete() {
-    if (!this.deleteProduct) {
-      return;
-    }
+    if (!this.deleteProduct) return;
 
-    this.petApi.deletePet(this.deleteProduct.id).subscribe({
+    const idToRemove = this.deleteProduct.id;
+    const petName = this.deleteProduct.name;
+
+    this.petApi.deletePet(idToRemove).subscribe({
       next: () => {
-        this.products = this.products.filter((product) => product.id !== this.deleteProduct?.id);
-        this.deleteProduct = null;
+        this.products = this.products.filter(p => p.id !== idToRemove);
+        this.deleteProduct = null; // Đóng modal xác nhận cũ
+
+        // Hiển thị modal thành công bằng component mới
+        this.showNotification(
+          'Thành công',
+          `Đã xóa thú cưng ${petName} khỏi hệ thống.`,
+          'success'
+        );
       },
-      error: () => alert('Khong the xoa san pham.')
+      error: () => {
+        this.showNotification(
+          'Lỗi',
+          'Không thể xóa sản phẩm. Vui lòng thử lại sau.',
+          'error'
+        );
+      }
     });
+  }
+
+  showNotification(title: string, message: string, type: 'success' | 'error' | 'info') {
+    this.notification = { show: true, title, message, type };
   }
 
   toggleMenu(id: number) {

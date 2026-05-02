@@ -20,14 +20,8 @@
 
   <!-- TOOLBAR -->
   <div class="toolbar">
-    <input
-      type="text"
-      placeholder="Tìm kiếm sản phẩm..."
-    />
-
-    <button class="add-btn" (click)="addProduct()">
-      + Thêm sản phẩm mới
-    </button>
+    <input type="text" placeholder="Tìm kiếm sản phẩm..." />
+    <button class="add-btn" (click)="addProduct()">+ Thêm sản phẩm mới</button>
   </div>
 
   <!-- LOADING STATE -->
@@ -47,62 +41,61 @@
   <!-- TABLE -->
   <table *ngIf="!isLoading && products.length > 0">
     <thead>
-    <tr>
-      <th></th>
-      <th>Sản phẩm</th>
-      <th>Loài</th>
-      <th>Giống</th>
-      <th>Màu lông</th>
-      <th>Giới tính</th>
-      <th>Cân nặng</th>
-      <th>Giá</th>
-      <th>Trạng thái</th>
-      <th>Hành động</th>
-    </tr>
+      <tr>
+        <th></th>
+        <th>Sản phẩm</th>
+        <th>Loài</th>
+        <th>Giống</th>
+        <th>Màu lông</th>
+        <th>Giới tính</th>
+        <th>Cân nặng</th>
+        <th>Giá</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+      </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let p of paginatedProducts">
-      <td><input type="checkbox"></td>
+      <tr *ngFor="let p of paginatedProducts">
+        <td><input type="checkbox"></td>
 
-      <td class="product">
-        <img [src]="p.imageUrl" alt="{{p.name}}">
-        <div>
-          <div class="name">{{ p.name }}</div>
-          <div class="desc">{{ p.description | slice:0:60 }}...</div>
-        </div>
-      </td>
+        <td class="product">
+          <img [src]="p.imageUrl || p.images[0]" [alt]="p.name">
+          <div>
+            <div class="name">{{ p.name }}</div>
+            <div class="desc">{{ p.description | slice:0:60 }}...</div>
+          </div>
+        </td>
 
-      <td>{{ p.species }}</td>
-      <td>{{ p.breed }}</td>
-      <td>{{ p.color }}</td>
-      <td>{{ p.gender === 'male' ? 'Đực' : 'Cái' }}</td>
-      <td>{{ p.weight | number:'1.1-1' }} kg</td>
-      <td class="price">{{ p.price | number }} ₫</td>
+        <td>{{ p.species }}</td>
+        <td>{{ p.breed }}</td>
+        <td>{{ p.color || '—' }}</td>
+        <td>{{ p.gender === 'male' ? 'Đực' : 'Cái' }}</td>
+        <td>{{ p.weight | number:'1.1-1' }} kg</td>
+        <td class="price">{{ p.price | number }} ₫</td>
 
-      <td>
+        <td>
           <span class="badge"
                 [class.available]="p.status === 'available'"
-                [class.sold]="p.status === 'sold'">
-            {{ p.status === 'available' ? 'Còn hàng' : 'Đã bán' }}
+                [class.sold]="p.status === 'sold'"
+                [class.pending]="p.status === 'pending'">
+            {{ getStatusLabel(p.status) }}
           </span>
-      </td>
+        </td>
 
-      <td class="actions">
-        <button class="dots" (click)="toggleMenu(p.id)">⋮</button>
-
-        <div class="dropdown" *ngIf="openMenu === p.id">
-          <div (click)="openView(p)">Xem chi tiết</div>
-          <div (click)="editProduct(p.id)">Chỉnh sửa</div>
-          <div (click)="openDelete(p)">Xóa</div>
-        </div>
-      </td>
-    </tr>
+        <td class="actions">
+          <button class="dots" (click)="toggleMenu(p.id)">⋮</button>
+          <div class="dropdown" *ngIf="openMenu === p.id">
+            <div (click)="openView(p); openMenu = null">Xem chi tiết</div>
+            <div (click)="editProduct(p.id); openMenu = null">Chỉnh sửa</div>
+            <div (click)="openDelete(p); openMenu = null" style="color:#ef4444">Xóa</div>
+          </div>
+        </td>
+      </tr>
     </tbody>
   </table>
 
-
   <!-- PAGINATION -->
-  <div class="pagination">
+  <div class="pagination" *ngIf="!isLoading && products.length > 0">
     <div class="page-size">
       <span>Hiển thị:</span>
       <select (change)="changePageSize($any($event.target).value)">
@@ -111,11 +104,9 @@
         <option value="20">20</option>
       </select>
     </div>
-
     <div class="page-info">
       {{ (page-1)*pageSize + 1 }} – {{ Math.min(page*pageSize, total) }} của {{ total }}
     </div>
-
     <div class="page-controls">
       <button (click)="prevPage()" [disabled]="page === 1">‹</button>
       <button (click)="nextPage()" [disabled]="page === totalPages">›</button>
@@ -123,254 +114,75 @@
   </div>
 </div>
 
-<!--<div class="products">-->
-
-<!--  &lt;!&ndash; FILTERS &ndash;&gt;-->
-
-<!--  <div class="filters">-->
-
-<!--    <select>-->
-<!--      <option>Status</option>-->
-<!--      <option>Publish</option>-->
-<!--      <option>Inactive</option>-->
-<!--    </select>-->
-
-<!--    <select>-->
-<!--      <option>Category</option>-->
-<!--      <option>Dog</option>-->
-<!--      <option>Food</option>-->
-<!--      <option>Accessory</option>-->
-<!--    </select>-->
-
-<!--    <select>-->
-<!--      <option>Stock</option>-->
-<!--      <option>In stock</option>-->
-<!--      <option>Out of stock</option>-->
-<!--    </select>-->
-
-<!--  </div>-->
-
-
-<!--  &lt;!&ndash; TOOLBAR &ndash;&gt;-->
-
-<!--  <div class="toolbar">-->
-
-<!--    <input-->
-<!--      type="text"-->
-<!--      placeholder="Search Product"-->
-<!--    />-->
-
-<!--    <button class="add-btn" (click)="addProduct()">-->
-<!--      + Add Product-->
-<!--    </button>-->
-
-<!--  </div>-->
-
-
-<!--  &lt;!&ndash; TABLE &ndash;&gt;-->
-
-<!--  <table>-->
-
-<!--    <thead>-->
-
-<!--    <tr>-->
-<!--      <th></th>-->
-<!--      <th>Product</th>-->
-<!--      <th>Category</th>-->
-<!--      <th>Stock</th>-->
-<!--      <th>SKU</th>-->
-<!--      <th>Price</th>-->
-<!--      <th>Status</th>-->
-<!--      <th>Actions</th>-->
-<!--    </tr>-->
-
-<!--    </thead>-->
-
-
-<!--    <tbody>-->
-
-<!--    <tr *ngFor="let p of paginatedProducts">-->
-
-<!--      <td>-->
-<!--        <input type="checkbox">-->
-<!--      </td>-->
-
-<!--      <td class="product">-->
-
-<!--        <img [src]="p.image">-->
-
-<!--        <div>-->
-
-<!--          <div class="name">-->
-<!--            {{p.name}}-->
-<!--          </div>-->
-
-<!--          <div class="desc">-->
-<!--            {{p.description}}-->
-<!--          </div>-->
-
-<!--        </div>-->
-
-<!--      </td>-->
-
-<!--      <td>{{p.category}}</td>-->
-
-<!--      <td>{{p.stock}}</td>-->
-
-<!--      <td>{{p.sku}}</td>-->
-
-<!--      <td>${{p.price}}</td>-->
-
-<!--      <td>-->
-
-<!--<span-->
-<!--  class="badge"-->
-<!--  [class.publish]="p.status==='publish'"-->
-<!--  [class.inactive]="p.status==='inactive'"-->
-<!--&gt;-->
-
-<!--{{p.status}}-->
-
-<!--</span>-->
-
-<!--      </td>-->
-
-<!--      <td class="actions">-->
-
-<!--        <div class="action-wrapper">-->
-
-<!--          <button-->
-<!--            class="dots"-->
-<!--            (click)="toggleMenu(p.id)"-->
-<!--          >-->
-<!--            ⋮-->
-<!--          </button>-->
-
-<!--          <div-->
-<!--            class="dropdown"-->
-<!--            *ngIf="openMenu === p.id"-->
-<!--          >-->
-
-<!--            <div (click)="editProduct(p.id)">-->
-<!--              Edit-->
-<!--            </div>-->
-
-<!--            <div (click)="openDelete(p)">-->
-<!--              Delete-->
-<!--            </div>-->
-
-<!--            <div (click)="openView(p)">-->
-<!--              View-->
-<!--            </div>-->
-
-<!--          </div>-->
-
-<!--        </div>-->
-
-<!--      </td>-->
-
-<!--    </tr>-->
-
-<!--    </tbody>-->
-
-<!--  </table>-->
-<!--  <div class="pagination">-->
-
-<!--    <div class="page-size">-->
-
-<!--      <span>Rows per page:</span>-->
-
-<!--      <select-->
-<!--        (change)="changePageSize($any($event.target).value)"-->
-<!--      >-->
-
-<!--        <option value="5">5</option>-->
-<!--        <option value="10" selected>10</option>-->
-<!--        <option value="20">20</option>-->
-
-<!--      </select>-->
-
-<!--    </div>-->
-
-<!--    <div class="page-info">-->
-
-<!--      {{ (page-1)*pageSize + 1 }}-->
-<!--      - -->
-<!--      {{ Math.min(page*pageSize,total) }}-->
-<!--      of-->
-<!--      {{ total }}-->
-
-<!--    </div>-->
-
-<!--    <div class="page-controls">-->
-
-<!--      <button-->
-<!--        (click)="prevPage()"-->
-<!--        [disabled]="page===1"-->
-<!--      >-->
-<!--        ‹-->
-<!--      </button>-->
-
-<!--      <button-->
-<!--        (click)="nextPage()"-->
-<!--        [disabled]="page===totalPages"-->
-<!--      >-->
-<!--        ›-->
-<!--      </button>-->
-
-<!--    </div>-->
-
-<!--  </div>-->
-
-<!--</div>-->
-
-
-<!--&lt;!&ndash; VIEW MODAL &ndash;&gt;-->
-
-<!--<div class="modal" *ngIf="selectedProduct">-->
-
-<!--  <div class="modal-content">-->
-
-<!--    <h3>{{selectedProduct.name}}</h3>-->
-
-<!--    <img [src]="selectedProduct.image">-->
-
-<!--    <p>{{selectedProduct.description}}</p>-->
-
-<!--    <p>Price: ${{selectedProduct.price}}</p>-->
-
-<!--    <button (click)="closeView()">-->
-<!--      Close-->
-<!--    </button>-->
-
-<!--  </div>-->
-
-
-<!--</div>-->
-
-
-<!--&lt;!&ndash; DELETE MODAL &ndash;&gt;-->
-
-<!--<div class="modal" *ngIf="deleteProduct">-->
-
-<!--  <div class="modal-content">-->
-
-<!--    <h3>Delete Product</h3>-->
-
-<!--    <p>Are you sure you want to delete this product?</p>-->
-
-<!--    <div class="modal-actions">-->
-
-<!--      <button (click)="confirmDelete()">-->
-<!--        Delete-->
-<!--      </button>-->
-
-<!--      <button (click)="closeDelete()">-->
-<!--        Cancel-->
-<!--      </button>-->
-
-<!--    </div>-->
-
-<!--  </div>-->
-
-<!--</div>-->
+<!-- VIEW MODAL -->
+<div class="modal" *ngIf="selectedProduct" (click)="closeView()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ selectedProduct.name }}</h3>
+      <button class="close-btn" (click)="closeView()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <img [src]="selectedProduct.imageUrl || selectedProduct.images[0]"
+           [alt]="selectedProduct.name"
+           style="width:100%; max-height:260px; object-fit:cover; border-radius:8px; margin-bottom:16px;">
+
+      <div class="info-grid">
+        <div class="info-row"><span class="label">Mã chip</span><span>{{ selectedProduct.petCode || '—' }}</span></div>
+        <div class="info-row"><span class="label">Loài</span><span>{{ selectedProduct.species }}</span></div>
+        <div class="info-row"><span class="label">Giống</span><span>{{ selectedProduct.breed }}</span></div>
+        <div class="info-row"><span class="label">Màu lông</span><span>{{ selectedProduct.color || '—' }}</span></div>
+        <div class="info-row"><span class="label">Giới tính</span><span>{{ selectedProduct.gender === 'male' ? 'Đực' : 'Cái' }}</span></div>
+        <div class="info-row"><span class="label">Cân nặng</span><span>{{ selectedProduct.weight }} kg</span></div>
+        <div class="info-row"><span class="label">Tuổi</span><span>{{ selectedProduct.age ? selectedProduct.age + ' tháng' : '—' }}</span></div>
+        <div class="info-row"><span class="label">Giá bán</span><span class="price">{{ selectedProduct.price | number }} ₫</span></div>
+        <div class="info-row"><span class="label">Trạng thái</span>
+          <span class="badge" [class.available]="selectedProduct.status === 'available'" [class.sold]="selectedProduct.status === 'sold'">
+            {{ getStatusLabel(selectedProduct.status) }}
+          </span>
+        </div>
+        <div class="info-row"><span class="label">Tiêm phòng</span><span>{{ selectedProduct.vaccinated ? 'Đã tiêm' : 'Chưa tiêm' }}</span></div>
+        <div class="info-row"><span class="label">Triệt sản</span><span>{{ selectedProduct.neutered ? 'Đã triệt' : 'Chưa triệt' }}</span></div>
+        <div class="info-row"><span class="label">Xác minh chip</span><span>{{ selectedProduct.isVerified ? '✓ Đã xác minh' : '✗ Chưa xác minh' }}</span></div>
+      </div>
+
+      <p style="margin-top:12px; color:#6b7280; font-size:14px;">{{ selectedProduct.description }}</p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeView()">Đóng</button>
+      <button class="btn-primary" (click)="editProduct(selectedProduct.id); closeView()">Chỉnh sửa</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal" *ngIf="deleteProduct" (click)="closeDelete()">
+  <div class="modal-content modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Xác nhận xóa</h3>
+      <button class="close-btn" (click)="closeDelete()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Bạn có chắc muốn xóa thú cưng <strong>{{ deleteProduct.name }}</strong> không?</p>
+      <p style="color:#ef4444; font-size:13px; margin-top:8px;">Hành động này không thể hoàn tác.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeDelete()">Hủy</button>
+      <button class="btn-danger" (click)="confirmDelete()">Xóa</button>
+    </div>
+  </div>
+</div>
+<!-- SUCCESS MODAL -->
+<div class="modal" *ngIf="showSuccessModal" (click)="showSuccessModal = false">
+  <div class="modal-content modal-sm" (click)="$event.stopPropagation()" style="text-align: center; padding: 30px;">
+    <div style="color: #10b981; font-size: 50px; margin-bottom: 15px;">
+      <i class="check-icon">✓</i>
+    </div>
+    <h3 style="margin-bottom: 10px;">Thành công!</h3>
+    <p>Sản phẩm đã được xóa khỏi hệ thống.</p>
+    <div class="modal-footer" style="justify-content: center; border-top: none; margin-top: 20px;">
+      <button class="btn-primary" (click)="showSuccessModal = false" style="width: 100%;">Đóng</button>
+    </div>
+  </div>
+</div>

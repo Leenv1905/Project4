@@ -1,7 +1,7 @@
 package com.eproject.petsale.registry.controller;
 
 import com.eproject.petsale.common.response.ApiSuccessResponse;
-import com.eproject.petsale.registry.dto.UnassignedPetResponse;
+import com.eproject.petsale.registry.dto.OrderVerificationResponse;
 import com.eproject.petsale.registry.dto.VerificationTaskResponse;
 import com.eproject.petsale.registry.service.VerificationService;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +71,7 @@ public class VerificationController {
 
     @GetMapping("/unassigned-pets")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiSuccessResponse<List<UnassignedPetResponse>>> getUnassignedPets() {
+    public ResponseEntity<ApiSuccessResponse<List<OrderVerificationResponse>>> getUnassignedPets() {
         return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Unassigned pets", verificationService.getUnassignedPetsWithOrderContext()));
     }
 

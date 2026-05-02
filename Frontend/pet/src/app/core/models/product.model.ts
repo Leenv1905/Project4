@@ -10,7 +10,7 @@ export interface Product {
 
   video?: string;
 
-  status: 'available' | 'sold' | 'reserved' | 'not_for_sale';
+  status: 'available' | 'sold' | 'pending' | 'reserved' | 'not_for_sale';
 
   species: 'Chó' | 'Mèo' | 'Khác';
   breed: string;

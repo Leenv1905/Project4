@@ -70,8 +70,7 @@ export class OrderDetailComponent {
     }
   }
 
-  // Trả về index bước hiện tại (0-based) dựa trên status + fulfillmentStatus từ BE
-  // Bước: 0=Đặt hàng, 1=Chờ xác minh, 2=Đã xác minh, 3=Đang giao, 4=Giao thành công
+  // Bước: 1=Chờ xác minh, 2=Đã xác minh (CONFIRMED+VERIFIED), 3=Đang giao (SHIPPING), 4=Hoàn tất
   getTimelineStep(order: { status: string; fulfillmentStatus?: string }): number {
     const s = (order.status || '').toLowerCase();
     const f = (order.fulfillmentStatus || '').toLowerCase();
@@ -79,7 +78,7 @@ export class OrderDetailComponent {
     if (['delivery_completed', 'customer_confirmed', 'completed'].includes(s)) return 4;
     if (['delivery_started'].includes(s) || f === 'shipping') return 3;
     if (['confirmed', 'shop_confirmed', 'warehouse_received',
-         'inspection_passed', 'delivery_failed'].includes(s)) return 2;
+         'inspection_passed', 'delivery_failed'].includes(s) || f === 'verified') return 2;
     // CREATED + waiting_verify = step 1 (default stop)
     return 1;
   }

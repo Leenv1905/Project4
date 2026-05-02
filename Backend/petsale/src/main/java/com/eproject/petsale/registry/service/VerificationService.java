@@ -5,25 +5,27 @@ import com.eproject.petsale.order.entity.Order;
 import com.eproject.petsale.order.repository.OrderRepository;
 import com.eproject.petsale.pet.entity.Pet;
 import com.eproject.petsale.pet.repository.PetRepository;
+import com.eproject.petsale.pet.service.RegistryClientService;
+import com.eproject.petsale.registry.dto.OrderVerificationResponse;
+import com.eproject.petsale.registry.dto.VerificationTaskResponse;
 import com.eproject.petsale.registry.entity.VerificationTask;
-import com.eproject.petsale.registry.repository.MockMicrochipRegistryRepository;
 import com.eproject.petsale.registry.repository.VerificationTaskRepository;
 import com.eproject.petsale.user.entity.User;
 import com.eproject.petsale.user.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import com.eproject.petsale.registry.dto.UnassignedPetResponse;
-import com.eproject.petsale.registry.dto.VerificationTaskResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +36,7 @@ public class VerificationService {
     private final UserRepository userRepository;
     private final R2StorageService r2StorageService;
     private final OrderRepository orderRepository;
-    private final MockMicrochipRegistryRepository microchipRegistryRepository;
+    private final RegistryClientService registryClientService;
 
     @Transactional
     public void assignTask(Long petId, Long operatorId) {
@@ -110,9 +112,29 @@ public class VerificationService {
         task.setCompletedAt(LocalDateTime.now());
 
         Pet pet = task.getPet();
-        boolean chipMatches = chipCode != null
-                && microchipRegistryRepository.findByMicrochipNumber(chipCode.trim()).isPresent()
+
+        // Lấy token từ cookie access_token
+        String token = null;
+        ServletRequestAttributes attrs =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attrs != null) {
+            Cookie[] cookies = attrs.getRequest().getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("access_token".equals(cookie.getName())) {
+                        token = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Chip phải khớp với mã đăng ký của thú cưng VÀ phải tồn tại trong registry service
+        boolean chipMatchesPet = chipCode != null
                 && chipCode.trim().equalsIgnoreCase(pet.getPetCode() != null ? pet.getPetCode().trim() : "");
+        boolean inRegistry = chipMatchesPet && token != null
+                && registryClientService.checkPetVerification(chipCode.trim(), token);
+        boolean chipMatches = inRegistry;
 
         if (chipMatches) {
             task.setStatus("APPROVED");
@@ -135,7 +157,7 @@ public class VerificationService {
 
                     if (allVerified) {
                         order.setStatus("CONFIRMED");
-                        order.setFulfillmentStatus("SHIPPING");
+                        order.setFulfillmentStatus("VERIFIED");
                         order.setUpdatedAt(LocalDateTime.now());
                         orderRepository.save(order);
                     }
@@ -191,10 +213,29 @@ public class VerificationService {
 
         Pet pet = task.getPet();
         pet.setIsVerified(true);
-        pet.setTrustScore(95); // Example score boost
-        pet.setStatus("AVAILABLE"); // Cập nhật trạng thái để có thể mua
+        pet.setTrustScore(95);
+        pet.setStatus("AVAILABLE");
         petRepository.save(pet);
 
+        // Kiểm tra nếu tất cả pet trong đơn đã xác minh → cập nhật order
+        List<Order> orders = orderRepository.findByOrderItems_Pet_Id(pet.getId());
+        for (Order order : orders) {
+            if ("CREATED".equals(order.getStatus())) {
+                boolean allVerified = order.getOrderItems().stream()
+                        .filter(item -> item.getPet() != null)
+                        .allMatch(item -> {
+                            if (item.getPet().getId().equals(pet.getId())) return true;
+                            return Boolean.TRUE.equals(item.getPet().getIsVerified());
+                        });
+
+                if (allVerified) {
+                    order.setStatus("CONFIRMED");
+                    order.setFulfillmentStatus("VERIFIED");
+                    order.setUpdatedAt(LocalDateTime.now());
+                    orderRepository.save(order);
+                }
+            }
+        }
     }
 
     public List<VerificationTaskResponse> getAllSubmittedTasks() {
@@ -207,43 +248,31 @@ public class VerificationService {
                 .stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
-    public List<UnassignedPetResponse> getUnassignedPetsWithOrderContext() {
-        List<Pet> unverifiedPets = petRepository.findByIsVerifiedFalseOrIsVerifiedIsNull();
+    public List<OrderVerificationResponse> getUnassignedPetsWithOrderContext() {
+        List<Order> waitingOrders = orderRepository.findByStatusAndFulfillmentStatus("CREATED", "WAITING_VERIFY");
 
-        Set<Long> busyPetIds = taskRepository.findByStatus("PENDING").stream()
-                .map(t -> t.getPet().getId())
-                .collect(Collectors.toSet());
+        return waitingOrders.stream()
+                .map(order -> {
+                    List<OrderVerificationResponse.PetToVerify> petsToVerify = order.getOrderItems().stream()
+                            .filter(item -> item.getPet() != null)
+                            .map(item -> {
+                                Pet pet = item.getPet();
+                                return OrderVerificationResponse.PetToVerify.builder()
+                                        .petId(pet.getId())
+                                        .petName(pet.getName())
+                                        .breed(pet.getBreed())
+                                        .petCode(pet.getPetCode())
+                                        .shopName(pet.getUser() != null ? pet.getUser().getName() : "—")
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
 
-        return unverifiedPets.stream()
-                .filter(pet -> !busyPetIds.contains(pet.getId()))
-                .map(pet -> {
-                    List<Order> orders = orderRepository.findByOrderItems_Pet_Id(pet.getId());
-                    Order relevantOrder = orders.stream()
-                            .filter(o -> "CREATED".equals(o.getStatus()))
-                            .findFirst()
-                            .orElse(null);
-
-                    UnassignedPetResponse.UnassignedPetResponseBuilder builder = UnassignedPetResponse.builder()
-                            .petId(pet.getId())
-                            .petName(pet.getName())
-                            .breed(pet.getBreed())
-                            .petCode(pet.getPetCode())
-                            .shopName(pet.getUser() != null ? pet.getUser().getName() : "—");
-
-                    if (relevantOrder != null) {
-                        long total = relevantOrder.getOrderItems().stream()
-                                .filter(item -> item.getPet() != null).count();
-                        long verified = relevantOrder.getOrderItems().stream()
-                                .filter(item -> item.getPet() != null)
-                                .filter(item -> Boolean.TRUE.equals(item.getPet().getIsVerified()))
-                                .count();
-                        builder.orderId(relevantOrder.getId())
-                                .orderCode(relevantOrder.getOrderCode())
-                                .totalPetsInOrder((int) total)
-                                .verifiedPetsInOrder((int) verified);
-                    }
-
-                    return builder.build();
+                    return OrderVerificationResponse.builder()
+                            .orderId(order.getId())
+                            .orderCode(order.getOrderCode())
+                            .totalPetsInOrder(order.getOrderItems().size())
+                            .petsToVerify(petsToVerify)
+                            .build();
                 })
                 .collect(Collectors.toList());
     }

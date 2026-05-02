@@ -38,11 +38,18 @@ interface PetApiResponse {
 }
 
 interface PetApiRequest {
+  petCode?: string;
   name: string;
   species: string;
   breed: string;
   description: string;
   price: number;
+  color?: string;
+  gender?: string;
+  weight?: number;
+  age?: number;
+  isVaccinated?: boolean;
+  isNeutered?: boolean;
   minDailyTime?: number;
   minLivingSpace?: number;
   minActivityTime?: number;
@@ -149,8 +156,8 @@ export class PetApiService {
     const species = pet.species === 'Chó' || pet.species === 'Mèo' ? pet.species : 'Khác';
 
     const statusRaw = (pet.status || 'available').toLowerCase();
-    const validStatuses = ['available', 'sold', 'reserved', 'not_for_sale'];
-    const status = (validStatuses.includes(statusRaw) ? statusRaw : 'available') as Product['status'];
+    const validStatuses = ['available', 'sold', 'pending', 'reserved', 'not_for_sale'];
+    const status = (validStatuses.includes(statusRaw) ? statusRaw : 'pending') as Product['status'];
 
     return {
       id: Number(pet.id),
@@ -159,6 +166,7 @@ export class PetApiService {
       description: pet.description || '',
       price: Number(pet.price || 0),
       images: images.length > 0 ? images : [this.fallbackImage],
+      imageUrl: images.length > 0 ? images[0] : this.fallbackImage,
       status,
       species,
       breed: pet.breed || '',
@@ -188,16 +196,18 @@ export class PetApiService {
       }));
 
     return {
+      petCode: product.petCode,
       name: product.name || '',
       species: product.species || 'Chó',
       breed: product.breed || '',
       description: product.description || '',
       price: Number(product.price || 0),
-      minDailyTime: 0,
-      minLivingSpace: 0,
-      minActivityTime: 0,
-      minMonthlyBudget: 0,
-      minExperienceLevel: 0,
+      color: product.color || '',
+      gender: product.gender || 'male',
+      weight: product.weight ?? undefined,
+      age: product.age ?? undefined,
+      isVaccinated: product.vaccinated ?? false,
+      isNeutered: product.neutered ?? false,
       images: normalizedImages
     };
   }

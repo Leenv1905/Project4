@@ -139,10 +139,11 @@ export class AddProductComponent {
 
     const payload = {
       ...this.product,
+      isVaccinated: this.product.vaccinated,
+      isNeutered: this.product.neutered,
       images: this.finalImages
     };
 
-    console.log('Payload gửi BE:', JSON.stringify(payload, null, 2));
     this.isLoading = true;
     this.petService.createPetWithRequest(payload).subscribe({
       next: () => {
@@ -157,13 +158,7 @@ export class AddProductComponent {
   }
 
   saveDraft() {
-    const payload = {
-      ...this.product,
-      images: this.finalImages
-    };
-    console.log('Đang lưu bản nháp:', payload);
     this.showModal('Thành công', 'Đã lưu bản nháp thành công!', 'success');
-    // Bạn có thể thêm logic lưu vào LocalStorage hoặc gọi API lưu nháp tại đây
   }
 
   discard() {

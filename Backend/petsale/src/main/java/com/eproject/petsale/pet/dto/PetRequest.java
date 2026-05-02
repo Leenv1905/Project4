@@ -17,6 +17,12 @@ public class PetRequest {
     private String breed;
     private String description;
     private BigDecimal price;
+    private String color;
+    private String gender;
+    private Double weight;
+    private Integer age;
+    private Boolean isVaccinated;
+    private Boolean isNeutered;
     private Integer minDailyTime;
     private Integer minLivingSpace;
     private Integer minActivityTime;

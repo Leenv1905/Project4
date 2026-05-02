@@ -52,6 +52,12 @@ public class PetService {
         pet.setBreed(request.getBreed());
         pet.setDescription(request.getDescription());
         pet.setPrice(request.getPrice());
+        pet.setColor(request.getColor());
+        pet.setGender(request.getGender());
+        pet.setWeight(request.getWeight());
+        pet.setAge(request.getAge());
+        pet.setIsVaccinated(request.getIsVaccinated());
+        pet.setIsNeutered(request.getIsNeutered());
         // Lấy token từ cookie access_token (frontend gửi withCredentials)
         String token = null;
         ServletRequestAttributes attrs =
@@ -69,7 +75,6 @@ public class PetService {
             }
         }
 
-// verify
         boolean isVerified = false;
         if (token != null) {
             isVerified = registryClientService.checkPetVerification(
@@ -161,6 +166,12 @@ public class PetService {
         pet.setBreed(request.getBreed());
         pet.setDescription(request.getDescription());
         pet.setPrice(request.getPrice());
+        pet.setColor(request.getColor());
+        pet.setGender(request.getGender());
+        pet.setWeight(request.getWeight());
+        pet.setAge(request.getAge());
+        pet.setIsVaccinated(request.getIsVaccinated());
+        pet.setIsNeutered(request.getIsNeutered());
 
         PetRequirement requirement = pet.getRequirements();
         if (requirement == null) {
@@ -251,7 +262,7 @@ public class PetService {
 //    }
 
     public List<PetPublicResponse> getAllPublicPets() {
-        return petRepository.findByIsVerifiedTrueOrderByCreatedAtDesc()
+        return petRepository.findByIsVerifiedTrueAndStatusOrderByCreatedAtDesc("AVAILABLE")
                 .stream()
                 .map(this::mapToPublicResponse)
                 .collect(Collectors.toList());
@@ -305,7 +316,7 @@ public class PetService {
         com.eproject.petsale.personalization.entity.BuyerProfile profile = buyerProfileRepository.findById(user.getId()).orElse(null);
         if (profile == null) return getAllPublicPets();
 
-        List<Pet> verifiedPets = petRepository.findByIsVerifiedTrueOrderByCreatedAtDesc();
+        List<Pet> verifiedPets = petRepository.findByIsVerifiedTrueAndStatusOrderByCreatedAtDesc("AVAILABLE");
 
         return verifiedPets.stream()
                 .map(pet -> {

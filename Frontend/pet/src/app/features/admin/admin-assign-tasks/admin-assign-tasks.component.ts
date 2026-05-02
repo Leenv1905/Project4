@@ -2,12 +2,20 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
-import { VerificationService, VerificationTask, UnassignedPet } from '../../../core/services/verification.service';
+import { VerificationService, VerificationTask, OrderVerification } from '../../../core/services/verification.service';
 import { AdminService } from '../../../core/services/admin.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { User } from '../../../core/models/user.model';
 
-interface PetRow extends UnassignedPet {
+interface PetRow {
+  petId: number;
+  petName: string;
+  breed: string;
+  petCode: string;
+  shopName: string;
+  orderId: number;
+  orderCode: string;
+  totalPetsInOrder: number;
   selectedOperatorId: number | null;
   assigning: boolean;
 }
@@ -113,22 +121,11 @@ interface OperatorLoad {
                   </div>
                 </td>
 
-                <!-- Tiến độ xác minh trong đơn -->
+                <!-- Số pet trong đơn -->
                 <td class="td">
-                  <div *ngIf="pet.totalPetsInOrder > 0">
-                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                      <span style="font-size: 13px; font-weight: 600; color: #374151;">
-                        {{ pet.verifiedPetsInOrder }}/{{ pet.totalPetsInOrder }}
-                      </span>
-                      <span style="font-size: 12px; color: #6b7280;">đã xác minh</span>
-                    </div>
-                    <div style="height: 6px; background: #e5e7eb; border-radius: 999px; width: 100px;">
-                      <div style="height: 100%; border-radius: 999px; background: #10b981; transition: width .3s;"
-                           [style.width.%]="(pet.verifiedPetsInOrder / pet.totalPetsInOrder) * 100">
-                      </div>
-                    </div>
-                  </div>
-                  <span *ngIf="!pet.totalPetsInOrder" style="color: #9ca3af; font-size: 12px;">—</span>
+                  <span style="font-size: 13px; font-weight: 600; color: #374151;">
+                    {{ pet.totalPetsInOrder }} thú cưng
+                  </span>
                 </td>
 
                 <!-- Operator selector -->
@@ -172,8 +169,11 @@ interface OperatorLoad {
               Chưa có operator.
             </div>
             <div *ngFor="let item of operatorsSorted"
+                 (click)="openOperatorTasks(item)"
                  style="display: flex; align-items: center; padding: 12px 16px;
-                        border-bottom: 1px solid #f9fafb;">
+                        border-bottom: 1px solid #f9fafb; cursor: pointer; transition: background .15s;"
+                 onmouseenter="this.style.background='#f8fafc'"
+                 onmouseleave="this.style.background='white'">
               <div style="width: 34px; height: 34px; border-radius: 50%; background: #dbeafe;
                           display: flex; align-items: center; justify-content: center;
                           font-weight: 700; color: #1d4ed8; font-size: 13px; flex-shrink: 0;">
@@ -195,6 +195,77 @@ interface OperatorLoad {
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- Modal việc của operator -->
+    <div *ngIf="selectedOperator" (click)="closeOperatorTasks()"
+         style="position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;
+                display:flex;align-items:center;justify-content:center;">
+      <div (click)="$event.stopPropagation()"
+           style="background:white;border-radius:16px;width:100%;max-width:600px;
+                  max-height:80vh;display:flex;flex-direction:column;
+                  box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+
+        <!-- Header -->
+        <div style="display:flex;justify-content:space-between;align-items:center;
+                    padding:20px 24px 16px;border-bottom:1px solid #f1f5f9;">
+          <div>
+            <div style="font-size:17px;font-weight:700;color:#111827;">
+              {{ selectedOperator.operator.name }}
+            </div>
+            <div style="font-size:13px;color:#6b7280;margin-top:2px;">
+              {{ selectedOperatorTasks.length }} việc (đang làm + đã nộp chờ duyệt)
+            </div>
+          </div>
+          <button (click)="closeOperatorTasks()"
+                  style="background:none;border:none;font-size:20px;cursor:pointer;
+                         color:#9ca3af;padding:4px 8px;border-radius:6px;">✕</button>
+        </div>
+
+        <!-- Body -->
+        <div style="overflow-y:auto;flex:1;padding:16px 24px;">
+          <div *ngIf="selectedOperatorTasks.length === 0"
+               style="text-align:center;padding:40px;color:#9ca3af;">
+            <div style="font-size:36px;margin-bottom:8px;">✓</div>
+            <p>Operator này chưa có việc nào.</p>
+          </div>
+
+          <div *ngFor="let task of selectedOperatorTasks"
+               style="border:1px solid #f1f5f9;border-radius:10px;
+                      padding:14px 16px;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div style="font-weight:600;color:#111827;font-size:14px;">
+                  {{ task.pet?.name }}
+                </div>
+                <div style="font-size:12px;color:#6b7280;margin-top:3px;">
+                  Mã chip: {{ task.pet?.petCode || '—' }} · {{ task.pet?.breed }}
+                </div>
+                <div style="font-size:12px;color:#6b7280;margin-top:2px;">
+                  Shop: {{ task.pet?.ownerName }}
+                </div>
+              </div>
+              <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;"
+                    [style.background]="task.status === 'SUBMITTED' ? '#dbeafe' : '#fef3c7'"
+                    [style.color]="task.status === 'SUBMITTED' ? '#1d4ed8' : '#92400e'">
+                {{ task.status === 'SUBMITTED' ? 'Đã nộp' : 'Đang làm' }}
+              </span>
+            </div>
+            <div style="margin-top:8px;font-size:12px;color:#9ca3af;">
+              Giao lúc: {{ task.assignedAt | date:'dd/MM/yyyy HH:mm' }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="padding:14px 24px 18px;border-top:1px solid #f1f5f9;text-align:right;">
+          <button (click)="closeOperatorTasks()"
+                  style="background:#f1f5f9;color:#374151;border:1px solid #e2e8f0;
+                         padding:9px 20px;border-radius:8px;font-weight:600;cursor:pointer;">
+            Đóng
+          </button>
+        </div>
       </div>
     </div>
   `,
@@ -221,8 +292,11 @@ export class AdminAssignTasksComponent implements OnInit {
   pets: PetRow[] = [];
   operators: User[] = [];
   pendingTasks: VerificationTask[] = [];
+  allActiveTasks: VerificationTask[] = [];
   operatorsSorted: OperatorLoad[] = [];
   loading = false;
+  selectedOperator: OperatorLoad | null = null;
+  selectedOperatorTasks: VerificationTask[] = [];
 
   ngOnInit() {
     this.loadAll();
@@ -233,34 +307,84 @@ export class AdminAssignTasksComponent implements OnInit {
     forkJoin({
       unassigned: this.verificationService.getUnassignedPets(),
       users: this.adminService.getUsers(0, 1000),
-      pending: this.verificationService.getPendingTasks()
+      pending: this.verificationService.getPendingTasks(),
+      submitted: this.verificationService.getSubmittedTasks()
     }).subscribe({
       next: (res) => {
+        // Gộp PENDING + SUBMITTED để hiển thị tải việc chính xác
+        this.allActiveTasks = [
+          ...(res.pending || []),
+          ...(res.submitted || [])
+        ];
         this.pendingTasks = res.pending || [];
+
         this.operators = (res.users.content || []).filter((u: User) =>
           u.role?.toLowerCase().includes('operator') && u.enabled !== false
         );
 
+        // Đếm task cho mỗi operator
         const countMap = new Map<number, number>();
-        for (const task of this.pendingTasks) {
+        for (const task of this.allActiveTasks) {
           const opId = task.operator?.id;
           if (opId) countMap.set(opId, (countMap.get(opId) || 0) + 1);
         }
 
-        this.operatorsSorted = this.operators
-          .map(op => ({ operator: op, pendingCount: countMap.get(op.id) || 0 }))
-          .sort((a, b) => a.pendingCount - b.pendingCount);
+        // Gộp thêm operator từ danh sách task (phòng trường hợp role filter bỏ sót)
+        const operatorMap = new Map<number, User>();
+        for (const op of this.operators) operatorMap.set(op.id, op);
+        for (const task of this.allActiveTasks) {
+          if (task.operator?.id && !operatorMap.has(task.operator.id)) {
+            operatorMap.set(task.operator.id, {
+              id: task.operator.id,
+              name: task.operator.name,
+              email: task.operator.email,
+              role: 'operator'
+            });
+          }
+        }
 
-        this.pets = (res.unassigned || []).map(p => ({
-          ...p,
-          selectedOperatorId: this.operatorsSorted[0]?.operator.id ?? null,
-          assigning: false
-        }));
+        // Operator bận hiện trước
+        this.operatorsSorted = Array.from(operatorMap.values())
+          .map(op => ({ operator: op, pendingCount: countMap.get(op.id) || 0 }))
+          .sort((a, b) => b.pendingCount - a.pendingCount);
+
+        const defaultOperatorId = this.operatorsSorted.find(o => o.pendingCount === 0)?.operator.id
+          ?? this.operatorsSorted[0]?.operator.id ?? null;
+        const busyPetIds = new Set(this.pendingTasks.map(t => t.pet?.id).filter(Boolean));
+
+        this.pets = (res.unassigned as OrderVerification[]).flatMap(order =>
+          order.petsToVerify
+            .filter(pet => !busyPetIds.has(pet.petId))
+            .map(pet => ({
+              petId: pet.petId,
+              petName: pet.petName,
+              breed: pet.breed,
+              petCode: pet.petCode,
+              shopName: pet.shopName,
+              orderId: order.orderId,
+              orderCode: order.orderCode,
+              totalPetsInOrder: order.totalPetsInOrder,
+              selectedOperatorId: defaultOperatorId,
+              assigning: false
+            }))
+        );
 
         this.loading = false;
       },
       error: () => { this.loading = false; }
     });
+  }
+
+  openOperatorTasks(item: OperatorLoad) {
+    this.selectedOperator = item;
+    this.selectedOperatorTasks = this.allActiveTasks.filter(
+      t => t.operator?.id === item.operator.id
+    );
+  }
+
+  closeOperatorTasks() {
+    this.selectedOperator = null;
+    this.selectedOperatorTasks = [];
   }
 
   assign(pet: PetRow) {

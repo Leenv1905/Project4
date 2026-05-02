@@ -11,6 +11,7 @@ public interface VerificationTaskRepository extends JpaRepository<VerificationTa
     List<VerificationTask> findByOperatorEmailAndStatus(String email, String status);
     List<VerificationTask> findByOperatorEmail(String email);
     List<VerificationTask> findByStatus(String status);
+    List<VerificationTask> findByStatusIn(java.util.Collection<String> statuses);
     boolean existsByPetIdAndStatusIn(Long petId, java.util.Collection<String> statuses);
     long countByOperatorIdAndStatusIn(Long operatorId, java.util.Collection<String> statuses);
 }

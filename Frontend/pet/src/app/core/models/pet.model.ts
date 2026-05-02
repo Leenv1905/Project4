@@ -14,10 +14,17 @@ export interface PetRequest {
   species: string;
   breed: string;
   description: string;
-  minDailyTime: number;
-  minLivingSpace: number;
-  minActivityTime: number;
-  minMonthlyBudget: number;
-  minExperienceLevel: number;
+  price?: number;
+  color?: string;
+  gender?: string;
+  weight?: number;
+  age?: number;
+  isVaccinated?: boolean;
+  isNeutered?: boolean;
+  minDailyTime?: number;
+  minLivingSpace?: number;
+  minActivityTime?: number;
+  minMonthlyBudget?: number;
+  minExperienceLevel?: number;
   images: PetImageDTO[];
 }

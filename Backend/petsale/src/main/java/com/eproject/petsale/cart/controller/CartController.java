@@ -27,7 +27,7 @@ public class CartController {
             @RequestBody AddToCartRequest request
     ) {
 
-        User user = userService.getCurrentUser(); // bạn đã có logic này
+        User user = userService.getCurrentUser();
 
         cartService.addToCart(
                 user.getId(),

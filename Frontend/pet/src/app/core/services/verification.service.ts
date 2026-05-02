@@ -4,16 +4,19 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
-export interface UnassignedPet {
+export interface PetToVerify {
   petId: number;
   petName: string;
   breed: string;
   petCode: string;
   shopName: string;
-  orderId?: number;
-  orderCode?: string;
+}
+
+export interface OrderVerification {
+  orderId: number;
+  orderCode: string;
   totalPetsInOrder: number;
-  verifiedPetsInOrder: number;
+  petsToVerify: PetToVerify[];
 }
 
 export interface VerificationTask {
@@ -89,7 +92,7 @@ export class VerificationService {
     );
   }
 
-  getUnassignedPets(): Observable<UnassignedPet[]> {
+  getUnassignedPets(): Observable<OrderVerification[]> {
     return this.http.get<any>(`${this.apiUrl}/unassigned-pets`, { withCredentials: true }).pipe(
       map(res => res?.data || [])
     );

@@ -1,49 +1,50 @@
 <div class="shop-info">
   <div class="header">
-    <h2>Thong tin cua hang</h2>
+    <h2>Thông tin cửa hàng</h2>
     <button class="edit-btn" (click)="editShopInfo()">
-      ✏️ Sua thong tin cua hang
+      ✏️ Sửa thông tin cửa hàng
     </button>
   </div>
 
   <div class="info-grid">
     <div class="shop-avatar-card">
       <div class="avatar-wrapper">
-        <img [src]="profile()?.avatarUrl || 'https://i.pravatar.cc/300?u=shop123'" alt="Shop Avatar" class="shop-avatar">
+        <img [src]="profile()?.avatarUrl || 'https://i.pravatar.cc/300?u=shop123'" alt="Ảnh đại diện cửa hàng" class="shop-avatar">
       </div>
-      <h3>{{ profile()?.name || user()?.name || 'Chua cap nhat' }}</h3>
-      <p class="shop-owner">Quan ly boi: {{ profile()?.name || user()?.name || 'Chua co ten' }}</p>
+      <h3>{{ profile()?.name || user()?.name || 'Chưa cập nhật' }}</h3>
+      <p class="shop-owner">Quản lý bởi: {{ profile()?.name || user()?.name || 'Chưa có tên' }}</p>
     </div>
 
     <div class="details-grid">
       <div class="info-block">
-        <span class="label">Ten cua hang</span>
-        <span class="value">{{ profile()?.name || user()?.name || 'Chua cap nhat' }}</span>
+        <span class="label">Tên cửa hàng</span>
+        <span class="value">{{ profile()?.name || user()?.name || 'Chưa cập nhật' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Chu cua hang</span>
-        <span class="value">{{ profile()?.name || user()?.name || 'Chua cap nhat' }}</span>
+        <span class="label">Chủ cửa hàng</span>
+        <span class="value">{{ profile()?.name || user()?.name || 'Chưa cập nhật' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">So dien thoai</span>
-        <span class="value">{{ profile()?.phone || 'Chua cap nhat' }}</span>
+        <span class="label">Số điện thoại</span>
+        <span class="value">{{ profile()?.phone || 'Chưa cập nhật' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Dia chi</span>
-        <span class="value">{{ profile()?.address || 'Chua cap nhat' }}</span>
+        <span class="label">Địa chỉ</span>
+        <span class="value">{{ profile()?.address || 'Chưa cập nhật' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Ngay tao gian hang</span>
-        <span class="value">Dang cap nhat</span>
+        <span class="label">Ngày tạo gian hàng</span>
+        <span class="value">Đang cập nhật</span>
       </div>
 
       <div class="info-block full-width">
-        <span class="label">Mo ta cua hang</span>
-        <p class="description">{{ profile()?.address || 'Chua co mo ta rieng cho cua hang.' }}</p>
+        <span class="label">Mô tả cửa hàng</span>
+        <!-- Lưu ý: Nếu bạn có trường bio hoặc description thì nên thay profile()?.address bằng trường đó -->
+        <p class="description">{{ profile()?.address || 'Chưa có mô tả riêng cho cửa hàng.' }}</p>
       </div>
     </div>
   </div>

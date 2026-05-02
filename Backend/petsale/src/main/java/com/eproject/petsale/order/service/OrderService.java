@@ -15,6 +15,7 @@ import com.eproject.petsale.order.entity.OrderEventRepository;
 import com.eproject.petsale.order.entity.OrderItem;
 import com.eproject.petsale.order.repository.OrderItemRepository;
 import com.eproject.petsale.order.repository.OrderRepository;
+import com.eproject.petsale.pet.repository.PetRepository;
 import com.eproject.petsale.pet.service.RegistryClientService;
 import com.eproject.petsale.registry.service.VerificationService;
 import com.eproject.petsale.user.entity.User;
@@ -46,6 +47,7 @@ public class OrderService {
     private final OrderEventMapper orderEventMapper;
     private final OrderEventRepository orderEventRepository;
     private final UserAddressRepository userAddressRepository;
+    private final PetRepository petRepository;
     private final RegistryClientService registryClientService;
     private final VerificationService verificationService;
 
@@ -96,7 +98,9 @@ public class OrderService {
         for (Map.Entry<User, List<CartItem>> entry : itemsByShop.entrySet()) {
             User shop = entry.getKey();
             List<CartItem> shopItems = entry.getValue();
-
+            if (shop.getId().equals(buyer.getId())) {
+                throw new RuntimeException("Bạn không được mua pet của chính mình");
+            }
             Order order = new Order();
             order.setOrderCode(generateOrderCode());
             order.setBuyer(buyer);
@@ -107,7 +111,6 @@ public class OrderService {
             order.setNote(request.getNote());
             order.setPaymentStatus("PENDING");
             order.setPaymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "COD");
-            order.setFulfillmentStatus("PROCESSING");
             order.setFulfillmentStatus("WAITING_VERIFY");
             order.setStatus("CREATED");
             order.setCreatedAt(LocalDateTime.now());
@@ -145,8 +148,10 @@ public class OrderService {
 
             orderEventRepository.save(event);
 
-            // Tự động phân công xác minh cho từng pet trong order
+            // Ẩn pet khỏi shop và tự động phân công xác minh
             for (CartItem cartItem : shopItems) {
+                cartItem.getPet().setStatus("SOLD");
+                petRepository.save(cartItem.getPet());
                 verificationService.autoAssignForPet(cartItem.getPet());
             }
 
