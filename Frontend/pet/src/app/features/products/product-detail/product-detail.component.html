@@ -91,8 +91,8 @@
         <button
           class="btn btn-primary"
           (click)="addToCart()"
-          [disabled]="p.status !== 'available'">
-          Thêm vào giỏ hàng
+          [disabled]="p.status !== 'available' || alreadyInCart()">
+          {{ alreadyInCart() ? 'Đã có trong giỏ hàng' : 'Thêm vào giỏ hàng' }}
         </button>
 
         <button

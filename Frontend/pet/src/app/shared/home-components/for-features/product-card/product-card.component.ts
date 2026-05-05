@@ -91,6 +91,8 @@ export class ProductCardComponent {
 
   @Input({ required: true }) product!: Product;
 
+  get cartItems() { return this.cart.items; }
+
   constructor(
     private router: Router,
     private cart: CartService,

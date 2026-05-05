@@ -79,8 +79,12 @@
 
   <!-- Action -->
   <div class="card-actions">
-    <button mat-icon-button (click)="addToCart()">
-      <mat-icon>shopping_cart</mat-icon>
+    <button
+      mat-icon-button
+      (click)="addToCart()"
+      [disabled]="cartItems().some(i => i.productId === product.id)"
+      [title]="cartItems().some(i => i.productId === product.id) ? 'Đã có trong giỏ hàng' : 'Thêm vào giỏ hàng'">
+      <mat-icon>{{ cartItems().some(i => i.productId === product.id) ? 'check_circle' : 'shopping_cart' }}</mat-icon>
     </button>
   </div>
 

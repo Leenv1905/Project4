@@ -84,7 +84,15 @@ export class CartService {
     );
   }
 
+  isInCart(productId: number): boolean {
+    return this.items().some(item => item.productId === productId);
+  }
+
   addToCart(newItem: CartItem): Observable<{ success: boolean; message: string }> {
+    if (this.isInCart(newItem.productId)) {
+      return of({ success: false, message: 'Thú cưng này đã có trong giỏ hàng của bạn' });
+    }
+
     const payload = {
       petId: newItem.productId,
       quantity: newItem.quantity || 1

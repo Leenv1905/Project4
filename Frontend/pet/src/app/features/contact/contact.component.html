@@ -1,0 +1,53 @@
+<app-breadcrumbs
+  title="Contact"
+  [breadcrumbs]="[
+		{ label: 'Home', href: '/' },
+		{ label: 'Contact' }
+	]">
+</app-breadcrumbs>
+
+<div class="contact-container template">
+  <div class="contact-grid">
+
+    <aside class="left-panel">
+      <div class="form-box">
+
+        <form class="template-form" (submit)="$event.preventDefault()">
+          <label class="small">Name:</label>
+          <input type="text" name="name" placeholder="Full name" />
+
+          <label class="small">Email address:</label>
+          <input type="email" name="email" placeholder="you@example.com" />
+
+          <label class="small">Your message:</label>
+          <textarea name="message" placeholder="Your message..."></textarea>
+
+          <div class="send-row">
+            <button class="send-btn" type="submit">SEND MESSAGE</button>
+          </div>
+        </form>
+      </div>
+    </aside>
+
+    <aside class="right-card">
+      <div class="right-accents">
+        <div class="drop-pill">DROP IN OUR SHOP</div>
+        <div class="accent-circle" aria-hidden="true"></div>
+      </div>
+
+      <div class="contact-card">
+
+        <h4>CONTACT INFORMATION</h4>
+        <p><strong>Phone:</strong> +11 012 1234-5678</p>
+        <p><strong>Address:</strong> 123 Pet Street, City</p>
+        <p><strong>Email: </strong> <a href="mailto:support@petsale.local">support@petsale.local</a></p>
+        <p><strong>Website:</strong> www.gupet.com</p>
+
+      </div>
+    </aside>
+
+  </div>
+
+
+</div>
+

@@ -1,0 +1,65 @@
+.shipping-container {
+  width: 96%;
+  max-width: 1600px;
+  margin: 28px auto;
+  padding-bottom: 48px;
+}
+
+/* Cards layout that mirrors provided template */
+.shipping-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(300px, 1fr));
+  gap: 40px;
+  max-width: 1400px;
+  margin: 28px auto;
+  padding: 0 16px;
+}
+.shipping-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 44px 32px 48px;
+  box-shadow: 0 18px 40px rgba(31, 45, 57, 0.07);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.shipping-card .icon {
+  width: 110px;
+  height: 110px;
+  margin-top: -36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg,#e8fbfd,#f6eef8);
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(31,45,57,0.06);
+}
+.shipping-card .icon svg { width: 56px; height: 56px; }
+.shipping-card h3 {
+  margin-top: 20px;
+  margin-bottom: 12px;
+  color: #2f5a66;
+  font-size: 20px;
+  font-weight: 700;
+}
+.shipping-card p {
+  color: #6b8b93;
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 520px;
+}
+
+.shipping-content h2 { margin-top: 0; }
+.shipping-content h3 { margin-top: 16px; }
+
+@media (max-width: 1100px) {
+  .shipping-cards { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+}
+
+@media (max-width: 900px) {
+  .shipping-container { width: 95%; padding: 12px; }
+  .shipping-cards { grid-template-columns: 1fr; margin: 14px auto 20px; }
+  .shipping-card { padding: 36px 24px; }
+  .shipping-card .icon { width: 88px; height: 88px; margin-top: -28px; }
+}

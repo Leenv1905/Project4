@@ -1,0 +1,50 @@
+<app-breadcrumbs
+  title="Shipping & Delivery"
+  [breadcrumbs]="[
+    { label: 'Home', href: '/' },
+    { label: 'Shipping & Delivery' }
+  ]">
+</app-breadcrumbs>
+
+<div class="shipping-container">
+  <section class="shipping-cards">
+    <div class="shipping-card">
+      <div class="icon">
+        <!-- cart icon -->
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" stroke="#2F5A66" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="10" cy="20" r="1" fill="#2F5A66"/>
+          <circle cx="18" cy="20" r="1" fill="#2F5A66"/>
+        </svg>
+      </div>
+      <h3>Order Processing</h3>
+      <p>Orders are typically processed within 24 hours on business days. Orders placed on weekends or public holidays will be processed on the next business day.</p>
+    </div>
+
+    <div class="shipping-card">
+      <div class="icon">
+        <!-- truck icon -->
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 7h13v8H3z" stroke="#2F5A66" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 11h3l2 2v2" stroke="#2F5A66" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="7" cy="19" r="1.2" fill="#2F5A66"/>
+          <circle cx="18" cy="19" r="1.2" fill="#2F5A66"/>
+        </svg>
+      </div>
+      <h3>Tracking Orders</h3>
+      <p>Once your order ships, you will receive a tracking number by email. You can also view tracking details on your account order page.</p>
+    </div>
+
+    <div class="shipping-card">
+      <div class="icon">
+        <!-- package icon -->
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M21 16v-6l-9-4-9 4v6" stroke="#2F5A66" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3.3 8.5L12 12.1l8.7-3.6" stroke="#2F5A66" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>Packaging &amp; Handling</h3>
+      <p>We pack items securely to protect them during transit. Fragile items include extra padding and clear handling instructions.</p>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,135 @@
+/* Contact page template styles: left form with scalloped bottom, right info card, header-bg blur */
+
+.contact-container {
+  width: 90%;
+  margin: 24px auto;
+  padding-bottom: 40px;
+}
+
+.contact-container.template {
+  max-width: 1200px;
+  /* add space from the header and before the footer */
+  margin: 12px auto 20px;
+  padding: 32px 18px 56px; /* top 32px, sides 18px, bottom 56px */
+  position: relative;
+
+  /* color tokens: use a light blue -> pink gradient like the header, plus solid tones for scallops and accents */
+  --bg-a: #dff3fb; /* pale blue */
+  --bg-b: #f3e6f3; /* pale pink */
+  --form-bg-solid: #bfe8ee; /* slightly darker solid used for scallops */
+  --accent-dark: #88c0c6; /* darker accent for circle */
+  --form-text: #27474d; /* dark text for contrast */
+}
+
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  align-items: start;
+  position: relative;
+  z-index: 2; /* sit above the blurred pseudo bg */
+}
+
+.left-panel .form-box {
+  background: linear-gradient(135deg, var(--bg-a), var(--bg-b));
+  padding: 24px 28px 76px 28px;
+  border-radius: 8px;
+  color: var(--form-text);
+  position: relative;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.06);
+  overflow: visible;
+}
+
+/* decorative contact image removed per user request */
+
+/* decorative SVGs around the form (non-interactive) */
+/* decorative images removed: no image decorators around the form */
+
+.template-form { position: relative; z-index: 3; }
+.template-form .small { display:block; font-size:13px; margin-bottom:6px; color: var(--form-text); }
+.template-form input, .template-form textarea { width: 100%; padding: 10px 12px; border-radius: 3px; border: none; margin-bottom: 14px; box-sizing: border-box; }
+.template-form input { height: 44px; }
+.template-form textarea { min-height: 140px; resize: vertical; }
+.template-form input, .template-form textarea { background: #fff; color: #333; }
+
+.send-row { display:flex; justify-content:flex-start; }
+.send-btn {
+  background: #d6eef5;
+  color: var(--form-text);
+  border: 2px solid rgba(39,71,77,0.12);
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  box-shadow: 0 8px 20px rgba(39,71,77,0.08);
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+  display: inline-block;
+}
+.send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(39,71,77,0.12);
+  opacity: 0.98;
+}
+.send-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(39,71,77,0.08), 0 14px 30px rgba(39,71,77,0.12);
+}
+
+/* scalloped bottom for the left form box */
+.left-panel .form-box::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: -30px;
+  height: 36px;
+  background: radial-gradient(circle at 18px 0, var(--form-bg-solid) 16px, transparent 17px);
+  background-size: 72px 36px;
+  background-repeat: repeat-x;
+  z-index: 1;
+}
+
+.right-card { position: relative; }
+.right-accents { position: absolute; right: 12px; top: -34px; z-index: 4; pointer-events: none; }
+.drop-pill, .right-accents .drop-pill {
+  display: inline-block;
+  background: #fff;
+  color: #27474d;
+  padding: 10px 20px;
+  border-radius: 28px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  font-weight:700;
+}
+.accent-circle { width:44px; height:44px; border-radius:50%; background:var(--accent-dark); display:inline-block; margin-left:10px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+
+.contact-card { background: #fff; padding: 26px; border-radius: 8px; box-shadow: 0 10px 28px rgba(0,0,0,0.06); position: relative; z-index: 2; }
+.contact-card .lead { margin: 0 0 10px 0; color:#6b8b93; }
+.contact-card .muted { color:#91a6ab; margin-bottom: 12px; }
+.contact-card h4 { margin-top: 12px; color:#27474d; }
+.map-placeholder { margin-top: 14px; background: #eef8fb; height: 86px; border-radius: 4px; display:flex; align-items:center; justify-content:center; color:#7aa3ad; }
+
+/* scalloped bottom for the right card (white) so it matches template */
+.contact-card::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: -30px;
+  height: 36px;
+  background: radial-gradient(circle at 18px 0, #fff 16px, transparent 17px);
+  background-size: 72px 36px;
+  background-repeat: repeat-x;
+}
+
+
+
+@media (max-width: 900px) {
+  .contact-grid { grid-template-columns: 1fr; }
+  .left-panel .form-box::after,
+  .contact-card::after { display: none; }
+  .right-accents { position: static; margin-bottom: 12px; }
+  .band-inner { padding: 18px 8px; }
+  .contact-container.template { padding: 20px 12px 28px; margin: 8px auto 12px; }
+}

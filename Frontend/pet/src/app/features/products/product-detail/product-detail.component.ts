@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MatIconModule} from '@angular/material/icon';
@@ -25,6 +25,10 @@ export class ProductDetailComponent implements OnInit {
 
   readonly product = signal<Product | null>(null);
   readonly selectedImageIndex = signal(0);
+  readonly alreadyInCart = computed(() => {
+    const p = this.product();
+    return p ? this.cart.isInCart(p.id) : false;
+  });
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
