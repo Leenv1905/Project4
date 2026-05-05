@@ -28,7 +28,6 @@ public class SellerProfile {
     private String sellerType;
 
     private String bio;
-
     @Column(name = "tax_code")
     private String taxCode;
 

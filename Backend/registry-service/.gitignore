@@ -18,7 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
-application.properties
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -31,13 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-# Compiled class file
-*.class
-
-# Log files
-*.log
-
-# Package Files #
-*.jar
-*.war
-*.ear

@@ -20,6 +20,9 @@ public class Role {
     @Column(unique = true)
     private String name;
 
+    @Column
+    private String description;
+
     // THÊM PHẦN NÀY ĐỂ KẾT NỐI HAI CHIỀU
     @ManyToMany(mappedBy = "roles")
     @JsonIgnore // Ngăn chặn vòng lặp vô tận khi convert sang JSON
