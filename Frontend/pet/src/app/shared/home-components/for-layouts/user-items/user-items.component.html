@@ -1,12 +1,14 @@
-<!-- Search Icon -->
-<mat-icon>search</mat-icon>
+<!-- Search -->
+<button mat-icon-button class="search-btn">
+  <mat-icon>search</mat-icon>
+</button>
 
 <!-- User Menu -->
-<button mat-icon-button [matMenuTriggerFor]="userMenu">
+<button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-btn">
   <mat-icon>account_circle</mat-icon>
 </button>
 
-<mat-menu #userMenu="matMenu">
+<mat-menu #userMenu="matMenu" class="pet-menu">
 
   <!-- Chưa đăng nhập -->
   <ng-container *ngIf="!isAuthenticated(); else loggedIn">
@@ -23,7 +25,7 @@
   <!-- Đã đăng nhập -->
   <ng-template #loggedIn>
     <button mat-menu-item disabled>
-      <span>👋 {{ auth.user()?.name || 'Người dùng' }}</span>
+      <span>{{ auth.user()?.name || 'Người dùng' }}</span>
     </button>
     <button mat-menu-item disabled>
       <span>Role: <strong>{{ auth.role() | titlecase }}</strong></span>
@@ -31,25 +33,17 @@
 
     <mat-divider></mat-divider>
 
-    <!-- User & Shop -->
-    <button mat-menu-item
-            *ngIf="isUserOrShop()"
-            (click)="goToAccount()">
+    <button mat-menu-item *ngIf="isUserOrShop()" (click)="goToAccount()">
       <mat-icon>person</mat-icon>
       <span>My Account</span>
     </button>
 
-    <button mat-menu-item
-            *ngIf="isShop()"
-            (click)="goToShop()">
+    <button mat-menu-item *ngIf="isShop()" (click)="goToShop()">
       <mat-icon>store</mat-icon>
       <span>My Shop</span>
     </button>
 
-    <!-- Operator & Admin -->
-    <button mat-menu-item
-            *ngIf="isAdminOrOperator()"
-            (click)="goToAdmin()">
+    <button mat-menu-item *ngIf="isAdminOrOperator()" (click)="goToAdmin()">
       <mat-icon>admin_panel_settings</mat-icon>
       <span>Trang quản trị</span>
     </button>
@@ -63,11 +57,11 @@
   </ng-template>
 </mat-menu>
 
-<!-- Cart & Wishlist chỉ hiển thị khi là user hoặc shop -->
+<!-- Cart & Wishlist -->
 <ng-container *ngIf="showCartAndWishlist()">
-  <app-wishlist-dropdown />
+<!--  <app-wishlist-dropdown />-->
   <app-cart-dropdown />
 </ng-container>
 
-<!-- User Modal (Login/Register) -->
+<!-- User Modal -->
 <app-user-modal />

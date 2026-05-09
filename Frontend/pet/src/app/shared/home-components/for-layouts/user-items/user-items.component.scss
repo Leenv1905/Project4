@@ -1,86 +1,101 @@
-/* ====================== USER ITEMS ====================== */
+/* ============== BOOKLY USER ITEMS ============== */
 
 :host {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-/* Search Icon */
-mat-icon[style*="search"] {
-  color: rgba(255, 255, 255, 0.9);
-  margin-right: 8px;
-  cursor: pointer;
-}
-
-/* User Avatar Button */
-button[mat-icon-button] {
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  border: none;          /* Bỏ viền */
-  outline: none;         /* Bỏ outline khi focus */
-  border-radius: 8px;    /* Bo góc nhẹ cho đẹp */
-  background: transparent;
-  transition: background 0.2s ease, transform 0.15s ease;
-}
-
-button[mat-icon-button]:hover {
-  background: rgba(0, 0, 0, 0.06); /* Hiệu ứng hover nhẹ */
-}
-
-button[mat-icon-button]:active {
-  transform: scale(0.92); /* Nhấn xuống mượt hơn */
-}
-
-/* Mat Menu Style */
-.mat-mdc-menu-panel {
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  min-width: 220px;
-}
-
-.mat-mdc-menu-item {
-  height: 48px;
-  font-size: 15px;
+/* ============== ICON BUTTONS ============== */
+.search-btn,
+.user-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: #272727;
+  transition: all 0.25s ease;
 
   mat-icon {
-    margin-right: 12px;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.search-btn:hover,
+.user-btn:hover {
+  background-color: #F8F9FA;
+  color: #F86D72;
+  transform: scale(1.08);
+}
+
+/* ============== MAT MENU - SỬA NỀN TRẮNG ============== */
+.bookly-menu.mat-mdc-menu-panel,
+.mat-mdc-menu-panel {
+  background-color: #FFFFFF !important;     /* ← Fix trong suốt */
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  min-width: 240px;
+  overflow: hidden;
+  border: 1px solid #E3E3E3;
+}
+
+/* Nội dung bên trong menu */
+.mat-mdc-menu-content {
+  background-color: #FFFFFF !important;
+  padding: 8px 0;
+}
+
+/* Menu items */
+.mat-mdc-menu-item {
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  height: 52px;
+  padding: 0 20px;
+  color: #272727;
+
+  mat-icon {
+    margin-right: 16px;
+    color: #6C757D;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
   }
 
   &:hover {
-    background-color: #f5f5f5;
+    background-color: #F8F9FA;
+    color: #F86D72;
   }
 }
 
-/* Disabled items (tên user và role) */
+/* Disabled items */
 .mat-mdc-menu-item[disabled] {
   opacity: 1;
-  color: #374151;
+  color: #272727;
   font-weight: 500;
+  background-color: transparent;
+}
+
+.mat-mdc-menu-item[disabled] strong {
+  color: #F86D72;
 }
 
 /* Divider */
 mat-divider {
   margin: 8px 0;
+  border-color: #E3E3E3;
 }
 
-/* Hover effect cho toàn bộ menu item */
-.mat-mdc-menu-item:hover {
-  background-color: #f8fafc;
-}
-
-/* Responsive */
+/* ============== RESPONSIVE ============== */
 @media (max-width: 768px) {
   :host {
     gap: 4px;
   }
 
-  button[mat-icon-button] {
-    width: 36px;
-    height: 36px;
+  .search-btn,
+  .user-btn {
+    width: 40px;
+    height: 40px;
   }
 }

@@ -1,22 +1,20 @@
-<mat-toolbar
-  class="header"
-  [class.scrolled]="isScrolled()"
->
+<mat-toolbar class="header" [class.scrolled]="isScrolled()">
 
   <!-- Logo -->
   <img
     src="/assets/logo/gupet.png"
     class="logo"
-    alt="Logo"
+    alt="Gupet"
+    routerLink="/"
   />
 
   <!-- Desktop menu -->
   <nav class="nav desktop-menu">
-    <a mat-button routerLink="/">Home</a>
-    <a mat-button routerLink="/about">About</a>
-    <a mat-button routerLink="/shop">Shop</a>
-    <a mat-button routerLink="/blog">Blogs</a>
-    <a mat-button routerLink="/contact">Contact</a>
+    <a mat-button routerLink="/" routerLinkActive="active">HOME</a>
+    <a mat-button routerLink="/about" routerLinkActive="active">ABOUT</a>
+    <a mat-button routerLink="/shop" routerLinkActive="active">SHOP</a>
+    <a mat-button routerLink="/blog" routerLinkActive="active">BLOGS</a>
+    <a mat-button routerLink="/contact" routerLinkActive="active">CONTACT</a>
   </nav>
 
   <span class="spacer"></span>
@@ -27,7 +25,7 @@
   <!-- Mobile menu icon -->
   <button
     mat-icon-button
-    class="mobile-menu"
+    class="mobile-menu-btn"
     (click)="toggleDrawer(true)"
   >
     <mat-icon>menu</mat-icon>
@@ -35,23 +33,81 @@
 </mat-toolbar>
 
 <!-- Mobile drawer -->
-<mat-drawer-container>
+<mat-drawer-container class="drawer-container">
   <mat-drawer
     mode="over"
     position="start"
     [opened]="drawerOpen()"
     class="mobile-drawer"
   >
-    <button mat-icon-button (click)="toggleDrawer(false)">
+    <button mat-icon-button class="close-drawer" (click)="toggleDrawer(false)">
       <mat-icon>close</mat-icon>
     </button>
 
     <div class="drawer-menu">
-      <a mat-button routerLink="/" (click)="toggleDrawer(false)">Home</a>
-      <a mat-button routerLink="/about">About</a>
-      <a mat-button routerLink="/shop">Shop</a>
-      <a mat-button routerLink="/blog">Blogs</a>
-      <a mat-button routerLink="/contact">Contact</a>
+      <a mat-button routerLink="/" (click)="toggleDrawer(false)" routerLinkActive="active">HOME</a>
+      <a mat-button routerLink="/about" (click)="toggleDrawer(false)" routerLinkActive="active">ABOUT</a>
+      <a mat-button routerLink="/shop" (click)="toggleDrawer(false)" routerLinkActive="active">SHOP</a>
+      <a mat-button routerLink="/blog" (click)="toggleDrawer(false)" routerLinkActive="active">BLOGS</a>
+      <a mat-button routerLink="/contact" (click)="toggleDrawer(false)" routerLinkActive="active">CONTACT</a>
     </div>
   </mat-drawer>
 </mat-drawer-container>
+
+<!--<mat-toolbar-->
+<!--  class="header"-->
+<!--  [class.scrolled]="isScrolled()"-->
+<!--&gt;-->
+
+<!--  &lt;!&ndash; Logo &ndash;&gt;-->
+<!--  <img-->
+<!--    src="/assets/logo/gupet.png"-->
+<!--    class="logo"-->
+<!--    alt="Logo"-->
+<!--  />-->
+
+<!--  &lt;!&ndash; Desktop menu &ndash;&gt;-->
+<!--  <nav class="nav desktop-menu">-->
+<!--    <a mat-button routerLink="/">Home</a>-->
+<!--    <a mat-button routerLink="/about">About</a>-->
+<!--    <a mat-button routerLink="/shop">Shop</a>-->
+<!--    <a mat-button routerLink="/blog">Blogs</a>-->
+<!--    <a mat-button routerLink="/contact">Contact</a>-->
+<!--  </nav>-->
+
+<!--  <span class="spacer"></span>-->
+
+<!--  &lt;!&ndash; User items &ndash;&gt;-->
+<!--  <app-user-items />-->
+
+<!--  &lt;!&ndash; Mobile menu icon &ndash;&gt;-->
+<!--  <button-->
+<!--    mat-icon-button-->
+<!--    class="mobile-menu"-->
+<!--    (click)="toggleDrawer(true)"-->
+<!--  >-->
+<!--    <mat-icon>menu</mat-icon>-->
+<!--  </button>-->
+<!--</mat-toolbar>-->
+
+<!--&lt;!&ndash; Mobile drawer &ndash;&gt;-->
+<!--<mat-drawer-container>-->
+<!--  <mat-drawer-->
+<!--    mode="over"-->
+<!--    position="start"-->
+<!--    [opened]="drawerOpen()"-->
+<!--    class="mobile-drawer"-->
+<!--  >-->
+<!--    <button mat-icon-button (click)="toggleDrawer(false)">-->
+<!--      <mat-icon>close</mat-icon>-->
+<!--    </button>-->
+
+<!--    <div class="drawer-menu">-->
+<!--      <a mat-button routerLink="/" (click)="toggleDrawer(false)">Home</a>-->
+<!--      <a mat-button routerLink="/about">About</a>-->
+<!--      <a mat-button routerLink="/shop">Shop</a>-->
+<!--      <a mat-button routerLink="/blog">Blogs</a>-->
+<!--      <a mat-button routerLink="/contact">Contact</a>-->
+<!--    </div>-->
+<!--  </mat-drawer>-->
+<!--</mat-drawer-container>-->
