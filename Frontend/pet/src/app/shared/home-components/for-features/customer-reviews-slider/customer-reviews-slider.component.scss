@@ -1,38 +1,99 @@
+/* ============== REVIEWS SECTION - PET SHOP ============== */
+
 .reviews {
   background-image: url('/assets/banner-image-bg.jpg');
   background-size: cover;
   background-position: center;
+  background-attachment: fixed; /* hiệu ứng mượt hơn */
 
-  height: 600px;
-
+  /* Thu gọn chiều cao + thêm padding top/bottom */
+  padding: 100px 20px 120px;   /* Khoảng cách với section trên/dưới */
+  min-height: auto;            /* Không cố định chiều cao */
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: 0 20px;
+  position: relative;
 }
 
 .inner {
   width: 100%;
-  max-width: 800px;
+  max-width: 860px;
   text-align: center;
+  z-index: 2;
 }
 
 h3 {
-  font-size: 39px;
-  margin-bottom: 40px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 36px;
+  font-weight: 600;
+  color: #272727;
+  margin-bottom: 48px;
+  line-height: 1.2;
 }
 
-/* Customize swiper */
+/* ============== SWIPER CUSTOMIZATION ============== */
+swiper-container {
+  width: 100%;
+  padding: 20px 0;
+}
+
+/* Navigation buttons */
 swiper-container::part(button-prev),
 swiper-container::part(button-next) {
-  color: black;
+  color: #F86D72;
+  background: rgba(255, 255, 255, 0.9);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
+swiper-container::part(button-prev):hover,
+swiper-container::part(button-next):hover {
+  background: #FFFFFF;
+  color: #E55A5F;
+  transform: scale(1.1);
+}
+
+/* Pagination */
 swiper-container::part(pagination-bullet) {
-  background: #ccc;
+  background: #E3E3E3;
+  width: 10px;
+  height: 10px;
+  opacity: 1;
 }
 
 swiper-container::part(pagination-bullet-active) {
-  background: #f86d72;
+  background: #F86D72;
+  width: 28px;
+  border-radius: 9999px;
+}
+
+/* ============== RESPONSIVE ============== */
+@media (max-width: 1024px) {
+  .reviews {
+    padding: 80px 20px 90px;
+  }
+
+  h3 {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .reviews {
+    padding: 60px 16px 80px;
+  }
+
+  h3 {
+    font-size: 28px;
+    margin-bottom: 32px;
+  }
+}
+
+@media (max-width: 576px) {
+  .reviews {
+    padding: 50px 12px 60px;
+  }
 }
