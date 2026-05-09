@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GalleryBookComponent } from '../../shared/home-components/for-features/gallery-book/gallery-book.component';
+import { GalleryPetComponent } from '../../shared/home-components/for-features/gallery-pet/gallery-pet.component';
 import { CompanyServicesComponent } from '../../shared/home-components/for-features/company-services/company-services.component';
 import { FeaturedProductsComponent } from '../../shared/home-components/for-features/featured-products/featured-products.component';
 import { LimitedOfferComponent } from '../../shared/home-components/for-features/limited-offer/limited-offer.component';
@@ -19,7 +19,7 @@ import { SurveyModalComponent } from './components/survey-modal/survey-modal.com
   standalone: true,
   selector: 'app-home-page',
   imports: [
-    GalleryBookComponent,
+    GalleryPetComponent,
     CompanyServicesComponent,
     FeaturedProductsComponent,
     LimitedOfferComponent,

@@ -1,28 +1,30 @@
-<section id="billboard" class="billboard">
+<section id="hero" class="hero">
 
   <swiper-container
     slides-per-view="1"
     loop="true"
-    autoplay-delay="3000"
+    autoplay-delay="4000"
     navigation="true"
-    class="gallery-swiper"
+    pagination="true"
+    class="pet-swiper"
   >
 
     <swiper-slide
       *ngFor="let slide of slides(); trackBy: trackById"
     >
       <div class="slide">
+
         <div class="content">
 
-          <!-- Text -->
+          <!-- Text Content -->
           <div class="text">
-            <h1>{{ slide.title | slice:0:30 }}</h1>
-            <p>{{ slide.description | slice:0:50 }}</p>
+            <span class="badge">HOT SALE</span>
+            <h1>{{ slide.title }}</h1>
+            <p>{{ slide.description }}</p>
 
             <a
               mat-raised-button
-              color="primary"
-              class="cta"
+              class="cta-btn"
               [routerLink]="['/productdetail', slide.id]"
             >
               {{ slide.buttonText }}
@@ -39,5 +41,4 @@
     </swiper-slide>
 
   </swiper-container>
-
 </section>

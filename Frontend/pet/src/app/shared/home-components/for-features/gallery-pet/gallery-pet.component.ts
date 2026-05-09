@@ -14,35 +14,31 @@ interface GallerySlide {
 @Component({
   standalone: true,
   selector: 'app-gallery-book',
-  imports: [
-    CommonModule,
-    RouterLink,
-    MatButtonModule
-  ],
+  imports: [CommonModule, RouterLink, MatButtonModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  templateUrl: './gallery-book.component.html',
-  styleUrls: ['./gallery-book.component.scss']
+  templateUrl: './gallery-pet.component.html',
+  styleUrls: ['./gallery-pet.component.scss'],
 })
-export class GalleryBookComponent implements OnInit {
-
+export class GalleryPetComponent implements OnInit {
   slides = signal<GallerySlide[]>([]);
 
   ngOnInit(): void {
     this.slides.set([
       {
         id: 1,
-        title: 'The Silent Forest',
-        description: 'Save 20%! Only 120.000 VNĐ',
+        title: 'Super Cute Corgi Puppy',
+        description: 'Get 20% off today only! Starting from 1,890,000₫',
         image: 'assets/cho1.jpg',
-        buttonText: 'Shop Now'
+        buttonText: 'Shop Now',
       },
       {
         id: 2,
-        title: 'Journey to the Stars',
-        description: 'Discover now!',
+        title: 'Adorable British Shorthair Cat',
+        description: 'Your perfect companion for every moment',
         image: 'assets/cho2.jpg',
-        buttonText: 'Shop Now'
-      }
+        buttonText: 'Shop Now',
+      },
+      // Add more slides if needed
     ]);
   }
 
