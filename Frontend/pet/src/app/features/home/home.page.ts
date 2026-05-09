@@ -54,7 +54,7 @@ export class HomePage {
   private showSurvey() {
     this.dialog.open(SurveyModalComponent, {
       width: '500px',
-      disableClose: true
+      disableClose: false
     });
   }
 }
