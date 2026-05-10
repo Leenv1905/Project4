@@ -20,33 +20,29 @@ export class AccountSidebarComponent {
   get navGroups() {
     return [
       {
-        title: 'Quản lý đơn hàng',
-        items: [
-          { id: 'orders', label: 'Đơn hàng của tôi', icon: '📦' }
-        ]
+        title: 'ORDER MANAGEMENT',
+        items: [{ id: 'orders', label: 'My Orders', icon: '📦' }],
       },
       {
-        title: 'Thông tin cá nhân',
-        items: [
-          { id: 'info', label: 'Thông tin tài khoản', icon: '👤' }
-        ]
+        title: 'ACCOUNT',
+        items: [{ id: 'info', label: 'Account Information', icon: '👤' }],
       },
       // THÊM MÃ MỚI: Nhóm dành cho Người bán
       {
-        title: 'Cửa hàng',
+        title: 'MY SHOP',
         items: [
           this.isSeller
-            ? { id: 'seller-channel', label: 'Kênh người bán', icon: '🏪' }
-            : { id: 'seller-register', label: 'Đăng ký bán hàng', icon: '🚀' }
-        ]
+            ? { id: 'seller-channel', label: 'Seller Dashboard', icon: '🏪' }
+            : { id: 'seller-register', label: 'Become a Seller', icon: '🚀' },
+        ],
       },
       {
-        title: 'Tài chính',
+        title: 'FINANCE',
         items: [
-          { id: 'payment', label: 'Kênh thanh toán', icon: '💳' },
-          { id: 'wallet', label: 'Ví của tôi', icon: '💰' }
-        ]
-      }
+          { id: 'payment', label: 'Payment Methods', icon: '💳' },
+          { id: 'wallet', label: 'My Wallet', icon: '💰' },
+        ],
+      },
     ];
   }
 

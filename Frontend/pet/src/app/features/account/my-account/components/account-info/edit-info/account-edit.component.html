@@ -1,57 +1,69 @@
 <div class="account-edit">
 
   <div class="header">
-    <h2>Chỉnh sửa thông tin cá nhân</h2>
+    <h2>Edit Personal Information</h2>
   </div>
 
   <div class="edit-grid">
 
-    <!-- Cột 1: Avatar -->
+    <!-- Avatar Column -->
     <div class="avatar-column">
       <div class="avatar-box">
-        <img [src]="avatarPreview()" alt="Avatar" class="avatar">
+        <img
+          [src]="avatarPreview()"
+          alt="Profile Avatar"
+          class="avatar">
+
         <label class="change-avatar">
-          Thay đổi ảnh
-          <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden>
+          Change Avatar
+          <input
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+            hidden>
         </label>
       </div>
     </div>
 
-    <!-- Cột 2 & 3: Form -->
+    <!-- Form Column -->
     <div class="form-column">
       <div class="form-grid">
 
         <div class="form-group">
-          <label>Họ và tên <span class="required">*</span></label>
-          <input [(ngModel)]="editForm().name" placeholder="Nhập họ và tên" />
+          <label>Full Name <span class="required">*</span></label>
+          <input [(ngModel)]="editForm().name" placeholder="Enter your full name" />
         </div>
 
         <div class="form-group">
-          <label>Email <span class="required">*</span></label>
-          <input [(ngModel)]="editForm().email" type="email" placeholder="Nhập email" />
+          <label>Email Address <span class="required">*</span></label>
+          <input [(ngModel)]="editForm().email" type="email" placeholder="Enter email address" />
         </div>
 
         <div class="form-group">
-          <label>Số điện thoại <span class="required">*</span></label>
-          <input [(ngModel)]="editForm().phone" placeholder="Nhập số điện thoại" />
+          <label>Phone Number <span class="required">*</span></label>
+          <input [(ngModel)]="editForm().phone" placeholder="Enter phone number" />
         </div>
 
         <div class="form-group">
-          <label>Ngày sinh</label>
+          <label>Date of Birth</label>
           <input [(ngModel)]="editForm().dateOfBirth" type="date" />
         </div>
 
         <div class="form-group full-width">
-          <label>Địa chỉ <span class="required">*</span></label>
-          <textarea [(ngModel)]="editForm().address" rows="3" placeholder="Nhập địa chỉ giao hàng"></textarea>
+          <label>Delivery Address <span class="required">*</span></label>
+          <textarea
+            [(ngModel)]="editForm().address"
+            rows="4"
+            placeholder="Enter your full delivery address">
+          </textarea>
         </div>
 
       </div>
 
-      <!-- Nút hành động -->
+      <!-- Action Buttons -->
       <div class="form-actions">
-        <button class="cancel-btn" (click)="cancel()">Hủy</button>
-        <button class="save-btn" (click)="saveChanges()">Lưu thay đổi</button>
+        <button class="cancel-btn" (click)="cancel()">Cancel</button>
+        <button class="save-btn" (click)="saveChanges()">Save Changes</button>
       </div>
     </div>
 
@@ -63,5 +75,5 @@
   [title]="modal()!.title"
   [message]="modal()!.message"
   [type]="modal()!.type"
-  (closed)="onModalClosed()"
-/>
+  (closed)="onModalClosed()">
+</app-notification-modal>

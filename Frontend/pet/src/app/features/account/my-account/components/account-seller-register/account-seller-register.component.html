@@ -1,33 +1,65 @@
-<div class="seller-register-card">
-  <h2>Đăng ký trở thành người bán</h2>
-  <p>Cung cấp thông tin để bắt đầu bán thú cưng trên GuPet</p>
+<div class="seller-register">
 
-  <form (ngSubmit)="onSubmit()" class="register-form">
-    <div class="form-group">
-      <label>Tên cửa hàng (Hiển thị cho khách hàng)</label>
-      <input type="text" [(ngModel)]="sellerData.displayName" name="displayName" required placeholder="Ví dụ: GuPet Farm">
+  <div class="register-card">
+
+    <div class="header">
+      <h2>Become a Seller</h2>
+      <p>Join our platform and start selling pets to thousands of pet lovers</p>
     </div>
 
-    <div class="form-group">
-      <label>Loại hình kinh doanh</label>
-      <select [(ngModel)]="sellerData.sellerType" name="sellerType">
-        <option value="INDIVIDUAL">Cá nhân</option>
-        <option value="SHOP">Cửa hàng</option>
-        <option value="FARM">Trang trại nuôi phối</option>
-      </select>
-    </div>
+    <form (ngSubmit)="onSubmit()" class="register-form">
 
-    <div class="form-group">
-      <label>Mã số thuế (nếu có)</label>
-      <input type="text" [(ngModel)]="sellerData.taxCode" name="taxCode">
-    </div>
+      <div class="form-grid">
 
-    <div class="form-group">
-      <label>Giới thiệu về shop</label>
-      <textarea [(ngModel)]="sellerData.bio" name="bio" rows="3"></textarea>    </div>
+        <div class="form-group">
+          <label>Shop Name <span class="required">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="sellerData.displayName"
+            name="displayName"
+            required
+            placeholder="e.g. GuPet Paradise">
+        </div>
 
-    <button type="submit" class="btn-submit">Gửi đơn đăng ký</button>
-  </form>
+        <div class="form-group">
+          <label>Business Type</label>
+          <select [(ngModel)]="sellerData.sellerType" name="sellerType">
+            <option value="INDIVIDUAL">Individual Seller</option>
+            <option value="SHOP">Pet Shop</option>
+            <option value="FARM">Breeding Farm</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tax Code (if any)</label>
+          <input
+            type="text"
+            [(ngModel)]="sellerData.taxCode"
+            name="taxCode"
+            placeholder="Tax identification number">
+        </div>
+
+        <div class="form-group full-width">
+          <label>Shop Introduction</label>
+          <textarea
+            [(ngModel)]="sellerData.bio"
+            name="bio"
+            rows="4"
+            placeholder="Tell customers about your shop, experience, and what makes your pets special...">
+          </textarea>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" >Cancel</button>
+        <button type="submit" class="submit-btn" [disabled]="isLoading">
+          {{ isLoading ? 'Submitting...' : 'Submit Application' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
 </div>
 
 <app-notification-modal
@@ -35,5 +67,5 @@
   [title]="modal.title"
   [message]="modal.message"
   [type]="modal.type"
-  (closed)="onModalClosed()"
-/>
+  (closed)="onModalClosed()">
+</app-notification-modal>
