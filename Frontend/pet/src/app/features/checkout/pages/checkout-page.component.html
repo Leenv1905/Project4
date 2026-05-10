@@ -2,22 +2,22 @@
   <div class="container">
 
     <!-- LEFT: FORM -->
-    <div class="form">
-      <h2>Thông tin nhận hàng</h2>
+    <div class="form-section">
 
-      <!-- ===== ĐỊA CHỈ ĐÃ LƯU ===== -->
+      <h2>Shipping Information</h2>
+
+      <!-- Saved Addresses -->
       <div class="address-section">
         <div class="address-section-header">
-          <span class="address-section-title">Địa chỉ giao hàng</span>
+          <span class="address-section-title">Delivery Address</span>
           <button class="btn-add-address" (click)="toggleNewAddressForm()">
-            {{ showNewAddressForm ? '✕ Hủy' : '+ Thêm địa chỉ mới' }}
+            {{ showNewAddressForm ? '✕ Cancel' : '+ Add New Address' }}
           </button>
         </div>
 
-        <!-- Đang tải -->
-        <p *ngIf="isLoadingAddresses" class="loading-text">Đang tải địa chỉ...</p>
+        <p *ngIf="isLoadingAddresses" class="loading-text">Loading addresses...</p>
 
-        <!-- Danh sách địa chỉ đã lưu -->
+        <!-- Saved Addresses List -->
         <div *ngIf="!isLoadingAddresses && addresses.length > 0" class="address-list">
           <label
             *ngFor="let addr of addresses; trackBy: trackAddress"
@@ -25,75 +25,66 @@
             [class.selected]="selectedAddressId === addr.id"
             (click)="selectAddress(addr)">
             <input type="radio" name="savedAddress"
-              [value]="addr.id"
-              [checked]="selectedAddressId === addr.id"
-              (change)="selectAddress(addr)" />
+                   [value]="addr.id"
+                   [checked]="selectedAddressId === addr.id"
+                   (change)="selectAddress(addr)" />
             <div class="address-info">
               <div class="address-name-row">
                 <span class="receiver-name">{{ addr.receiverName }}</span>
                 <span class="phone">{{ addr.phone }}</span>
-                <span *ngIf="addr.isDefault" class="default-badge">Mặc định</span>
+                <span *ngIf="addr.isDefault" class="default-badge">Default</span>
               </div>
               <div class="address-text">{{ addr.address }}</div>
             </div>
           </label>
         </div>
 
-        <!-- Không có địa chỉ -->
         <p *ngIf="!isLoadingAddresses && addresses.length === 0 && !showNewAddressForm"
            class="no-address-hint">
-          Bạn chưa có địa chỉ nào. Hãy thêm địa chỉ giao hàng.
+          You don't have any addresses yet. Please add a delivery address.
         </p>
 
-        <!-- Form thêm địa chỉ mới -->
+        <!-- New Address Form -->
         <div *ngIf="showNewAddressForm" class="new-address-form">
-          <h4>Địa chỉ mới</h4>
-          <input placeholder="Họ và tên người nhận *"
-            [(ngModel)]="newAddress.receiverName" />
-          <input placeholder="Số điện thoại *"
-            [(ngModel)]="newAddress.phone" />
-          <input placeholder="Địa chỉ giao hàng *"
-            [(ngModel)]="newAddress.address" />
+          <h4>New Address</h4>
+          <input placeholder="Receiver's Full Name *" [(ngModel)]="newAddress.receiverName" />
+          <input placeholder="Phone Number *" [(ngModel)]="newAddress.phone" />
+          <input placeholder="Full Delivery Address *" [(ngModel)]="newAddress.address" />
           <label class="default-checkbox">
             <input type="checkbox" [(ngModel)]="newAddress.isDefault" />
-            Đặt làm địa chỉ mặc định
+            Set as default address
           </label>
           <button class="btn-save-address" (click)="saveNewAddress()" [disabled]="isSavingAddress">
-            {{ isSavingAddress ? 'Đang lưu...' : 'Lưu địa chỉ này' }}
+            {{ isSavingAddress ? 'Saving...' : 'Save Address' }}
           </button>
         </div>
       </div>
 
-      <!-- ===== FORM NHẬN HÀNG (tự điền từ địa chỉ chọn) ===== -->
+      <!-- Manual Form -->
       <div class="manual-form">
-        <input placeholder="Họ và tên *"
-          [(ngModel)]="form.customerName" required />
-        <input placeholder="Số điện thoại *"
-          [(ngModel)]="form.phone" required />
-        <input placeholder="Địa chỉ giao hàng *"
-          [(ngModel)]="form.address" required />
-        <textarea placeholder="Ghi chú cho người bán (tùy chọn)"
-          [(ngModel)]="form.note">
-        </textarea>
+        <input placeholder="Full Name *" [(ngModel)]="form.customerName" required />
+        <input placeholder="Phone Number *" [(ngModel)]="form.phone" required />
+        <input placeholder="Delivery Address *" [(ngModel)]="form.address" required />
+        <textarea placeholder="Note for seller (optional)" [(ngModel)]="form.note" rows="3"></textarea>
       </div>
 
-      <!-- ===== THANH TOÁN ===== -->
-      <h3>Phương thức thanh toán</h3>
+      <!-- Payment Methods -->
+      <h3>Payment Method</h3>
       <div class="payment-methods">
         <label>
           <input type="radio" name="paymentMethod" value="COD" [(ngModel)]="form.paymentMethod" />
-          Thanh toán khi nhận hàng (COD)
+          Cash on Delivery (COD)
         </label>
         <label>
           <input type="radio" name="paymentMethod" value="VNPAY" [(ngModel)]="form.paymentMethod" />
-          Thanh toán qua VNPAY
+          VNPAY / Internet Banking
         </label>
       </div>
     </div>
 
-    <!-- RIGHT: SUMMARY -->
+    <!-- RIGHT: ORDER SUMMARY -->
     <div class="summary">
-      <h2>Đơn hàng của bạn ({{ selectedItems.length }} pet)</h2>
+      <h2>Your Order ({{ selectedItems.length }} items)</h2>
 
       <div class="order-items">
         <div *ngFor="let item of selectedItems" class="order-item">
@@ -109,12 +100,12 @@
       <hr />
 
       <div class="total">
-        <span>Tổng thanh toán:</span>
+        <span>Total Payment</span>
         <strong>{{ total() | number }} ₫</strong>
       </div>
 
       <button class="place-order-btn" (click)="placeOrder()" [disabled]="isSubmitting">
-        {{ isSubmitting ? 'Đang xử lý...' : 'Đặt hàng và thanh toán' }}
+        {{ isSubmitting ? 'Processing...' : 'Place Order & Pay' }}
       </button>
     </div>
 

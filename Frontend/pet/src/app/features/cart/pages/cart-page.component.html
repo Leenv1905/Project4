@@ -1,29 +1,29 @@
 <div class="cart-page">
 
   <div class="header">
-    <h1>Giỏ hàng của bạn ({{ items().length }} sản phẩm)</h1>
-
+    <h1>Your Cart ({{ items().length }} items)</h1>
     <button *ngIf="items().length > 0" class="clear-all-btn" (click)="clearCart()">
-      Xóa toàn bộ giỏ hàng
+      Clear Cart
     </button>
   </div>
 
-  <!-- Thông báo -->
+  <!-- Success Message -->
   <div *ngIf="addToCartMessage" class="success-message">
     {{ addToCartMessage }}
   </div>
 
+  <!-- Empty Cart -->
   <div *ngIf="items().length === 0" class="empty-cart">
-    <p>Giỏ hàng của bạn đang trống</p>
-    <button routerLink="/shop" class="shop-btn">Tiếp tục mua sắm</button>
+    <p>Your cart is empty</p>
+    <button routerLink="/shop" class="shop-btn">Continue Shopping</button>
   </div>
 
+  <!-- Cart Content -->
   <div *ngIf="items().length > 0" class="cart-content">
 
-    <!-- LEFT: Danh sách sản phẩm -->
+    <!-- Cart Items -->
     <div class="cart-items">
       <div *ngFor="let item of items()" class="cart-item">
-
         <img [src]="item.image" [alt]="item.name" class="item-image">
 
         <div class="item-info">
@@ -34,40 +34,38 @@
 
         <div class="item-actions">
           <button class="checkout-btn" (click)="checkoutThisItem(item)">
-            Thanh toán ngay
+            Checkout Now
           </button>
           <button class="remove-btn" (click)="remove(item.productId)">
-            Xóa
+            Remove
           </button>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT: Tóm tắt + Thông tin nhận hàng -->
+    <!-- Summary -->
     <div class="cart-summary">
-
       <div class="summary-box">
-        <h3>Thông tin nhận hàng</h3>
+        <h3>Shipping Information</h3>
         <p><strong>Nguyễn Văn A</strong></p>
-        <p>SĐT: 0966 228 008</p>
-        <p>Địa chỉ: Hậu Dưỡng, Thiện Lộc, HN</p>
+        <p>Phone: 0966 228 008</p>
+        <p>Address: Hậu Dưỡng, Thiện Lộc, Hanoi</p>
       </div>
 
       <div class="total-box">
         <div class="total-row">
-          <span>Tổng tiền</span>
+          <span>Subtotal</span>
           <strong>{{ total() | number }} ₫</strong>
         </div>
         <div class="total-row">
-          <span>Số lượng sản phẩm</span>
+          <span>Items</span>
           <strong>{{ items().length }}</strong>
         </div>
       </div>
 
       <button class="proceed-btn" (click)="checkoutAll()">
-        Tiến hành thanh toán
+        Proceed to Checkout
       </button>
-
     </div>
 
   </div>

@@ -45,6 +45,12 @@ export class ProductDetailComponent implements OnInit {
     this.shop.getPublicPets().subscribe({
       next: (products) => {
         const found = products.find((product) => product.id === id) || null;
+        if (found) {
+          // Convert images from object[] → string[]
+          found.images = (found.images || [])
+            .map((img: any) => img.imageUrl || img.originalImageUrl || img.aiRenderedUrl)
+            .filter((url: string) => !!url); // remove null
+        }
         this.product.set(found);
       }
     });

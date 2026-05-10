@@ -12,7 +12,6 @@
           [alt]="p.name"
         >
 
-        <!-- Status -->
         <div class="status-badge" [class.sold]="p.status !== 'available'">
           {{ getStatusLabel(p.status) }}
         </div>
@@ -30,59 +29,54 @@
       </div>
     </div>
 
-    <!-- RIGHT: INFORMATION -->
+    <!-- RIGHT: PRODUCT INFORMATION -->
     <div class="info-section">
 
       <div class="header">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <h1>{{ p.name }}</h1>
-          <span *ngIf="p.isVerified" class="verified-badge" title="Đã xác minh thực địa (O2O)">
-            <mat-icon style="color: #3498db; vertical-align: middle;">verified</mat-icon>
-            <small style="color: #3498db; font-weight: bold;">Verified {{p.trustScore}}%</small>
-          </span>
-        </div>
-        <p class="shop">Từ: {{ p.shopName }}</p>
+        <h1>{{ p.name }}</h1>
+        <p class="shop">From: {{ p.shopName }}</p>
+        <span *ngIf="p.isVerified" class="verified-badge">
+          <mat-icon>verified</mat-icon>
+          Verified {{p.trustScore}}%
+        </span>
       </div>
 
       <!-- Price -->
       <div class="price">
         <span class="current">{{ p.price | number:'1.0-0' }} ₫</span>
-<!--        <span class="original" *ngIf="p.originalPrice">-->
-<!--          {{ p.originalPrice | number:'1.0-0' }} ₫-->
-<!--        </span>-->
       </div>
 
-      <!-- Meta Info -->
+      <!-- Meta Information -->
       <div class="meta">
         <div class="meta-row">
-          <span class="label">Loài</span>
+          <span class="label">Species</span>
           <span class="value">{{ p.species }}</span>
         </div>
         <div class="meta-row">
-          <span class="label">Giống</span>
+          <span class="label">Breed</span>
           <span class="value">{{ p.breed }}</span>
         </div>
         <div class="meta-row">
-          <span class="label">Màu lông</span>
+          <span class="label">Color</span>
           <span class="value">{{ p.color }}</span>
         </div>
         <div class="meta-row">
-          <span class="label">Giới tính</span>
-          <span class="value">{{ p.gender === 'male' ? 'Đực' : 'Cái' }}</span>
+          <span class="label">Gender</span>
+          <span class="value">{{ p.gender === 'male' ? 'Male' : 'Female' }}</span>
         </div>
         <div class="meta-row">
-          <span class="label">Cân nặng</span>
+          <span class="label">Weight</span>
           <span class="value">{{ p.weight }} kg</span>
         </div>
         <div class="meta-row">
-          <span class="label">Tuổi</span>
-          <span class="value">{{ p.age }} tháng</span>
+          <span class="label">Age</span>
+          <span class="value">{{ p.age }} months</span>
         </div>
       </div>
 
       <!-- Description -->
       <div class="description">
-        <h3>Mô tả</h3>
+        <h3>Description</h3>
         <p>{{ p.description }}</p>
       </div>
 
@@ -92,87 +86,22 @@
           class="btn btn-primary"
           (click)="addToCart()"
           [disabled]="p.status !== 'available' || alreadyInCart()">
-          {{ alreadyInCart() ? 'Đã có trong giỏ hàng' : 'Thêm vào giỏ hàng' }}
+          {{ alreadyInCart() ? 'Already in Cart' : 'Add to Cart' }}
         </button>
 
         <button
           class="btn btn-outline"
           (click)="buyNow()"
           *ngIf="p.status === 'available'">
-          Mua ngay
+          Buy Now
         </button>
       </div>
 
-      <!-- Shipping Info -->
+      <!-- Shipping & Warranty -->
       <div class="shipping-info">
-        <p><strong>Giao hàng:</strong> 2-4 ngày làm việc</p>
-        <p><strong>Bảo hành:</strong> Sức khỏe 30 ngày</p>
+        <p><strong>Delivery:</strong> 2-4 business days</p>
+        <p><strong>Health Warranty:</strong> 30 days</p>
       </div>
     </div>
   </div>
 </div>
-
-<!--<div class="product-detail" *ngIf="product() as p">-->
-
-<!--  <div class="container">-->
-
-<!--    &lt;!&ndash; LEFT: IMAGE &ndash;&gt;-->
-<!--    <div class="gallery">-->
-
-<!--      <img-->
-<!--        class="main-image"-->
-<!--        [src]="selectedImage()"-->
-<!--      />-->
-
-<!--      <div class="thumbnails">-->
-<!--        <img-->
-<!--          *ngFor="let img of p.images"-->
-<!--          [src]="img"-->
-<!--          (click)="selectImage(img)"-->
-<!--        />-->
-<!--      </div>-->
-
-<!--    </div>-->
-
-<!--    &lt;!&ndash; RIGHT: INFO &ndash;&gt;-->
-<!--    <div class="info">-->
-
-<!--      <h1>{{ p.name }}</h1>-->
-
-<!--      <p class="meta">-->
-<!--        {{ p.breed }} - {{ p.dogType }}-->
-<!--      </p>-->
-
-<!--      <div class="price">-->
-<!--        {{ p.price | number:'1.0-0' }} ₫-->
-<!--      </div>-->
-
-<!--      <div class="shop">-->
-<!--        Shop: {{ p.shopName }}-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; QUANTITY &ndash;&gt;-->
-<!--      <div class="quantity">-->
-<!--        <button (click)="decreaseQty()">-</button>-->
-<!--        <span>{{ quantity() }}</span>-->
-<!--        <button (click)="increaseQty()">+</button>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; ACTION &ndash;&gt;-->
-<!--      <div class="actions">-->
-<!--        <button class="add" (click)="addToCart()">-->
-<!--          🛒 Thêm vào giỏ-->
-<!--        </button>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; DESCRIPTION &ndash;&gt;-->
-<!--      <div class="description">-->
-<!--        <h3>Mô tả</h3>-->
-<!--        <p>{{ p.description }}</p>-->
-<!--      </div>-->
-
-<!--    </div>-->
-
-<!--  </div>-->
-
-<!--</div>-->
