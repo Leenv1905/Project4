@@ -11,7 +11,7 @@
     <mat-nav-list class="admin-nav-list">
       <ng-container *ngFor="let item of visibleNavItems()">
 
-        <!-- Menu có submenu -->
+        <!-- Menu with submenu -->
         <ng-container *ngIf="item.children">
           <div class="menu-group-header" (click)="toggleItem(item.label)">
             <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
@@ -26,7 +26,7 @@
           </div>
         </ng-container>
 
-        <!-- Menu không có submenu -->
+        <!-- Menu without submenu -->
         <a mat-list-item *ngIf="!item.children" routerLinkActive="active-link" [routerLink]="item.route">
           <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
           <span matListItemTitle>{{ item.label }}</span>
@@ -36,7 +36,7 @@
 
       <div *ngIf="visibleNavItems().length === 0" class="no-access-debug">
         <mat-icon>lock_outline</mat-icon>
-        <p>Không có quyền truy cập</p>
+        <p>No access rights</p>
         <small>Role: {{ authService.role() }}</small>
       </div>
     </mat-nav-list>
@@ -60,9 +60,7 @@
         <mat-icon>notifications</mat-icon>
       </button>
 
-      <!-- Phần User Items - Tái sử dụng từ Home -->
       <app-user-items></app-user-items>
-
     </mat-toolbar>
 
     <!-- CONTENT AREA -->
@@ -71,51 +69,3 @@
     </main>
   </mat-sidenav-content>
 </mat-sidenav-container>
-
-
-<!--<mat-sidenav-container class="admin-container">-->
-
-<!--  &lt;!&ndash; SIDEBAR &ndash;&gt;-->
-<!--  <mat-sidenav mode="side" opened class="admin-sidenav">-->
-<!--    <div class="logo">-->
-<!--      📚 Admin-->
-<!--    </div>-->
-
-<!--    <mat-nav-list>-->
-<!--      <a mat-list-item routerLink="/admin/">-->
-<!--        <mat-icon>dashboard</mat-icon>-->
-<!--        <span>Dashboard</span>-->
-<!--      </a>-->
-
-<!--      <a mat-list-item routerLink="/admin/operators">-->
-<!--        <mat-icon>menu_book</mat-icon>-->
-<!--        <span>ĐƠN HÀNG</span>-->
-<!--      </a>-->
-
-<!--      <a mat-list-item routerLink="/admin/authors">-->
-<!--        <mat-icon>person</mat-icon>-->
-<!--        <span>Users</span>-->
-<!--      </a>-->
-<!--    </mat-nav-list>-->
-<!--  </mat-sidenav>-->
-
-<!--  &lt;!&ndash; MAIN &ndash;&gt;-->
-<!--  <mat-sidenav-content>-->
-
-<!--    &lt;!&ndash; HEADER &ndash;&gt;-->
-<!--    <mat-toolbar color="primary" class="admin-toolbar">-->
-<!--      <span>Admin Panel</span>-->
-<!--      <span class="spacer"></span>-->
-
-<!--      <button mat-icon-button>-->
-<!--        <mat-icon>account_circle</mat-icon>-->
-<!--      </button>-->
-<!--    </mat-toolbar>-->
-
-<!--    &lt;!&ndash; CONTENT &ndash;&gt;-->
-<!--    <main class="admin-content">-->
-<!--      <router-outlet></router-outlet>-->
-<!--    </main>-->
-
-<!--  </mat-sidenav-content>-->
-<!--</mat-sidenav-container>-->

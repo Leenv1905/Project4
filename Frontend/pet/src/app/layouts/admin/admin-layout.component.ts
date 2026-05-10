@@ -10,14 +10,14 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { MatSidenav } from '@angular/material/sidenav';
 import { AuthService } from '../../core/services/auth.service';
-import { UserItemsComponent } from '../../shared/home-components/for-layouts/user-items/user-items.component';   // ← Import AuthService
+import { UserItemsComponent } from '../../shared/home-components/for-layouts/user-items/user-items.component';
 
 interface NavItem {
   label: string;
   icon: string;
   route?: string;
   children?: NavItem[];
-  rolesAllowed: string[];        // Thay vì role đơn giản
+  rolesAllowed: string[];
 }
 
 @Component({
@@ -35,105 +35,168 @@ interface NavItem {
     MatListModule,
     MatIconModule,
     MatButtonModule,
-    UserItemsComponent
-  ]
+    UserItemsComponent,
+  ],
 })
 export class AdminLayoutComponent {
-
   @ViewChild('sidenav') sidenav!: MatSidenav;
 
   authService = inject(AuthService);
 
-  // Lấy role từ AuthService
-  currentRole = this.authService.role;   // 'admin' hoặc 'operators' hoặc 'user'...
-
+  // Navigation Items (English)
   navItems: NavItem[] = [
     {
       label: 'Dashboard',
       icon: 'dashboard',
       route: '/admin',
-      rolesAllowed: ['admin', 'operator']
+      rolesAllowed: ['admin', 'operator'],
     },
     {
-      label: 'Đơn hàng',
+      label: 'Orders',
       icon: 'shopping_cart',
       rolesAllowed: ['admin', 'operator'],
       children: [
-        { label: 'Danh sách đơn hàng', icon: 'list', route: '/admin/operators', rolesAllowed: ['admin', 'operator'] },
-        { label: 'Chờ tiếp nhận', icon: 'pending', route: '/admin/orders/pending', rolesAllowed: ['admin', 'operator'] },
-        { label: 'Đơn trả / hủy', icon: 'undo', route: '/admin/orders/returns', rolesAllowed: ['admin', 'operator'] }
-      ]
+        {
+          label: 'All Orders',
+          icon: 'list',
+          route: '/admin/orders',
+          rolesAllowed: ['admin', 'operator'],
+        },
+        {
+          label: 'Pending Orders',
+          icon: 'pending',
+          route: '/admin/orders/pending',
+          rolesAllowed: ['admin', 'operator'],
+        },
+        {
+          label: 'Returns & Cancellations',
+          icon: 'undo',
+          route: '/admin/orders/returns',
+          rolesAllowed: ['admin', 'operator'],
+        },
+      ],
     },
     {
-      label: 'Sản phẩm',
+      label: 'Products',
       icon: 'inventory_2',
       rolesAllowed: ['admin', 'operator'],
       children: [
-        { label: 'Danh sách sản phẩm', icon: 'list_alt', route: '/admin/products', rolesAllowed: ['admin', 'operator'] },
-        { label: 'Xác minh chip (O2O)', icon: 'verified_user', route: '/admin/verifications', rolesAllowed: ['admin'] }
-      ]
+        {
+          label: 'All Products',
+          icon: 'list_alt',
+          route: '/admin/products',
+          rolesAllowed: ['admin', 'operator'],
+        },
+        {
+          label: 'Chip Verification (O2O)',
+          icon: 'verified_user',
+          route: '/admin/verifications',
+          rolesAllowed: ['admin'],
+        },
+      ],
     },
-    // ── Chỉ dành cho ADMIN ──────────────────────────────────────
+    // Admin Only
     {
-      label: 'Quản lý Operator',
+      label: 'Operator',
       icon: 'engineering',
       rolesAllowed: ['admin'],
       children: [
-        { label: 'Danh sách Operator', icon: 'people', route: '/admin/operators/list', rolesAllowed: ['admin'] },
-        { label: 'Thêm Operator mới', icon: 'person_add', route: '/admin/operators/add', rolesAllowed: ['admin'] },
-        { label: 'Giao việc xác minh', icon: 'assignment_ind', route: '/admin/operators/assign', rolesAllowed: ['admin'] }
-      ]
+        {
+          label: 'Operator List',
+          icon: 'people',
+          route: '/admin/operators/list',
+          rolesAllowed: ['admin'],
+        },
+        {
+          label: 'Add New Operator',
+          icon: 'person_add',
+          route: '/admin/operators/add',
+          rolesAllowed: ['admin'],
+        },
+        {
+          label: 'Assign Verification Tasks',
+          icon: 'assignment_ind',
+          route: '/admin/operators/assign',
+          rolesAllowed: ['admin'],
+        },
+      ],
     },
     {
-      label: 'Người dùng',
+      label: 'Users',
       icon: 'group',
       rolesAllowed: ['admin'],
       children: [
-        { label: 'Danh sách người dùng', icon: 'people_outline', route: '/admin/users', rolesAllowed: ['admin'] },
-        { label: 'Thêm người dùng', icon: 'person_add', route: '/admin/users/add', rolesAllowed: ['admin'] }
-      ]
+        {
+          label: 'User List',
+          icon: 'people_outline',
+          route: '/admin/users',
+          rolesAllowed: ['admin'],
+        },
+        {
+          label: 'Add New User',
+          icon: 'person_add',
+          route: '/admin/users/add',
+          rolesAllowed: ['admin'],
+        },
+      ],
     },
     {
-      label: 'Tài Chính',
+      label: 'Finance',
       icon: 'account_balance',
       rolesAllowed: ['admin'],
       children: [
-        { label: 'Doanh thu', icon: 'monetization_on', route: '/admin/finance/revenue', rolesAllowed: ['admin'] },
-        { label: 'Tài khoản ngân hàng', icon: 'account_balance_wallet', route: '/admin/finance/bank', rolesAllowed: ['admin'] },
-        { label: 'Kênh thanh toán', icon: 'payments', route: '/admin/finance/payment', rolesAllowed: ['admin'] }
-      ]
+        {
+          label: 'Revenue Report',
+          icon: 'monetization_on',
+          route: '/admin/finance/revenue',
+          rolesAllowed: ['admin'],
+        },
+        {
+          label: 'Bank Accounts',
+          icon: 'account_balance_wallet',
+          route: '/admin/finance/bank',
+          rolesAllowed: ['admin'],
+        },
+        {
+          label: 'Payment Channels',
+          icon: 'payments',
+          route: '/admin/finance/payment',
+          rolesAllowed: ['admin'],
+        },
+      ],
     },
-    // ── Chung ───────────────────────────────────────────────────
+    // Common
     {
-      label: 'Cài đặt',
+      label: 'Settings',
       icon: 'settings',
       route: '/admin/settings',
-      rolesAllowed: ['admin', 'operator']
+      rolesAllowed: ['admin', 'operator'],
     },
     {
-      label: 'Quay lại Website',
+      label: 'Back to Website',
       icon: 'home',
       route: '/',
-      rolesAllowed: []
-    }
+      rolesAllowed: [],
+    },
   ];
 
-  // Lọc menu theo role hiện tại (Bao gồm cả con) - Chuyển sang dùng Computed để đảm bảo tính reactive
+  // Filter menu based on user role (reactive)
   visibleNavItems = computed(() => {
-    const userRoles = this.authService.normalizedRoles(); // Đã được normalize thành lowercase array
-    console.log('DEBUG: User Roles in AdminLayout:', userRoles);
-    
+    const userRoles = this.authService.normalizedRoles();
+
     return this.navItems
-      .filter(item => this.checkAccess(item, userRoles))
-      .map(item => {
+      .filter((item) => this.checkAccess(item, userRoles))
+      .map((item) => {
         if (item.children) {
-          const visibleChildren = item.children.filter(child => this.checkAccess(child, userRoles));
+          const visibleChildren = item.children.filter((child) =>
+            this.checkAccess(child, userRoles),
+          );
           return { ...item, children: visibleChildren.length > 0 ? visibleChildren : undefined };
         }
         return item;
       })
-      .filter(item => {
-        const originalItem = this.navItems.find(i => i.label === item.label);
+      .filter((item) => {
+        const originalItem = this.navItems.find((i) => i.label === item.label);
         if (originalItem?.children && (!item.children || item.children.length === 0)) {
           return false;
         }
@@ -143,7 +206,7 @@ export class AdminLayoutComponent {
 
   private checkAccess(item: NavItem, userRoles: string[]): boolean {
     if (!item.rolesAllowed || item.rolesAllowed.length === 0) return true;
-    return item.rolesAllowed.some(role => userRoles.includes(role.toLowerCase()));
+    return item.rolesAllowed.some((role) => userRoles.includes(role.toLowerCase()));
   }
 
   private openedItems = new Set<string>();
@@ -164,4 +227,3 @@ export class AdminLayoutComponent {
     this.sidenav.toggle();
   }
 }
-

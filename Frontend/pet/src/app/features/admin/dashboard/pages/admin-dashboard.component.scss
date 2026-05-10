@@ -1,0 +1,118 @@
+.dashboard-container {
+  padding: 32px;
+  background: #F8F9FA;
+  min-height: 100%;
+}
+
+.dashboard-header {
+  margin-bottom: 40px;
+
+  h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #272727;
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    color: #64748B;
+    font-size: 16.5px;
+    margin: 0;
+  }
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.stat-card {
+  border-radius: 20px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-content {
+    display: flex;
+    align-items: center;
+    padding: 28px;
+    gap: 24px;
+  }
+
+  .icon-bg {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .data {
+    flex: 1;
+
+    .label {
+      font-size: 14px;
+      color: #64748B;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .value {
+      font-family: 'Nunito', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #272727;
+      margin: 0;
+    }
+
+    .trend {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      color: #64748B;
+    }
+  }
+}
+
+/* Color variants */
+.stat-card.revenue .icon-bg { background: #FEF2F2; color: #F86D72; }
+.stat-card.users .icon-bg   { background: #F0FDF4; color: #22C55E; }
+.stat-card.pets .icon-bg    { background: #FFFBEB; color: #F59E0B; }
+.stat-card.orders .icon-bg  { background: #F3E8FF; color: #A855F7; }
+
+/* Chart Card */
+.chart-card {
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  padding: 8px;
+
+  mat-card-header {
+    padding: 24px 28px 16px;
+  }
+
+  mat-card-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #272727;
+  }
+
+  .chart-wrapper {
+    height: 420px;
+    padding: 0 20px 20px;
+  }
+}
