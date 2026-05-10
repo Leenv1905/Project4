@@ -1,23 +1,25 @@
 <div class="slider-container">
-
+  <!--
+    FIX: Thêm style="--swiper-wrapper-align-items: stretch" trực tiếp
+    để đảm bảo tất cả slide stretch đồng đều chiều cao.
+    CSS variable này được Swiper Web Component hỗ trợ chính thức.
+  -->
   <swiper-container
     slides-per-view="4"
-    space-between="10"
+    space-between="20"
     navigation="true"
-    loop="true"
-    speed="500"
+    loop="false"
+    speed="600"
+    style="--swiper-wrapper-align-items: stretch"
     breakpoints='{
-      "1268": { "slidesPerView": 3 },
-      "1024": { "slidesPerView": 2 },
-      "700":  { "slidesPerView": 1 },
-      "480":  { "slidesPerView": 1 }
+      "1400": { "slidesPerView": 4, "spaceBetween": 20 },
+      "1100": { "slidesPerView": 3, "spaceBetween": 20 },
+      "768":  { "slidesPerView": 2, "spaceBetween": 16 },
+      "480":  { "slidesPerView": 1, "spaceBetween": 12 }
     }'
   >
     <swiper-slide *ngFor="let product of products">
-      <div class="card-wrapper">
-        <app-product-card [product]="product" />
-      </div>
+      <app-product-card [product]="product" />
     </swiper-slide>
   </swiper-container>
-
 </div>

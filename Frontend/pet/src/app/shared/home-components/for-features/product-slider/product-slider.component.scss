@@ -1,54 +1,87 @@
 .slider-container {
-  padding: 0 20px;
-  position: relative;
-  max-width: 85%;
+  max-width: 1440px;
   margin: 0 auto;
-
-  @media (max-width: 800px) {
-    max-width: 80%;
-  }
+  padding: 0 32px;
 }
 
 swiper-container {
-  height: 480px;
+  width: 100% !important;
+  padding: 20px 0 40px;
+
+  /* FIX: Quan trọng nhất - ép tất cả slide cùng chiều cao */
+  --swiper-wrapper-align-items: stretch;
 }
 
+/* FIX: Slide phải stretch để card fill đầy */
 swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 450px;
+  height: auto !important;
+  display: flex !important;
+  align-items: stretch !important;
+  box-sizing: border-box;
+  padding: 0 4px;
 }
 
-.card-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-width: 220px;
+/*
+ * FIX: Bỏ toàn bộ override min-height ở đây.
+ * min-height chỉ được set 1 nơi duy nhất trong product-card.component.scss
+ * Việc set 2 nơi gây conflict và không nhất quán.
+ */
+:host ::ng-deep app-product-card {
+  width: 100% !important;
+  height: 100% !important;    /* ← Fill đầy swiper-slide */
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box;
 }
 
-/* ===== CUSTOM NAVIGATION (giống slick) ===== */
+/* Ép ảnh đồng đều */
+:host ::ng-deep app-product-card .image-wrapper {
+  height: 260px !important;
+  min-height: 260px !important;   /* ← Giữ đồng bộ với product-card.scss */
+  max-height: 260px !important;
+  flex-shrink: 0 !important;
+  overflow: hidden;
+}
+
+:host ::ng-deep app-product-card .product-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+}
+
+/* ============== Navigation Buttons ============== */
 swiper-container::part(button-prev),
 swiper-container::part(button-next) {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: #272727;
   border-radius: 50%;
-  color: black;
-  background: none;
 }
 
-swiper-container::part(button-prev) {
-  left: -50px;
+swiper-container::part(button-prev) { left: -20px; }
+swiper-container::part(button-next) { right: -20px; }
 
-  @media (max-width: 600px) {
-    left: -20px;
+swiper-container::part(button-prev):hover,
+swiper-container::part(button-next):hover {
+  background: #F86D72;
+  color: white;
+}
+
+/* ============== Responsive ============== */
+@media (max-width: 1024px) {
+  .slider-container {
+    padding: 0 24px;
   }
 }
 
-swiper-container::part(button-next) {
-  right: -50px;
-
-  @media (max-width: 600px) {
-    right: -20px;
+@media (max-width: 768px) {
+  :host ::ng-deep app-product-card .image-wrapper {
+    height: 220px !important;
+    min-height: 220px !important;
+    max-height: 220px !important;
   }
 }

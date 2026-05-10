@@ -1,83 +1,6 @@
-<!--<div class="product-card">-->
-
-<!--  <div class="card-inner">-->
-
-<!--    &lt;!&ndash; LEFT: Image &ndash;&gt;-->
-<!--    <div class="image-section" (click)="navigateToDetail()">-->
-<!--      <img-->
-<!--        [src]="product.images[0]"-->
-<!--        [alt]="product.name"-->
-<!--        class="product-image"-->
-<!--      >-->
-
-<!--      &lt;!&ndash; Status Badge &ndash;&gt;-->
-<!--      <div class="status-badge"-->
-<!--           [style.backgroundColor]="getStatusColor(product.status)">-->
-<!--        {{ getStatusLabel(product.status) }}-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; RIGHT: Info &ndash;&gt;-->
-<!--    <div class="info-section">-->
-
-<!--      <h3 class="product-name" (click)="navigateToDetail()">-->
-<!--        {{ product.name }}-->
-<!--      </h3>-->
-
-<!--      <div class="meta">-->
-<!--        <span class="shop">{{ product.shopName }}</span>-->
-<!--        <span class="breed">{{ product.breed }} • {{ product.species }}</span>-->
-<!--      </div>-->
-
-<!--      <div class="details">-->
-<!--        <div class="detail-item">-->
-<!--          <span class="label">Giới tính</span>-->
-<!--          <span class="value">{{ product.gender === 'male' ? 'Đực' : 'Cái' }}</span>-->
-<!--        </div>-->
-<!--        <div class="detail-item">-->
-<!--          <span class="label">Màu lông</span>-->
-<!--          <span class="value">{{ product.color }}</span>-->
-<!--        </div>-->
-<!--        <div class="detail-item">-->
-<!--          <span class="label">Cân nặng</span>-->
-<!--          <span class="value">{{ product.dogType }} kg</span>-->
-<!--        </div>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Price &ndash;&gt;-->
-<!--      <div class="price-section">-->
-<!--        <span class="price">{{ product.price | number:'1.0-0' }} ₫</span>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Actions &ndash;&gt;-->
-<!--      <div class="actions">-->
-<!--        <button-->
-<!--          mat-raised-button-->
-<!--          color="primary"-->
-<!--          class="buy-btn"-->
-<!--          (click)="navigateToDetail()"-->
-<!--          *ngIf="product.status === 'available'">-->
-<!--          Xem chi tiết-->
-<!--        </button>-->
-
-<!--        <button-->
-<!--          mat-raised-button-->
-<!--          color="accent"-->
-<!--          class="add-cart-btn"-->
-<!--          (click)="addToCart(); $event.stopPropagation()"-->
-<!--          [disabled]="product.status !== 'available'">-->
-<!--          <mat-icon>add_shopping_cart</mat-icon>-->
-<!--          Thêm vào giỏ-->
-<!--        </button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
-
-
 <div class="product-card">
 
-  <!-- Action -->
+  <!-- Action Button -->
   <div class="card-actions">
     <button
       mat-icon-button
@@ -89,12 +12,17 @@
   </div>
 
   <!-- Image -->
-  <img
-    class="product-image"
-    [src]="product.images[0]"
-    [alt]="product.name"
-    (click)="navigateDetail()"
-  />
+  <!-- FIX: Dùng optional chaining product.images?.[0] tránh lỗi null -->
+  <!-- FIX: Thêm onerror fallback khi ảnh không load được -->
+  <div class="image-wrapper">
+    <img
+      class="product-image"
+      [src]="product.images?.[0] || 'assets/images/placeholder-pet.png'"
+      [alt]="product.name"
+      (click)="navigateDetail()"
+      (error)="onImageError($event)"
+    />
+  </div>
 
   <div class="content">
 
@@ -103,22 +31,15 @@
       {{ product.name }}
     </h3>
 
-    <!-- Shop + Breed -->
+    <!-- Meta -->
     <div class="meta">
-      <span class="author">
-        {{ product.shopName }}
-      </span>
-
-      <span class="author">
-        {{ product.breed }} - {{ product.weight }}
-      </span>
+      <span class="shop">{{ product.shopName }}</span>
+      <span class="breed">{{ product.breed }} • {{ product.weight }}</span>
     </div>
 
-    <!-- Rating (fake for now) -->
-    <div class="meta">
-      <span class="rating">
-        <mat-icon *ngFor="let _ of stars()">star</mat-icon>
-      </span>
+    <!-- Rating -->
+    <div class="rating">
+      <mat-icon *ngFor="let _ of stars()">star</mat-icon>
     </div>
 
     <!-- Price -->

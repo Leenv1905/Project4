@@ -131,6 +131,17 @@ export class ProductCardComponent {
       }
     });
   }
+  /**
+   * FIX: Xử lý khi ảnh bị lỗi (broken image).
+   * Ảnh lỗi khiến image-wrapper collapse → card thấp hơn các card khác.
+   * Fallback về ảnh placeholder để giữ chiều cao cố định.
+   */
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/images/placeholder-pet.png';
+    // Nếu không có placeholder, dùng data URI 1x1 transparent
+    // img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"%3E%3C/svg%3E';
+  }
 
   stars(): number[] {
     return Array(5).fill(0); // mock rating sau này
