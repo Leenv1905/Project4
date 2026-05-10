@@ -1,6 +1,17 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OrderService } from '../../../../../core/services/order.service';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
+
+interface Stat {
+  title: string;
+  value: string;
+  change: string;
+  trend: 'up' | 'down';
+  icon: string;
+}
 
 interface RevenueBar {
   day: string;
@@ -18,98 +29,125 @@ interface TopProduct {
   selector: 'app-my-shop-revenue',
   imports: [CommonModule],
   templateUrl: './my-shop-revenue.component.html',
-  styleUrls: ['./my-shop-revenue.component.scss']
+  styleUrls: ['./my-shop-revenue.component.scss'],
 })
-export class MyShopRevenueComponent implements OnInit {
+export class MyShopRevenueComponent implements OnInit, AfterViewInit {
   private readonly orderService = inject(OrderService);
 
-  readonly weeklyRevenue = signal<RevenueBar[]>([
-    { day: 'T2', revenue: 0 },
-    { day: 'T3', revenue: 0 },
-    { day: 'T4', revenue: 0 },
-    { day: 'T5', revenue: 0 },
-    { day: 'T6', revenue: 0 },
-    { day: 'T7', revenue: 0 },
-    { day: 'CN', revenue: 0 }
+  private revenueChart: Chart | null = null;
+  private ordersChart: Chart | null = null;
+
+  // Stats dạng Array để *ngFor hoạt động
+  readonly stats = signal<Stat[]>([
+    {
+      title: 'Total Revenue',
+      value: '248,500,000 ₫',
+      change: '+18.2%',
+      trend: 'up',
+      icon: '💰',
+    },
+    {
+      title: 'Total Orders',
+      value: '142',
+      change: '+12%',
+      trend: 'up',
+      icon: '📦',
+    },
+    {
+      title: 'This Month Revenue',
+      value: '162,000,000 ₫',
+      change: '+8.5%',
+      trend: 'up',
+      icon: '📅',
+    },
+    {
+      title: 'Avg. Order Value',
+      value: '1,750,000 ₫',
+      change: '+5.4%',
+      trend: 'up',
+      icon: '⭐',
+    },
   ]);
 
-  readonly topProducts = signal<TopProduct[]>([]);
+  readonly weeklyRevenue = signal<RevenueBar[]>([
+    { day: 'Mon', revenue: 1250000 },
+    { day: 'Tue', revenue: 980000 },
+    { day: 'Wed', revenue: 2150000 },
+    { day: 'Thu', revenue: 1890000 },
+    { day: 'Fri', revenue: 2650000 },
+    { day: 'Sat', revenue: 1780000 },
+    { day: 'Sun', revenue: 3120000 },
+  ]);
 
-  readonly stats = computed(() => {
-    const orders = this.orderService.orders();
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
-    const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-    const thisMonthOrders = orders.filter((order) => {
-      const createdAt = new Date(order.createdAt);
-      return createdAt.getMonth() === currentMonth && createdAt.getFullYear() === currentYear;
-    });
-    const thisMonthRevenue = thisMonthOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-
-    return {
-      totalRevenue,
-      totalOrders: orders.length,
-      thisMonthRevenue,
-      thisMonthOrders: thisMonthOrders.length,
-      averageOrderValue: orders.length > 0 ? totalRevenue / orders.length : 0
-    };
-  });
-
-  readonly totalRevenue = computed(() => this.stats().totalRevenue);
-  readonly totalOrders = computed(() => this.stats().totalOrders);
+  readonly topProducts = signal<TopProduct[]>([
+    { name: 'Corgi Pembroke', sold: 28, revenue: 89600000 },
+    { name: 'Pomeranian Teacup', sold: 19, revenue: 52300000 },
+    { name: 'Husky Siberian', sold: 14, revenue: 42000000 },
+    { name: 'Golden Retriever', sold: 11, revenue: 38500000 },
+  ]);
 
   ngOnInit() {
-    this.orderService.loadShopOrders().subscribe({
-      next: () => {
-        this.buildWeeklyRevenue();
-        this.buildTopProducts();
-      }
+    this.orderService.loadShopOrders().subscribe();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.createRevenueChart();
+      this.createOrdersChart();
+    }, 300);
+  }
+
+  // ==================== CHARTS ====================
+  private createRevenueChart() {
+    const ctx = document.getElementById('revenueChart') as HTMLCanvasElement;
+    if (!ctx) return;
+
+    this.revenueChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Mar 10', 'Mar 15', 'Mar 20', 'Mar 25', 'Mar 30', 'Apr 5', 'Apr 10'],
+        datasets: [
+          {
+            label: 'Revenue',
+            data: [1250000, 980000, 2150000, 1890000, 2650000, 1780000, 3120000],
+            borderColor: '#F86D72',
+            backgroundColor: 'rgba(248, 109, 114, 0.12)',
+            borderWidth: 3,
+            tension: 0.4,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        // maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+      },
     });
   }
 
-  private buildWeeklyRevenue() {
-    const dayLabels = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-    const revenueByDay = new Map<string, number>();
+  private createOrdersChart() {
+    const ctx = document.getElementById('ordersChart') as HTMLCanvasElement;
+    if (!ctx) return;
 
-    this.orderService.orders().forEach((order) => {
-      const date = new Date(order.createdAt);
-      const label = dayLabels[date.getDay()];
-      revenueByDay.set(label, (revenueByDay.get(label) || 0) + order.totalAmount);
+    this.ordersChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [
+          {
+            label: 'Orders',
+            data: [18, 24, 31, 27],
+            backgroundColor: '#F86D72',
+            borderRadius: 8,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        // maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+      },
     });
-
-    this.weeklyRevenue.set([
-      { day: 'T2', revenue: revenueByDay.get('T2') || 0 },
-      { day: 'T3', revenue: revenueByDay.get('T3') || 0 },
-      { day: 'T4', revenue: revenueByDay.get('T4') || 0 },
-      { day: 'T5', revenue: revenueByDay.get('T5') || 0 },
-      { day: 'T6', revenue: revenueByDay.get('T6') || 0 },
-      { day: 'T7', revenue: revenueByDay.get('T7') || 0 },
-      { day: 'CN', revenue: revenueByDay.get('CN') || 0 }
-    ]);
-  }
-
-  private buildTopProducts() {
-    const aggregated = new Map<string, TopProduct>();
-
-    this.orderService.orders().forEach((order) => {
-      order.items.forEach((item) => {
-        const current = aggregated.get(item.name) || {
-          name: item.name,
-          sold: 0,
-          revenue: 0
-        };
-        current.sold += item.quantity;
-        current.revenue += item.price * item.quantity;
-        aggregated.set(item.name, current);
-      });
-    });
-
-    this.topProducts.set(
-      Array.from(aggregated.values())
-        .sort((a, b) => b.sold - a.sold)
-        .slice(0, 5)
-    );
   }
 }

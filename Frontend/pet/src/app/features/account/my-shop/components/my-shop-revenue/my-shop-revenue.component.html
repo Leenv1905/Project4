@@ -1,70 +1,62 @@
 <div class="revenue-dashboard">
 
   <div class="header">
-    <h2>Báo cáo doanh thu</h2>
-    <div class="period">
-      Tháng này • <span class="date">Tháng 4/2026</span>
+    <div>
+      <h1>Revenue Report</h1>
+      <p class="subtitle">April 2026 • Last 30 days</p>
+    </div>
+    <div class="period-selector">
+      <button class="active">This Month</button>
+      <button>Last Month</button>
+      <button>Last 3 Months</button>
     </div>
   </div>
 
-  <!-- Thống kê tổng quan -->
+  <!-- STATS -->
   <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon">💰</div>
-      <div class="stat-info">
-        <span class="label">Tổng doanh thu</span>
-        <span class="value">{{ totalRevenue() | number }} ₫</span>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">📦</div>
-      <div class="stat-info">
-        <span class="label">Tổng đơn hàng</span>
-        <span class="value">{{ totalOrders() }}</span>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">📅</div>
-      <div class="stat-info">
-        <span class="label">Doanh thu tháng này</span>
-        <span class="value">{{ stats().thisMonthRevenue | number }} ₫</span>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">⭐</div>
-      <div class="stat-info">
-        <span class="label">Giá trị đơn TB</span>
-        <span class="value">{{ stats().averageOrderValue | number }} ₫</span>
+    <div class="stat-card" *ngFor="let s of stats()">
+      <div class="stat-icon">{{ s.icon }}</div>
+      <div class="stat-content">
+        <span class="stat-title">{{ s.title }}</span>
+        <span class="stat-value">{{ s.value }}</span>
+        <span class="stat-change" [class.up]="s.trend === 'up'" [class.down]="s.trend === 'down'">
+          {{ s.change }}
+        </span>
       </div>
     </div>
   </div>
 
-  <!-- Doanh thu theo tuần -->
-  <div class="chart-section">
-    <h3>Doanh thu theo tuần</h3>
-    <div class="weekly-chart">
-      <div *ngFor="let day of weeklyRevenue()" class="bar-item">
-        <div class="bar" [style.height.%]="(day.revenue / 14000000) * 100">
-          <span class="bar-value">{{ day.revenue | number }}</span>
-        </div>
-        <span class="day">{{ day.day }}</span>
-      </div>
+  <!-- CHARTS -->
+  <div class="charts">
+    <div class="chart-card">
+      <h3>Revenue Trend (Last 30 days)</h3>
+      <canvas id="revenueChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3>Orders This Month</h3>
+      <canvas id="ordersChart"></canvas>
     </div>
   </div>
 
-  <!-- Top sản phẩm bán chạy -->
+  <!-- TOP PRODUCTS -->
   <div class="top-products">
-    <h3>Sản phẩm bán chạy nhất</h3>
-    <div class="product-list">
-      <div *ngFor="let product of topProducts()" class="product-row">
-        <div class="product-name">{{ product.name }}</div>
-        <div class="product-sold">{{ product.sold }} đơn</div>
-        <div class="product-revenue">{{ product.revenue | number }} ₫</div>
-      </div>
-    </div>
+    <h3>Top Selling Products</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Product</th>
+        <th>Units Sold</th>
+        <th>Revenue</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let p of topProducts()">
+        <td>{{ p.name }}</td>
+        <td><strong>{{ p.sold }}</strong></td>
+        <td>{{ p.revenue }}</td>
+      </tr>
+      </tbody>
+    </table>
   </div>
-
 </div>
