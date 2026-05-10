@@ -83,7 +83,9 @@
       <!-- Actions -->
       <div class="actions">
         <button
-          class="btn btn-primary"
+          class="btn"
+          [class.btn-primary]="!alreadyInCart()"
+          [class.btn-disabled]="alreadyInCart()"
           (click)="addToCart()"
           [disabled]="p.status !== 'available' || alreadyInCart()">
           {{ alreadyInCart() ? 'Already in Cart' : 'Add to Cart' }}
@@ -92,7 +94,7 @@
         <button
           class="btn btn-outline"
           (click)="buyNow()"
-          *ngIf="p.status === 'available'">
+          *ngIf="p.status === 'available' && !alreadyInCart()">
           Buy Now
         </button>
       </div>

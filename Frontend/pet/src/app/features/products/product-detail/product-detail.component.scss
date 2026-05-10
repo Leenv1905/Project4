@@ -160,6 +160,7 @@
     }
   }
 
+  /* ==================== ACTIONS ==================== */
   .actions {
     display: flex;
     gap: 16px;
@@ -176,6 +177,7 @@
       transition: all 0.3s ease;
     }
 
+    /* Nút "Add to Cart" - Màu Coral nổi bật */
     .btn-primary {
       background: #F86D72;
       color: white;
@@ -187,14 +189,19 @@
       transform: translateY(-3px);
     }
 
-    .btn-outline {
-      background: transparent;
-      border: 2px solid #F86D72;
-      color: #F86D72;
+    /* Nút "Already in Cart" - Màu xám nhạt, mờ hơn */
+    .btn-disabled {
+      background: #E5E7EB;
+      color: #6B7280;
+      border: none;
+      cursor: not-allowed;
+      opacity: 0.85;
+      font-weight: 500;
     }
 
-    .btn-outline:hover {
-      background: #FFF0F0;
+    .btn-disabled:hover {
+      background: #E5E7EB;
+      transform: none;
     }
   }
 
