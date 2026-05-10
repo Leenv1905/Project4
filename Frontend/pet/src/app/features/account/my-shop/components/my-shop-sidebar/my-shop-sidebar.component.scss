@@ -1,22 +1,25 @@
 .sidebar {
-  background: white;
+  background: #FFFFFF;
   border-radius: 16px;
-  padding: 24px 20px;
+  padding: 28px 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   height: fit-content;
   min-width: 260px;
+  position: sticky;
+  top: 100px;
 }
 
 .sidebar-header {
   margin-bottom: 32px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #E3E3E3;
 
   h3 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #272727;
     margin: 0;
-    font-size: 22px;
-    font-weight: 700;
-    color: #1f2937;
   }
 }
 
@@ -29,49 +32,54 @@
 }
 
 .group-title {
-  font-size: 13.5px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
   font-weight: 600;
-  color: #64748b;
+  color: #6C757D;
   margin-bottom: 12px;
   padding-left: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  margin-bottom: 4px;
-  border-radius: 10px;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
   color: #374151;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
 
   &:hover {
-    background: #f8fafc;
+    background: #F8F9FA;
   }
 
   &.active {
-    background: #fee2e2;
-    color: #ef4444;
+    background: #FFF0F0;
+    color: #F86D72;
     font-weight: 600;
   }
 
   .icon {
-    font-size: 18px;
-    width: 24px;
+    font-size: 22px;
+    width: 26px;
+    color: #6C757D;
   }
 
   .label {
-    font-size: 15px;
+    flex: 1;
   }
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .sidebar {
     min-width: unset;
+    position: static;
   }
 }

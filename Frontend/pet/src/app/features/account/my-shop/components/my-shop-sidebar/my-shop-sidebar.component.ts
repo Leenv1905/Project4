@@ -1,3 +1,4 @@
+
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -12,49 +13,46 @@ export interface NavItem {
   selector: 'app-my-shop-sidebar',
   imports: [CommonModule],
   templateUrl: './my-shop-sidebar.component.html',
-  styleUrls: ['./my-shop-sidebar.component.scss']
+  styleUrls: ['./my-shop-sidebar.component.scss'],
 })
 export class MyShopSidebarComponent {
-
   @Input() active: string = 'dashboard';
   @Output() changeTab = new EventEmitter<string>();
 
   navGroups = [
     {
-      title: 'Tổng quan',
-      items: [
-        { id: 'dashboard', label: 'Dashboard', icon: '📊' }
-      ]
+      title: 'Overview',
+      items: [{ id: 'dashboard', label: 'Dashboard', icon: '📊' }],
     },
     {
-      title: 'Sản phẩm',
+      title: 'Products',
       items: [
-        { id: 'products', label: 'Danh sách sản phẩm', icon: '🐶' },
-        { id: 'add-product', label: 'Thêm sản phẩm mới', icon: '➕' }
-      ]
+        { id: 'products', label: 'All Products', icon: '🐶' },
+        { id: 'add-product', label: 'Add New Product', icon: '➕' },
+      ],
     },
     {
-      title: 'Đơn hàng',
+      title: 'Orders',
       items: [
-        { id: 'orders', label: 'Danh sách đơn hàng', icon: '📦' },
-        { id: 'pending-orders', label: 'Chờ xử lý', icon: '⏳' }
-      ]
+        { id: 'orders', label: 'All Orders', icon: '📦' },
+        { id: 'pending-orders', label: 'Pending Orders', icon: '⏳' },
+      ],
     },
     {
-      title: 'Cửa hàng',
+      title: 'Shop Management',
       items: [
-        { id: 'info', label: 'Thông tin cửa hàng', icon: '🏪' },
-        { id: 'edit-shop', label: 'Chỉnh sửa thông tin', icon: '✏️' }
-      ]
+        { id: 'info', label: 'Shop Information', icon: '🏪' },
+        { id: 'edit-shop', label: 'Edit Shop', icon: '✏️' },
+      ],
     },
     {
-      title: 'Tài chính',
+      title: 'Finance',
       items: [
-        { id: 'revenue', label: 'Báo cáo doanh thu', icon: '📈' },
-        { id: 'reconciliation', label: 'Đối soát thu chi', icon: '🔄' },
-        { id: 'settings', label: 'Cài đặt', icon: '⚙️' }
-      ]
-    }
+        { id: 'revenue', label: 'Revenue Report', icon: '📈' },
+        { id: 'reconciliation', label: 'Reconciliation', icon: '🔄' },
+        { id: 'settings', label: 'Settings', icon: '⚙️' },
+      ],
+    },
   ];
 
   changeTabHandler(tabId: string) {

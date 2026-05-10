@@ -12,7 +12,8 @@
          class="nav-item"
          [class.active]="active === item.id"
          (click)="changeTabHandler(item.id)">
-      <span class="icon">{{ item.icon }}</span>
+
+      <span class="icon material-icons-outlined">{{ item.icon }}</span>
       <span class="label">{{ item.label }}</span>
     </div>
 
