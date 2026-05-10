@@ -1,0 +1,32 @@
+<div class="account-payment">
+
+  <div class="header">
+    <h2>Payment Methods</h2>
+    <button class="add-btn" (click)="addNewMethod()">
+      <span class="material-icons-outlined">Add New Method</span>
+    </button>
+  </div>
+
+  <div class="methods-grid">
+    <div class="method-card"
+         *ngFor="let method of paymentMethods()">
+      <div class="card-header">
+        <img [src]="method.icon" [alt]="method.type" class="card-icon">
+        <div class="card-info">
+          <h4>{{ method.name }}</h4>
+          <p>{{ method.number }}</p>
+        </div>
+        <span class="default-badge" *ngIf="method.isDefault">Default</span>
+      </div>
+
+      <div class="card-footer">
+        <span class="expiry">Expires {{ method.expiry }}</span>
+        <button class="remove-btn" (click)="removeMethod(method.id)">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <p *ngIf="paymentMethods().length === 0" class="no-methods">
+    No payment methods added yet.
+  </p>
+</div>

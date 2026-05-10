@@ -1,0 +1,28 @@
+<div class="account-wallet">
+
+  <div class="balance-card">
+    <h3>Available Balance</h3>
+    <div class="amount">{{ balance() | number }} ₫</div>
+    <button class="deposit-btn" (click)="depositMoney()">
+      Deposit Money
+    </button>
+  </div>
+
+  <div class="transactions">
+    <h3>Recent Transactions</h3>
+
+    <div class="transaction-list">
+      <div class="transaction-item"
+           *ngFor="let tx of transactions()">
+        <div class="info">
+          <span class="type">{{ tx.type | titlecase }}</span>
+          <span class="desc">{{ tx.description }}</span>
+        </div>
+        <div class="amount" [class.positive]="tx.amount > 0">
+          {{ tx.amount > 0 ? '+' : '' }}{{ tx.amount | number }} ₫
+        </div>
+        <div class="date">{{ tx.date }}</div>
+      </div>
+    </div>
+  </div>
+</div>

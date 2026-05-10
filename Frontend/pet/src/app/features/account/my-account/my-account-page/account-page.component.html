@@ -12,11 +12,12 @@
 
       <app-account-orders *ngIf="tab() === 'orders'" />
       <app-account-info *ngIf="tab() === 'info'" />
-      <app-account-payment *ngIf="tab() === 'payment'" />
+<!--      <app-account-payment *ngIf="tab() === 'payment'" />-->
       <app-account-edit *ngIf="tab() === 'edit'" />
 
       <app-account-seller-register *ngIf="tab() === 'seller-register'" />
-
+      <app-account-payment *ngIf="tab() === 'payment'" />
+      <app-account-wallet *ngIf="tab() === 'wallet'" />
       <div *ngIf="tab() === 'seller-channel'">
         <!-- Kênh người bán -->
       </div>
