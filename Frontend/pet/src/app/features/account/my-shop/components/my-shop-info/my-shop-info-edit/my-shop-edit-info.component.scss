@@ -1,28 +1,32 @@
 .shop-edit {
-  background: white;
+  background: #FFFFFF;
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
 }
 
 .header {
   margin-bottom: 40px;
-  text-align: center;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #E3E3E3;
 
   h2 {
+    font-family: 'Nunito', sans-serif;
     font-size: 28px;
-    font-weight: 700;
-    color: #1f2937;
+    font-weight: 600;
+    color: #272727;
+    margin: 0;
   }
 }
 
 .edit-grid {
   display: grid;
   grid-template-columns: 300px 1fr;
-  gap: 50px;
+  gap: 48px;
 
-  @media (max-width: 900px) {
+  @media (max-width: 1024px) {
     grid-template-columns: 1fr;
+    gap: 32px;
   }
 }
 
@@ -36,42 +40,44 @@
       height: 180px;
       border-radius: 50%;
       object-fit: cover;
-      border: 8px solid #f8fafc;
-      box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+      border: 8px solid #F8F9FA;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+      margin-bottom: 24px;
     }
   }
 
   .change-avatar-btn {
-    display: block;
-    margin-top: 20px;
-    padding: 12px 28px;
-    background: #3b82f6;
+    display: inline-block;
+    padding: 12px 32px;
+    background: #F86D72;
     color: white;
-    border-radius: 30px;
-    font-size: 15px;
+    border-radius: 200px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
 
     &:hover {
-      background: #2563eb;
+      background: #E55A5F;
+      transform: translateY(-2px);
     }
   }
 
   .tip {
-    color: #64748b;
-    font-size: 14px;
+    color: #6C757D;
+    font-size: 14.5px;
     margin-top: 16px;
     text-align: center;
   }
 }
 
-/* Form */
+/* Form Area */
 .form-column {
   .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 50px;
-    margin-right: 30px;
+    gap: 24px;
 
     .full-width {
       grid-column: 1 / -1;
@@ -81,58 +87,79 @@
       label {
         display: block;
         margin-bottom: 8px;
+        font-family: 'Nunito', sans-serif;
+        font-size: 14px;
         font-weight: 600;
-        color: #374151;
+        color: #6C757D;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
 
       .required {
-        color: #ef4444;
+        color: #F86D72;
       }
 
       input, textarea {
         width: 100%;
-        padding: 14px 16px;
-        border: 1px solid #d1d5db;
+        padding: 16px;
+        border: 1px solid #E3E3E3;
         border-radius: 12px;
         font-size: 16px;
+        font-family: 'Nunito', sans-serif;
+        transition: all 0.2s ease;
 
         &:focus {
           outline: none;
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+          border-color: #F86D72;
+          box-shadow: 0 0 0 3px rgba(248, 109, 114, 0.1);
         }
       }
 
       textarea {
         resize: vertical;
+        min-height: 130px;
       }
     }
   }
 
   .form-actions {
-    margin-top: 50px;
+    margin-top: 48px;
     display: flex;
     gap: 16px;
+    justify-content: flex-end;
 
     button {
-      flex: 1;
-      padding: 16px;
-      border-radius: 12px;
+      padding: 14px 32px;
+      border-radius: 200px;
+      font-family: 'Nunito', sans-serif;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
+      transition: all 0.3s ease;
     }
 
     .cancel-btn {
-      background: #f3f4f6;
-      color: #374151;
-      border: 1px solid #d1d5db;
+      background: #F8F9FA;
+      color: #272727;
+      border: 1px solid #E3E3E3;
     }
 
     .save-btn {
-      background: #15803d;
+      background: #F86D72;
       color: white;
       border: none;
     }
+
+    .save-btn:hover {
+      background: #E55A5F;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .shop-edit {
+    padding: 28px;
   }
 }

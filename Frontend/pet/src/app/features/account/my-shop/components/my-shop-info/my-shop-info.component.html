@@ -1,51 +1,59 @@
 <div class="shop-info">
+
   <div class="header">
-    <h2>Thông tin cửa hàng</h2>
+    <h2>Shop Information</h2>
     <button class="edit-btn" (click)="editShopInfo()">
-      ✏️ Sửa thông tin cửa hàng
+      <span class="material-icons-outlined">edit</span>
+      Edit Shop Information
     </button>
   </div>
 
   <div class="info-grid">
+
+    <!-- Shop Avatar Card -->
     <div class="shop-avatar-card">
       <div class="avatar-wrapper">
-        <img [src]="profile()?.avatarUrl || 'https://i.pravatar.cc/300?u=shop123'" alt="Ảnh đại diện cửa hàng" class="shop-avatar">
+        <img
+          [src]="profile()?.avatarUrl || user()?.avatarUrl || 'https://i.pravatar.cc/300?u=shop123'"
+          alt="Shop Avatar"
+          class="shop-avatar">
       </div>
-      <h3>{{ profile()?.name || user()?.name || 'Chưa cập nhật' }}</h3>
-      <p class="shop-owner">Quản lý bởi: {{ profile()?.name || user()?.name || 'Chưa có tên' }}</p>
+      <h3>{{ profile()?.name || user()?.name || 'Shop Name' }}</h3>
+      <p class="shop-owner">Managed by: {{ profile()?.name || user()?.name || 'Owner Name' }}</p>
     </div>
 
+    <!-- Details Grid -->
     <div class="details-grid">
       <div class="info-block">
-        <span class="label">Tên cửa hàng</span>
-        <span class="value">{{ profile()?.name || user()?.name || 'Chưa cập nhật' }}</span>
+        <span class="label">Shop Name</span>
+        <span class="value">{{ profile()?.name || user()?.name || 'Not updated' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Chủ cửa hàng</span>
-        <span class="value">{{ profile()?.name || user()?.name || 'Chưa cập nhật' }}</span>
+        <span class="label">Owner</span>
+        <span class="value">{{ profile()?.name || user()?.name || 'Not updated' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Số điện thoại</span>
-        <span class="value">{{ profile()?.phone || 'Chưa cập nhật' }}</span>
+        <span class="label">Phone Number</span>
+        <span class="value">{{ profile()?.phone || 'Not updated' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Địa chỉ</span>
-        <span class="value">{{ profile()?.address || 'Chưa cập nhật' }}</span>
+        <span class="label">Address</span>
+        <span class="value">{{ profile()?.address || 'Not updated' }}</span>
       </div>
 
       <div class="info-block">
-        <span class="label">Ngày tạo gian hàng</span>
-        <span class="value">Đang cập nhật</span>
+        <span class="label">Shop Created</span>
+        <span class="value">Not updated</span>
       </div>
 
       <div class="info-block full-width">
-        <span class="label">Mô tả cửa hàng</span>
-        <!-- Lưu ý: Nếu bạn có trường bio hoặc description thì nên thay profile()?.address bằng trường đó -->
-        <p class="description">{{ profile()?.address || 'Chưa có mô tả riêng cho cửa hàng.' }}</p>
+        <span class="label">Shop Description</span>
+        <p class="description">Pet shop</p>
       </div>
     </div>
+
   </div>
 </div>

@@ -1,54 +1,74 @@
 <div class="shop-edit">
 
   <div class="header">
-    <h2>Chỉnh sửa thông tin cửa hàng</h2>
+    <h2>Edit Shop Information</h2>
   </div>
 
   <div class="edit-grid">
 
-    <!-- Cột 1: Avatar -->
+    <!-- Avatar Column -->
     <div class="avatar-column">
       <div class="avatar-box">
-        <img [src]="shopAvatar()" alt="Shop Avatar" class="shop-avatar">
+        <img
+          [src]="shopAvatar()"
+          alt="Shop Avatar"
+          class="shop-avatar">
+
         <label class="change-avatar-btn">
-          Thay đổi ảnh cửa hàng
-          <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden>
+          Change Shop Avatar
+          <input
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+            hidden>
         </label>
       </div>
-      <p class="tip">Ảnh đại diện cho cửa hàng của bạn</p>
+      <p class="tip">This image will be displayed as your shop's profile picture</p>
     </div>
 
-    <!-- Cột 2 & 3: Form -->
+    <!-- Form Column -->
     <div class="form-column">
 
       <div class="form-grid">
 
         <div class="form-group">
-          <label>Tên cửa hàng <span class="required">*</span></label>
-          <input [(ngModel)]="editForm().shopName" placeholder="Nhập tên cửa hàng" />
+          <label>Shop Name <span class="required">*</span></label>
+          <input
+            [(ngModel)]="editForm().shopName"
+            placeholder="Enter shop name" />
         </div>
 
         <div class="form-group">
-          <label>Số điện thoại <span class="required">*</span></label>
-          <input [(ngModel)]="editForm().phone" placeholder="Nhập số điện thoại" />
+          <label>Phone Number <span class="required">*</span></label>
+          <input
+            [(ngModel)]="editForm().phone"
+            placeholder="Enter phone number" />
         </div>
 
         <div class="form-group full-width">
-          <label>Địa chỉ cửa hàng <span class="required">*</span></label>
-          <textarea [(ngModel)]="editForm().address" rows="2" placeholder="Nhập địa chỉ cửa hàng"></textarea>
+          <label>Shop Address <span class="required">*</span></label>
+          <textarea
+            [(ngModel)]="editForm().address"
+            rows="2"
+            placeholder="Enter full shop address">
+          </textarea>
         </div>
 
         <div class="form-group full-width">
-          <label>Mô tả cửa hàng</label>
-          <textarea [(ngModel)]="editForm().description" rows="5" placeholder="Mô tả ngắn về cửa hàng của bạn"></textarea>
+          <label>Shop Description</label>
+          <textarea
+            [(ngModel)]="editForm().description"
+            rows="5"
+            placeholder="Tell customers about your shop, experience, and specialty...">
+          </textarea>
         </div>
 
       </div>
 
-      <!-- Nút hành động -->
+      <!-- Form Actions -->
       <div class="form-actions">
-        <button class="cancel-btn" (click)="cancel()">Hủy</button>
-        <button class="save-btn" (click)="saveChanges()">Lưu thay đổi</button>
+        <button class="cancel-btn" (click)="cancel()">Cancel</button>
+        <button class="save-btn" (click)="saveChanges()">Save Changes</button>
       </div>
 
     </div>
