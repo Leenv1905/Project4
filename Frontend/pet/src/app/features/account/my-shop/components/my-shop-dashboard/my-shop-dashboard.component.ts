@@ -1,96 +1,96 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { OrderService } from '../../../../../core/services/order.service';
-import { PetApiService } from '../../../../../core/services/pet-api.service';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 @Component({
   standalone: true,
   selector: 'app-my-shop-dashboard',
   imports: [CommonModule],
   templateUrl: './my-shop-dashboard.component.html',
-  styleUrls: ['./my-shop-dashboard.component.scss']
+  styleUrls: ['./my-shop-dashboard.component.scss'],
 })
-export class MyShopDashboardComponent implements OnInit {
-  private readonly orderService = inject(OrderService);
-  private readonly petApi = inject(PetApiService);
+export class MyShopDashboardComponent implements OnInit, AfterViewInit {
+  private revenueChart: Chart | null = null;
+  private ordersChart: Chart | null = null;
 
-  readonly productsCount = signal(0);
-  readonly topProducts = signal<Array<{ name: string; sales: number; revenue: string }>>([]);
+  readonly stats = signal([
+    { title: 'Total Revenue', value: '248,500,000 ₫', change: '+18.2%', trend: 'up', icon: '💰' },
+    { title: 'Total Orders', value: '142', change: '+12%', trend: 'up', icon: '📦' },
+    { title: 'Active Listings', value: '37', change: '+3', trend: 'up', icon: '🐾' },
+    { title: 'Avg. Order Value', value: '1,750,000 ₫', change: '+5.4%', trend: 'up', icon: '📈' },
+  ]);
 
-  readonly stats = computed(() => {
-    const orders = this.orderService.orders();
-    const revenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-    const avgOrder = orders.length > 0 ? revenue / orders.length : 0;
-
-    return [
-      {
-        title: 'Revenue',
-        value: this.formatCurrency(revenue),
-        change: `${orders.length} orders`,
-        trend: 'up'
-      },
-      {
-        title: 'Orders',
-        value: String(orders.length),
-        change: 'From API',
-        trend: 'up'
-      },
-      {
-        title: 'Products',
-        value: String(this.productsCount()),
-        change: 'My listings',
-        trend: 'up'
-      },
-      {
-        title: 'Avg Order',
-        value: this.formatCurrency(avgOrder),
-        change: 'Per order',
-        trend: 'up'
-      }
-    ];
-  });
+  readonly topProducts = signal([
+    { name: 'Corgi Pembroke', sales: 28, revenue: '89,600,000 ₫', trend: 'up' },
+    { name: 'Pomeranian Teacup', sales: 19, revenue: '52,300,000 ₫', trend: 'up' },
+    { name: 'Husky Siberian', sales: 14, revenue: '42,000,000 ₫', trend: 'stable' },
+    { name: 'Golden Retriever', sales: 11, revenue: '38,500,000 ₫', trend: 'up' },
+  ]);
 
   ngOnInit() {
-    this.orderService.loadShopOrders().subscribe({
-      next: () => this.buildTopProducts()
-    });
+    // Dữ liệu mẫu
+  }
 
-    this.petApi.listMyPets().subscribe({
-      next: (products) => {
-        this.productsCount.set(products.length);
-      }
+  ngAfterViewInit() {
+    setTimeout(() => {
+      // Đợi DOM render xong
+      this.createRevenueChart();
+      this.createOrdersChart();
+    }, 100);
+  }
+
+  private createRevenueChart() {
+    const ctx = document.getElementById('revenueChart') as HTMLCanvasElement;
+    if (!ctx) return;
+
+    this.revenueChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Mar 10', 'Mar 15', 'Mar 20', 'Mar 25', 'Mar 30', 'Apr 5', 'Apr 10'],
+        datasets: [
+          {
+            label: 'Revenue (₫)',
+            data: [1250000, 980000, 2150000, 1890000, 2650000, 1780000, 3120000],
+            borderColor: '#F86D72',
+            backgroundColor: 'rgba(248, 109, 114, 0.1)',
+            tension: 0.4,
+            borderWidth: 3,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        // maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+      },
     });
   }
 
-  private buildTopProducts() {
-    const aggregated = new Map<string, { sales: number; revenue: number }>();
+  private createOrdersChart() {
+    const ctx = document.getElementById('ordersChart') as HTMLCanvasElement;
+    if (!ctx) return;
 
-    this.orderService.orders().forEach((order) => {
-      order.items.forEach((item) => {
-        const current = aggregated.get(item.name) || { sales: 0, revenue: 0 };
-        current.sales += item.quantity;
-        current.revenue += item.price * item.quantity;
-        aggregated.set(item.name, current);
-      });
+    this.ordersChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [
+          {
+            label: 'Orders',
+            data: [18, 24, 31, 27],
+            backgroundColor: '#F86D72',
+            borderRadius: 8,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        // maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+      },
     });
-
-    this.topProducts.set(
-      Array.from(aggregated.entries())
-        .map(([name, value]) => ({
-          name,
-          sales: value.sales,
-          revenue: this.formatCurrency(value.revenue)
-        }))
-        .sort((a, b) => b.sales - a.sales)
-        .slice(0, 5)
-    );
-  }
-
-  private formatCurrency(value: number): string {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-      maximumFractionDigits: 0
-    }).format(value || 0);
   }
 }

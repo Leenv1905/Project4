@@ -1,85 +1,60 @@
 <div class="dashboard">
 
-  <h2 class="title">Shop Overview</h2>
+  <div class="header">
+    <h1>Shop Overview</h1>
+    <p class="subtitle">Welcome back! Here's what's happening with your shop this month</p>
+  </div>
 
   <!-- STATS -->
   <div class="stats">
-
-    <div class="card" *ngFor="let s of stats()">
-
-      <div class="card-header">
-        <span>{{s.title}}</span>
-        <span
-          class="badge"
-          [class.up]="s.trend === 'up'"
-          [class.down]="s.trend === 'down'"
-        >
-          {{s.change}}
-        </span>
+    <div class="stat-card" *ngFor="let s of stats()">
+      <div class="stat-icon">{{ s.icon }}</div>
+      <div class="stat-content">
+        <span class="stat-title">{{ s.title }}</span>
+        <span class="stat-value">{{ s.value }}</span>
+        <div class="stat-trend" [class.up]="s.trend === 'up'" [class.down]="s.trend === 'down'">
+          {{ s.change }}
+        </div>
       </div>
-
-      <div class="card-value">
-        {{s.value}}
-      </div>
-
-      <div class="card-sub">
-        Last 30 days
-      </div>
-
     </div>
-
   </div>
 
-  <!-- CHART AREA -->
+  <!-- CHARTS -->
   <div class="charts">
-
     <div class="chart-card">
-
-      <h3>Sales Overview</h3>
-
-      <div class="fake-chart"></div>
-
+      <h3>Revenue Trend (Last 30 days)</h3>
+      <canvas id="revenueChart"></canvas>
     </div>
 
     <div class="chart-card">
-
-      <h3>Views Trend</h3>
-
-      <div class="fake-chart"></div>
-
+      <h3>Orders This Month</h3>
+      <canvas id="ordersChart"></canvas>
     </div>
-
   </div>
 
   <!-- TOP PRODUCTS -->
-  <div class="table-card">
-
-    <h3>Top Products</h3>
-
+  <div class="top-products">
+    <h3>Top Selling Products</h3>
     <table>
-
       <thead>
       <tr>
         <th>Product</th>
         <th>Sales</th>
         <th>Revenue</th>
+        <th>Trend</th>
       </tr>
       </thead>
-
       <tbody>
-
       <tr *ngFor="let p of topProducts()">
-
-        <td>{{p.name}}</td>
-        <td>{{p.sales}}</td>
-        <td>{{p.revenue}}</td>
-
+        <td>{{ p.name }}</td>
+        <td><strong>{{ p.sales }}</strong></td>
+        <td>{{ p.revenue }}</td>
+        <td>
+          <span class="trend up" *ngIf="p.trend === 'up'">↑ Rising</span>
+          <span class="trend" *ngIf="p.trend === 'stable'">→ Stable</span>
+        </td>
       </tr>
-
       </tbody>
-
     </table>
-
   </div>
-
 </div>
