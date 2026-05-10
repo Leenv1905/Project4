@@ -1,7 +1,7 @@
 <div class="post-card">
 
   <div class="image-wrapper">
-    <img [src]="image" alt="Post image" />
+    <img [src]="image" [alt]="title" />
   </div>
 
   <div class="content">
@@ -14,8 +14,9 @@
 
     <p class="description">
       {{ description }}
-      <span class="read-more" (click)="navigate()">Read More</span>
     </p>
+
+    <span class="read-more" (click)="navigate()">Read More →</span>
 
   </div>
 
