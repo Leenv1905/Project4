@@ -1,131 +1,154 @@
 <div class="add-product">
+
   <div class="header">
     <div class="title">
-      <button class="back-btn" (click)="backToProducts()">← Quay lại danh sách</button>
-      <h2>Thêm thú cưng mới</h2>
-      <p class="subtitle">Điền thông tin chi tiết cho pet</p>
+      <button class="back-btn" (click)="backToProducts()">← Back to Products</button>
+      <h2>Add New Pet</h2>
+      <p class="subtitle">Fill in the details for your pet</p>
     </div>
+
     <div class="actions">
-      <button class="discard-btn" (click)="discard()">Hủy bỏ</button>
-      <button class="draft-btn" (click)="saveDraft()">Lưu nháp</button>
-      <button class="publish-btn" (click)="publish()">Đăng bán</button>
+      <button class="discard-btn" (click)="discard()">Discard</button>
+      <button class="draft-btn" (click)="saveDraft()">Save Draft</button>
+      <button class="publish-btn" (click)="publish()">Publish for Sale</button>
     </div>
   </div>
 
   <div class="layout">
+
+    <!-- LEFT COLUMN -->
     <div class="left">
+
+      <!-- Identification -->
       <div class="card">
-        <h3>Thông tin định danh</h3>
+        <h3>Identification</h3>
         <div class="form-group">
-          <label>Mã chip thú cưng *</label>
+          <label>Pet Chip Code <span class="required">*</span></label>
           <input
-            placeholder="Ví dụ: CZAREP8B1LVXNV3"
+            placeholder="e.g. CZAREP8B1LVXNV3"
             [(ngModel)]="product.petCode"
             maxlength="15"
-            (input)="validatePetCode($event)"
             class="pet-code-input"
           />
           <small *ngIf="product.petCode?.length > 0 && product.petCode?.length < 15" class="error-text">
-            Mã chip chưa đủ định dạng (Hiện có: {{product.petCode.length}}/15 ký tự)
+            Chip code must be 15 characters (Currently: {{product.petCode.length}}/15)
           </small>
         </div>
       </div>
 
+      <!-- Basic Information -->
       <div class="card">
-        <h3>Thông tin cơ bản</h3>
-        <input placeholder="Tên thú cưng *" [(ngModel)]="product.name" />
+        <h3>Basic Information</h3>
+        <div class="form-group">
+          <label>Pet Name <span class="required">*</span></label>
+          <input placeholder="Pet name" [(ngModel)]="product.name" />
+        </div>
 
         <div class="row">
           <div class="form-group">
-            <label>Loài</label>
+            <label>Species</label>
             <select [(ngModel)]="product.species">
-              <option value="Chó">Chó</option>
-              <option value="Mèo">Mèo</option>
-              <option value="Khác">Khác</option>
+              <option value="Dog">Dog</option>
+              <option value="Cat">Cat</option>
+              <option value="Other">Other</option>
             </select>
           </div>
+
           <div class="form-group">
-            <label>Giống</label>
-            <input placeholder="Ví dụ: Poodle, Corgi..." [(ngModel)]="product.breed" />
+            <label>Breed</label>
+            <select [(ngModel)]="product.breed">
+              <option value="">Select breed...</option>
+              <option value="Corgi">Corgi</option>
+              <option value="Poodle">Poodle</option>
+              <option value="Husky">Husky</option>
+              <option value="Golden Retriever">Golden Retriever</option>
+              <option value="Pomeranian">Pomeranian</option>
+              <option value="Alaska">Alaska</option>
+              <option value="Shiba Inu">Shiba Inu</option>
+              <option value="Bulldog">Bulldog</option>
+              <option value="Beagle">Beagle</option>
+              <option value="Labrador">Labrador</option>
+              <option value="German Shepherd">German Shepherd</option>
+              <option value="Chihuahua">Chihuahua</option>
+              <option value="Dachshund">Dachshund</option>
+              <option value="Yorkshire Terrier">Yorkshire Terrier</option>
+              <!-- Thêm giống khác nếu cần -->
+            </select>
           </div>
         </div>
 
         <div class="row">
           <div class="form-group">
-            <label>Màu lông</label>
-            <input placeholder="Màu lông" [(ngModel)]="product.color" />
+            <label>Color</label>
+            <input placeholder="e.g. White, Brown, Black..." [(ngModel)]="product.color" />
           </div>
           <div class="form-group">
-            <label>Giới tính</label>
+            <label>Gender</label>
             <select [(ngModel)]="product.gender">
-              <option value="male">Đực</option>
-              <option value="female">Cái</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
             </select>
           </div>
         </div>
 
         <div class="row">
           <div class="form-group">
-            <label>Cân nặng (kg)</label>
+            <label>Weight (kg)</label>
             <input type="number" step="0.1" [(ngModel)]="product.weight" />
           </div>
           <div class="form-group">
-            <label>Ngày sinh</label>
-            <input type="date" value="2022-12-20" disabled />
+            <label>Date of Birth</label>
+            <input type="date" [(ngModel)]="product.dateOfBirth" />
           </div>
         </div>
 
-        <label>Mô tả</label>
-        <textarea rows="5" placeholder="Mô tả tính cách..." [(ngModel)]="product.description"></textarea>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea rows="5" placeholder="Describe personality, characteristics, health status..." [(ngModel)]="product.description"></textarea>
+        </div>
       </div>
     </div>
 
+    <!-- RIGHT COLUMN -->
     <div class="right">
+
+      <!-- Price -->
       <div class="card">
-        <h3>Giá bán</h3>
-        <input type="number" placeholder="Giá bán (VNĐ) *" [(ngModel)]="product.price" />
+        <h3>Pricing</h3>
+        <div class="form-group">
+          <label>Price (VND) <span class="required">*</span></label>
+          <input type="number" placeholder="e.g. 2500000" [(ngModel)]="product.price" />
+        </div>
       </div>
 
+      <!-- Images & AI -->
       <div class="card">
-        <h3>Hình ảnh thú cưng & AI Render</h3>
-        <input type="file" (change)="onFileSelected($event)" accept="image/*" class="mb-3" />
+        <h3>Pet Photos & AI Enhancement</h3>
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" class="file-input" />
 
-        <div class="ai-box mt-3" *ngIf="originalPreview">
-          <div class="d-flex gap-3 mb-3">
-            <div class="p-view">
-              <small>Ảnh gốc</small>
-              <img [src]="originalPreview" class="rounded shadow-sm">
-            </div>
-
-            <div class="p-view" *ngIf="aiImageUrl">
-              <small class="text-purple">Bản AI ✨</small>
-              <img [src]="aiImageUrl" class="rounded shadow-sm border-purple">
-            </div>
-          </div>
-
-          <button type="button" class="btn-ai" (click)="generateAiImage()" [disabled]="isAiLoading">
-            <span *ngIf="!isAiLoading">🪄 Tạo phong cách AI (DALL-E)</span>
-            <span *ngIf="isAiLoading">⏳ Đang xử lý...</span>
-          </button>
-        </div>
-
-        <div class="image-preview mt-4">
+        <!-- Preview -->
+        <div class="image-preview" *ngIf="finalImages.length > 0">
           <div class="image-card" *ngFor="let img of finalImages; let i = index">
-            <img [src]="img.imageUrl"> <span class="badge-ai" *ngIf="img.isAiProcessed">AI</span>
+            <img [src]="img.imageUrl">
+            <span class="ai-badge" *ngIf="img.isAiProcessed">AI</span>
             <button class="remove-btn" (click)="removeImage(i)">×</button>
           </div>
         </div>
+
+        <button class="btn-ai" (click)="generateAiImage()" [disabled]="isAiLoading || !originalPreview">
+          {{ isAiLoading ? 'Generating AI Style...' : '✨ Generate AI Version' }}
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<app-loading-modal [visible]="isLoading" message="Đang đăng bán thú cưng..." />
-
+<!-- Modals -->
+<app-loading-modal [visible]="isLoading" message="Publishing your pet..." />
 <app-notification-modal
   *ngIf="modal.show"
   [title]="modal.title"
   [message]="modal.message"
   [type]="modal.type"
-  (closed)="closeModal()"
-/>
+  (closed)="closeModal()">
+</app-notification-modal>

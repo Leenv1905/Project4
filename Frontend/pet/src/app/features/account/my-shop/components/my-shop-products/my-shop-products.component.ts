@@ -1,15 +1,15 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Product} from '../../../../../core/models/product.model';
-import {PetApiService} from '../../../../../core/services/pet-api.service';
+import { Component, inject, OnInit, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Product } from '../../../../../core/models/product.model';
+import { PetApiService } from '../../../../../core/services/pet-api.service';
 
 @Component({
   standalone: true,
   selector: 'app-my-shop-products',
   imports: [CommonModule],
   templateUrl: './my-shop-products.component.html',
-  styleUrls: ['./my-shop-products.component.scss']
+  styleUrls: ['./my-shop-products.component.scss'],
 })
 export class MyShopProductsComponent implements OnInit {
   private readonly router = inject(Router);
@@ -24,7 +24,6 @@ export class MyShopProductsComponent implements OnInit {
   showSuccessModal = false;
   page = 1;
   pageSize = 10;
-  imageUrl?: string;
 
   ngOnInit() {
     this.loadProducts();
@@ -53,22 +52,39 @@ export class MyShopProductsComponent implements OnInit {
       error: () => {
         this.products = [];
         this.isLoading = false;
-      }
+      },
     });
   }
-  notification = {
-    show: false,
-    title: '',
-    message: '',
-    type: 'info' as 'success' | 'error' | 'info'
-  };
+
+  // ==================== CLICK OUTSIDE TO CLOSE MENU ====================
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    // Nếu click không phải vào nút ⋮ và không phải vào dropdown thì đóng menu
+    if (!target.closest('.dots') && !target.closest('.dropdown')) {
+      this.openMenu = null;
+    }
+  }
+
+  toggleMenu(id: number) {
+    // Ngăn event lan ra document
+    event?.stopImmediatePropagation();
+
+    if (this.openMenu === id) {
+      this.openMenu = null;
+    } else {
+      this.openMenu = id;
+    }
+  }
+
+  // ==================== OTHER METHODS ====================
   getStatusLabel(status: string): string {
     const map: Record<string, string> = {
-      available: 'Còn hàng',
-      sold: 'Đã bán',
-      pending: 'Chờ duyệt',
-      reserved: 'Đặt trước',
-      not_for_sale: 'Ngừng bán'
+      available: 'Available',
+      sold: 'Sold',
+      pending: 'Pending',
+      reserved: 'Reserved',
+      not_for_sale: 'Not for Sale',
     };
     return map[status] || status;
   }
@@ -76,19 +92,20 @@ export class MyShopProductsComponent implements OnInit {
   addProduct() {
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: {tab: 'add-product'}
+      queryParams: { tab: 'add-product' },
     });
   }
 
   editProduct(id: number) {
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: {tab: 'edit-product', id}
+      queryParams: { tab: 'edit-product', id },
     });
   }
 
   openView(product: Product) {
     this.selectedProduct = product;
+    this.openMenu = null;
   }
 
   closeView() {
@@ -97,6 +114,7 @@ export class MyShopProductsComponent implements OnInit {
 
   openDelete(product: Product) {
     this.deleteProduct = product;
+    this.openMenu = null;
   }
 
   closeDelete() {
@@ -111,44 +129,22 @@ export class MyShopProductsComponent implements OnInit {
 
     this.petApi.deletePet(idToRemove).subscribe({
       next: () => {
-        this.products = this.products.filter(p => p.id !== idToRemove);
-        this.deleteProduct = null; // Đóng modal xác nhận cũ
-
-        // Hiển thị modal thành công bằng component mới
-        this.showNotification(
-          'Thành công',
-          `Đã xóa thú cưng ${petName} khỏi hệ thống.`,
-          'success'
-        );
+        this.products = this.products.filter((p) => p.id !== idToRemove);
+        this.deleteProduct = null;
+        this.showSuccessModal = true;
       },
       error: () => {
-        this.showNotification(
-          'Lỗi',
-          'Không thể xóa sản phẩm. Vui lòng thử lại sau.',
-          'error'
-        );
-      }
+        alert('Error deleting product. Please try again.');
+      },
     });
   }
 
-  showNotification(title: string, message: string, type: 'success' | 'error' | 'info') {
-    this.notification = { show: true, title, message, type };
-  }
-
-  toggleMenu(id: number) {
-    this.openMenu = this.openMenu === id ? null : id;
-  }
-
   nextPage() {
-    if (this.page < this.totalPages) {
-      this.page++;
-    }
+    if (this.page < this.totalPages) this.page++;
   }
 
   prevPage() {
-    if (this.page > 1) {
-      this.page--;
-    }
+    if (this.page > 1) this.page--;
   }
 
   changePageSize(size: number) {

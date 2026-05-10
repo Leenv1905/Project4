@@ -3,186 +3,113 @@
   <!-- FILTERS -->
   <div class="filters">
     <select>
-      <option value="">Tất cả trạng thái</option>
-      <option value="available">Còn hàng</option>
-      <option value="sold">Đã bán</option>
-      <option value="reserved">Đặt trước</option>
+      <option value="">All Status</option>
+      <option value="available">Available</option>
+      <option value="sold">Sold</option>
+      <option value="reserved">Reserved</option>
     </select>
 
     <select>
-      <option value="">Tất cả loài</option>
-      <option value="Chó">Chó</option>
-      <option value="Mèo">Mèo</option>
+      <option value="">All Species</option>
+      <option value="Dog">Dog</option>
+      <option value="Cat">Cat</option>
     </select>
 
-    <input type="text" placeholder="Tìm theo giống..." />
+    <input type="text" placeholder="Search by breed..." />
   </div>
 
   <!-- TOOLBAR -->
   <div class="toolbar">
-    <input type="text" placeholder="Tìm kiếm sản phẩm..." />
-    <button class="add-btn" (click)="addProduct()">+ Thêm sản phẩm mới</button>
+    <input type="text" placeholder="Search products..." />
+    <button class="add-btn" (click)="addProduct()">+ Add New Product</button>
   </div>
 
-  <!-- LOADING STATE -->
+  <!-- LOADING -->
   <div *ngIf="isLoading" class="loading-state">
     <div class="spinner"></div>
-    <p>Đang tải danh sách sản phẩm...</p>
+    <p>Loading products...</p>
   </div>
 
   <!-- EMPTY STATE -->
   <div *ngIf="!isLoading && products.length === 0" class="empty-state">
-    <img src="assets/images/empty-cart.png" alt="No products" style="width: 150px; opacity: 0.5;">
-    <h3>Bạn chưa có sản phẩm nào</h3>
-    <p>Hãy bắt đầu bằng cách thêm sản phẩm mới cho cửa hàng của mình.</p>
-    <button class="add-btn" (click)="addProduct()">+ Thêm sản phẩm ngay</button>
+    <img src="assets/images/empty-cart.png" alt="No products" style="width: 160px; opacity: 0.6;">
+    <h3>You have no products yet</h3>
+    <p>Start by adding your first pet to the shop.</p>
+    <button class="add-btn" (click)="addProduct()">+ Add Product Now</button>
   </div>
 
   <!-- TABLE -->
   <table *ngIf="!isLoading && products.length > 0">
     <thead>
-      <tr>
-        <th></th>
-        <th>Sản phẩm</th>
-        <th>Loài</th>
-        <th>Giống</th>
-        <th>Màu lông</th>
-        <th>Giới tính</th>
-        <th>Cân nặng</th>
-        <th>Giá</th>
-        <th>Trạng thái</th>
-        <th>Hành động</th>
-      </tr>
+    <tr>
+      <th></th>
+      <th>Product</th>
+      <th>Species</th>
+      <th>Breed</th>
+      <th>Color</th>
+      <th>Gender</th>
+      <th>Weight</th>
+      <th>Price</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let p of paginatedProducts">
-        <td><input type="checkbox"></td>
+    <tr *ngFor="let p of paginatedProducts">
+      <td><input type="checkbox"></td>
 
-        <td class="product">
-          <img [src]="p.imageUrl || p.images[0]" [alt]="p.name">
-          <div>
-            <div class="name">{{ p.name }}</div>
-            <div class="desc">{{ p.description | slice:0:60 }}...</div>
-          </div>
-        </td>
+      <td class="product">
+        <img [src]="p.imageUrl || p.images?.[0]" [alt]="p.name">
+        <div>
+          <div class="name">{{ p.name }}</div>
+          <div class="desc">{{ p.description | slice:0:60 }}...</div>
+        </div>
+      </td>
 
-        <td>{{ p.species }}</td>
-        <td>{{ p.breed }}</td>
-        <td>{{ p.color || '—' }}</td>
-        <td>{{ p.gender === 'male' ? 'Đực' : 'Cái' }}</td>
-        <td>{{ p.weight | number:'1.1-1' }} kg</td>
-        <td class="price">{{ p.price | number }} ₫</td>
+      <td>{{ p.species }}</td>
+      <td>{{ p.breed }}</td>
+      <td>{{ p.color || '—' }}</td>
+      <td>{{ p.gender === 'male' ? 'Male' : 'Female' }}</td>
+      <td>{{ p.weight | number:'1.1-1' }} kg</td>
+      <td class="price">{{ p.price | number }} ₫</td>
 
-        <td>
+      <td>
           <span class="badge"
                 [class.available]="p.status === 'available'"
                 [class.sold]="p.status === 'sold'"
-                [class.pending]="p.status === 'pending'">
+                [class.reserved]="p.status === 'reserved'">
             {{ getStatusLabel(p.status) }}
           </span>
-        </td>
+      </td>
 
-        <td class="actions">
-          <button class="dots" (click)="toggleMenu(p.id)">⋮</button>
-          <div class="dropdown" *ngIf="openMenu === p.id">
-            <div (click)="openView(p); openMenu = null">Xem chi tiết</div>
-            <div (click)="editProduct(p.id); openMenu = null">Chỉnh sửa</div>
-            <div (click)="openDelete(p); openMenu = null" style="color:#ef4444">Xóa</div>
-          </div>
-        </td>
-      </tr>
+      <td class="actions">
+        <button class="dots" (click)="toggleMenu(p.id)">⋮</button>
+        <div class="dropdown" [class.show]="openMenu === p.id">
+          <div (click)="openView(p); openMenu = null">View Details</div>
+          <div (click)="editProduct(p.id); openMenu = null">Edit</div>
+          <div (click)="openDelete(p); openMenu = null" class="delete-option">Delete</div>
+        </div>
+      </td>
+    </tr>
     </tbody>
   </table>
 
   <!-- PAGINATION -->
   <div class="pagination" *ngIf="!isLoading && products.length > 0">
     <div class="page-size">
-      <span>Hiển thị:</span>
-      <select (change)="changePageSize($any($event.target).value)">
+      <span>Rows per page:</span>
+      <select (change)="changePageSize(+$any($event.target).value)">
         <option value="5">5</option>
         <option value="10" selected>10</option>
         <option value="20">20</option>
       </select>
     </div>
     <div class="page-info">
-      {{ (page-1)*pageSize + 1 }} – {{ Math.min(page*pageSize, total) }} của {{ total }}
+      {{ (page-1)*pageSize + 1 }} – {{ Math.min(page*pageSize, total) }} of {{ total }}
     </div>
     <div class="page-controls">
       <button (click)="prevPage()" [disabled]="page === 1">‹</button>
       <button (click)="nextPage()" [disabled]="page === totalPages">›</button>
-    </div>
-  </div>
-</div>
-
-<!-- VIEW MODAL -->
-<div class="modal" *ngIf="selectedProduct" (click)="closeView()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>{{ selectedProduct.name }}</h3>
-      <button class="close-btn" (click)="closeView()">✕</button>
-    </div>
-
-    <div class="modal-body">
-      <img [src]="selectedProduct.imageUrl || selectedProduct.images[0]"
-           [alt]="selectedProduct.name"
-           style="width:100%; max-height:260px; object-fit:cover; border-radius:8px; margin-bottom:16px;">
-
-      <div class="info-grid">
-        <div class="info-row"><span class="label">Mã chip</span><span>{{ selectedProduct.petCode || '—' }}</span></div>
-        <div class="info-row"><span class="label">Loài</span><span>{{ selectedProduct.species }}</span></div>
-        <div class="info-row"><span class="label">Giống</span><span>{{ selectedProduct.breed }}</span></div>
-        <div class="info-row"><span class="label">Màu lông</span><span>{{ selectedProduct.color || '—' }}</span></div>
-        <div class="info-row"><span class="label">Giới tính</span><span>{{ selectedProduct.gender === 'male' ? 'Đực' : 'Cái' }}</span></div>
-        <div class="info-row"><span class="label">Cân nặng</span><span>{{ selectedProduct.weight }} kg</span></div>
-        <div class="info-row"><span class="label">Tuổi</span><span>{{ selectedProduct.age ? selectedProduct.age + ' tháng' : '—' }}</span></div>
-        <div class="info-row"><span class="label">Giá bán</span><span class="price">{{ selectedProduct.price | number }} ₫</span></div>
-        <div class="info-row"><span class="label">Trạng thái</span>
-          <span class="badge" [class.available]="selectedProduct.status === 'available'" [class.sold]="selectedProduct.status === 'sold'">
-            {{ getStatusLabel(selectedProduct.status) }}
-          </span>
-        </div>
-        <div class="info-row"><span class="label">Tiêm phòng</span><span>{{ selectedProduct.vaccinated ? 'Đã tiêm' : 'Chưa tiêm' }}</span></div>
-        <div class="info-row"><span class="label">Triệt sản</span><span>{{ selectedProduct.neutered ? 'Đã triệt' : 'Chưa triệt' }}</span></div>
-        <div class="info-row"><span class="label">Xác minh chip</span><span>{{ selectedProduct.isVerified ? '✓ Đã xác minh' : '✗ Chưa xác minh' }}</span></div>
-      </div>
-
-      <p style="margin-top:12px; color:#6b7280; font-size:14px;">{{ selectedProduct.description }}</p>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-secondary" (click)="closeView()">Đóng</button>
-      <button class="btn-primary" (click)="editProduct(selectedProduct.id); closeView()">Chỉnh sửa</button>
-    </div>
-  </div>
-</div>
-
-<!-- DELETE CONFIRM MODAL -->
-<div class="modal" *ngIf="deleteProduct" (click)="closeDelete()">
-  <div class="modal-content modal-sm" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>Xác nhận xóa</h3>
-      <button class="close-btn" (click)="closeDelete()">✕</button>
-    </div>
-    <div class="modal-body">
-      <p>Bạn có chắc muốn xóa thú cưng <strong>{{ deleteProduct.name }}</strong> không?</p>
-      <p style="color:#ef4444; font-size:13px; margin-top:8px;">Hành động này không thể hoàn tác.</p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" (click)="closeDelete()">Hủy</button>
-      <button class="btn-danger" (click)="confirmDelete()">Xóa</button>
-    </div>
-  </div>
-</div>
-<!-- SUCCESS MODAL -->
-<div class="modal" *ngIf="showSuccessModal" (click)="showSuccessModal = false">
-  <div class="modal-content modal-sm" (click)="$event.stopPropagation()" style="text-align: center; padding: 30px;">
-    <div style="color: #10b981; font-size: 50px; margin-bottom: 15px;">
-      <i class="check-icon">✓</i>
-    </div>
-    <h3 style="margin-bottom: 10px;">Thành công!</h3>
-    <p>Sản phẩm đã được xóa khỏi hệ thống.</p>
-    <div class="modal-footer" style="justify-content: center; border-top: none; margin-top: 20px;">
-      <button class="btn-primary" (click)="showSuccessModal = false" style="width: 100%;">Đóng</button>
     </div>
   </div>
 </div>

@@ -1,114 +1,141 @@
-<div class="add-product">
+<div class="add-product">  <!-- Giữ class chung với Add Product -->
 
   <!-- HEADER -->
   <div class="header">
     <div class="title">
-      <button class="back" (click)="backToProducts()">
-        ← Quay lại danh sách
-      </button>
-      <h2>Chỉnh sửa thú cưng</h2>
-      <p class="subtitle">Cập nhật thông tin sản phẩm</p>
+      <button class="back-btn" (click)="backToProducts()">← Back to Products</button>
+      <h2>Edit Pet Information</h2>
+      <p class="subtitle">Update your pet's details</p>
     </div>
 
     <div class="actions">
-      <button class="discard" (click)="backToProducts()">Hủy</button>
-      <button class="publish" (click)="updateProduct()">Cập nhật</button>
+      <button class="discard-btn" (click)="backToProducts()">Discard</button>
+      <button class="publish-btn" (click)="updateProduct()">Update Product</button>
     </div>
   </div>
 
   <!-- CONTENT -->
   <div class="layout">
 
-    <!-- LEFT -->
+    <!-- LEFT COLUMN -->
     <div class="left">
-      <div class="card" *ngIf="!auth.isUser()">
-        <h3>Thông tin định danh</h3>
+
+      <!-- Identification -->
+      <div class="card" *ngIf="auth.isSeller()">
+        <h3>Identification</h3>
         <div class="form-group">
-          <label>Mã chip</label>
+          <label>Pet Chip Code</label>
           <input [value]="product.petCode || ''" disabled class="pet-code-input" />
         </div>
       </div>
 
+      <!-- Basic Information -->
       <div class="card">
-        <h3>Thông tin cơ bản</h3>
+        <h3>Basic Information</h3>
 
-        <input placeholder="Tên thú cưng *" [(ngModel)]="product.name" />
+        <div class="form-group">
+          <label>Pet Name <span class="required">*</span></label>
+          <input placeholder="Pet name" [(ngModel)]="product.name" />
+        </div>
 
         <div class="row">
           <div class="form-group">
-            <label>Loài</label>
+            <label>Species</label>
             <select [(ngModel)]="product.species">
-              <option value="Chó">Chó</option>
-              <option value="Mèo">Mèo</option>
-              <option value="Khác">Khác</option>
+              <option value="Dog">Dog</option>
+              <option value="Cat">Cat</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label>Giống</label>
-            <input placeholder="Giống thú cưng" [(ngModel)]="product.breed" />
+            <label>Breed</label>
+            <select [(ngModel)]="product.breed">
+              <option value="">Select breed...</option>
+              <option value="Corgi">Corgi</option>
+              <option value="Poodle">Poodle</option>
+              <option value="Husky">Husky</option>
+              <option value="Golden Retriever">Golden Retriever</option>
+              <option value="Pomeranian">Pomeranian</option>
+              <option value="Alaska">Alaska</option>
+              <option value="Shiba Inu">Shiba Inu</option>
+              <option value="Bulldog">Bulldog</option>
+              <option value="Beagle">Beagle</option>
+              <option value="Labrador">Labrador</option>
+              <option value="German Shepherd">German Shepherd</option>
+              <option value="Chihuahua">Chihuahua</option>
+              <!-- Thêm giống khác nếu cần -->
+            </select>
           </div>
         </div>
 
         <div class="row">
           <div class="form-group">
-            <label>Màu lông</label>
-            <input placeholder="Màu lông" [(ngModel)]="product.color" />
+            <label>Color</label>
+            <input placeholder="e.g. White, Brown..." [(ngModel)]="product.color" />
           </div>
-
           <div class="form-group">
-            <label>Giới tính</label>
+            <label>Gender</label>
             <select [(ngModel)]="product.gender">
-              <option value="male">Đực</option>
-              <option value="female">Cái</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
             </select>
           </div>
         </div>
 
         <div class="row">
           <div class="form-group">
-            <label>Cân nặng (kg)</label>
+            <label>Weight (kg)</label>
             <input type="number" step="0.1" [(ngModel)]="product.weight" />
           </div>
-
           <div class="form-group">
-            <label>Tuổi (tháng)</label>
+            <label>Age (months)</label>
             <input type="number" [(ngModel)]="product.age" />
           </div>
         </div>
 
-        <label>Mô tả</label>
-        <textarea rows="5" [(ngModel)]="product.description" placeholder="Mô tả chi tiết về thú cưng..."></textarea>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea rows="5" [(ngModel)]="product.description"
+                    placeholder="Describe personality, health condition, characteristics..."></textarea>
+        </div>
       </div>
     </div>
 
-    <!-- RIGHT -->
+    <!-- RIGHT COLUMN -->
     <div class="right">
+
+      <!-- Pricing -->
       <div class="card">
-        <h3>Giá bán</h3>
-        <input type="number" placeholder="Giá bán (VNĐ) *" [(ngModel)]="product.price" />
+        <h3>Pricing</h3>
+        <div class="form-group">
+          <label>Price (VND) <span class="required">*</span></label>
+          <input type="number" placeholder="e.g. 2500000" [(ngModel)]="product.price" />
+        </div>
       </div>
 
+      <!-- Images -->
       <div class="card">
-        <h3>Hình ảnh</h3>
+        <h3>Pet Photos</h3>
         <input type="file" multiple accept="image/*" (change)="uploadImages($event)" />
 
         <div class="image-preview">
           <div class="image-card" *ngFor="let img of images; let i = index">
             <img [src]="img" alt="preview">
-            <button class="remove" (click)="removeImage(i)">×</button>
+            <button class="remove-btn" (click)="removeImage(i)">×</button>
           </div>
         </div>
       </div>
 
+      <!-- Health Status -->
       <div class="card">
-        <h3>Trạng thái sức khỏe</h3>
+        <h3>Health Status</h3>
         <label class="toggle">
-          <span>Đã tiêm vaccine</span>
+          <span>Vaccinated</span>
           <input type="checkbox" [(ngModel)]="product.vaccinated" />
         </label>
         <label class="toggle">
-          <span>Đã triệt sản</span>
+          <span>Neutered</span>
           <input type="checkbox" [(ngModel)]="product.neutered" />
         </label>
       </div>
@@ -117,13 +144,15 @@
   </div>
 </div>
 
-<app-loading-modal [visible]="isSaving || isLoadingData"
-  [message]="isSaving ? 'Đang cập nhật thú cưng...' : 'Đang tải thông tin...'" />
+<!-- Modals -->
+<app-loading-modal
+  [visible]="isSaving || isLoadingData"
+  [message]="isSaving ? 'Updating pet...' : 'Loading information...'" />
 
 <app-notification-modal
   *ngIf="modal.show"
   [title]="modal.title"
   [message]="modal.message"
   [type]="modal.type"
-  (closed)="closeModal()"
-/>
+  (closed)="closeModal()">
+</app-notification-modal>
