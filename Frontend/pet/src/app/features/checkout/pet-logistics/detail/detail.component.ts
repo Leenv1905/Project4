@@ -10,7 +10,8 @@ import { NotificationModalComponent } from '../../../../shared/notification-moda
   selector: 'app-detail',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, NotificationModalComponent],
-  templateUrl: './detail.component.html'
+  templateUrl: './detail.component.html',
+  // styleUrls: ['./detail.component.scss']
 })
 export class DetailComponent implements OnInit {
   private router = inject(Router);

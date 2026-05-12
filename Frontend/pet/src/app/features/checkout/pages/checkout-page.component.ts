@@ -67,6 +67,9 @@ export class CheckoutPageComponent implements OnInit {
     note: '',
     paymentMethod: 'COD',
   };
+  trackAddress(index: number, item: UserAddress) {
+    return item.id;
+  }
 
   // Payment Methods
   paymentMethods = signal<PaymentMethod[]>([
