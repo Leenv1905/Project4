@@ -1,0 +1,42 @@
+
+.badge {
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+  margin-left: 8px;
+  font-weight: 700;
+  color: white;
+  background: #3498db;
+}
+.badge.warn    { background: #e67e22; }
+.badge.info    { background: #1abc9c; }
+.badge.success { background: #27ae60; }
+.badge.danger  { background: #e74c3c; }
+.table-wrap {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.empty-state {
+  text-align: center;
+  padding: 60px;
+  color: #bdc3c7;
+}
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+}
+.row-hover:hover { background-color: #fcfcfc; }
+.chip {
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+.chip-blue  { background: #e3f2fd; color: #1565c0; }
+.chip-green { background: #e8f5e9; color: #2e7d32; }
+.chip-red   { background: #fce4ec; color: #c62828; }
+
