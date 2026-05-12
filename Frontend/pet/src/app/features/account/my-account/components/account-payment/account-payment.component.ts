@@ -28,7 +28,7 @@ export class AccountPaymentComponent {
       name: 'Visa',
       number: '•••• •••• •••• 4242',
       expiry: '12/28',
-      icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png',
+      icon: '/assets/payment/visa.png',
       isDefault: true,
     },
     {
@@ -37,7 +37,7 @@ export class AccountPaymentComponent {
       name: 'Mastercard',
       number: '•••• •••• •••• 8888',
       expiry: '09/27',
-      icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mastercard_2019_logo.svg/2560px-Mastercard_2019_logo.svg.png',
+      icon: '/assets/payment/mastercard.png',
       isDefault: false,
     },
     {
@@ -46,7 +46,7 @@ export class AccountPaymentComponent {
       name: 'MoMo Wallet',
       number: '0987 654 321',
       expiry: '',
-      icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/MoMo_Logo.svg/2560px-MoMo_Logo.svg.png',
+      icon: '/assets/payment/momo.png',
       isDefault: false,
     },
   ]);

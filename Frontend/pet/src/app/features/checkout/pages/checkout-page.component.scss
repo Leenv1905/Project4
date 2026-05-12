@@ -1,211 +1,614 @@
+/* ============ CHECKOUT PAGE ============ */
+
 .checkout {
   max-width: 1280px;
-  margin: 40px auto;
-  padding: 0 32px;
+  margin: 40px auto;   /* ← khoảng cách với các component bên trên */
+  padding-bottom: 60px;
 }
 
+/* ============ HEADER ============ */
+.checkout-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 32px;  /* ← cùng padding với .container bên dưới */
+  background: #FFFFFF;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  /* Không full-width nữa — nằm trong max-width 1280px giống container */
+}
+
+.checkout-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .logo-icon { font-size: 28px; }
+  .logo-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #F86D72;
+  }
+}
+
+.header-divider {
+  width: 1px;
+  height: 28px;
+  background: #E3E3E3;
+}
+
+.header-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 20px;
+  color: #F86D72;
+  font-weight: 500;
+}
+
+/* Dashed deco line (Shopee style) */
+.deco-line {
+  height: 6px;
+  background: repeating-linear-gradient(
+      90deg,
+      #F86D72 0px, #F86D72 20px,
+      #6C9EF8 20px, #6C9EF8 40px
+  );
+  opacity: 0.35;
+}
+
+/* ============ LAYOUT ============ */
 .container {
   display: grid;
-  grid-template-columns: 2fr 380px;
-  gap: 40px;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  padding: 24px 32px 0;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
   }
 }
 
-/* Form Section */
+/* ============ FORM SECTION ============ */
 .form-section {
-  background: #FFFFFF;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
-}
-
-.form-section h2,
-.form-section h3 {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 600;
-  color: #272727;
-  margin-bottom: 24px;
-}
-
-.form-section h3 {
-  font-size: 20px;
-  margin-top: 32px;
-}
-
-/* Address Section */
-.address-section {
-  border: 1px solid #E3E3E3;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 32px;
-  background: #F8F9FA;
-}
-
-.address-section-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.address-section-title {
+/* ============ ADDRESS BLOCK (Shopee style) ============ */
+.address-block {
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.address-block-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 24px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
   font-weight: 600;
+  color: #F86D72;
+  border-bottom: 1px solid #F1F5F9;
+
+  .pin-icon { font-size: 18px; }
+}
+
+/* Dòng hiển thị địa chỉ compact */
+.address-display-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+.address-display-info {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.addr-name {
+  font-weight: 700;
+  font-size: 15px;
   color: #272727;
 }
 
-.btn-add-address {
-  background: none;
+.addr-phone {
+  font-weight: 700;
+  font-size: 15px;
+  color: #272727;
+}
+
+.addr-text {
+  font-size: 15px;
+  color: #444;
+}
+
+.default-badge {
   border: 1px solid #F86D72;
   color: #F86D72;
-  padding: 8px 20px;
-  border-radius: 200px;
-  font-size: 14px;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.btn-change {
+  background: none;
+  border: none;
+  color: #1a73e8;
+  font-size: 15px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  white-space: nowrap;
+  padding: 4px 0;
+  flex-shrink: 0;
+
+  &:hover { text-decoration: underline; }
 }
 
-.btn-add-address:hover {
-  background: #F86D72;
-  color: white;
-}
-
-/* Address Cards */
-.address-list {
+/* ============ ADDRESS CHANGE PANEL ============ */
+.address-change-panel {
+  padding: 20px 24px;
+  border-top: 1px solid #F1F5F9;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .address-card {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 16px;
-  border: 2px solid #E3E3E3;
-  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1.5px solid #E3E3E3;
+  border-radius: 10px;
   cursor: pointer;
   background: white;
   transition: all 0.2s ease;
+
+  &:hover { border-color: #F86D72; }
+  &.selected {
+    border-color: #F86D72;
+    background: #FFF6F6;
+  }
+
+  input[type="radio"] {
+    margin-top: 3px;
+    accent-color: #F86D72;
+    flex-shrink: 0;
+  }
 }
 
-.address-card:hover {
-  border-color: #F86D72;
+.address-info { flex: 1; }
+
+.address-name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+
+  .receiver-name { font-weight: 600; color: #272727; }
+  .phone { color: #6C757D; font-size: 14px; }
 }
 
-.address-card.selected {
-  border-color: #F86D72;
-  background: #FFF0F0;
+.address-text { font-size: 14px; color: #555; }
+
+/* New address form inside panel */
+.new-address-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &.has-top-border {
+    padding-top: 16px;
+    border-top: 1px dashed #E3E3E3;
+  }
 }
 
-.address-card input[type="radio"] {
-  margin-top: 4px;
-  accent-color: #F86D72;
-}
-
-.address-info {
-  flex: 1;
-}
-
-.receiver-name {
+.new-addr-label {
   font-weight: 600;
   color: #272727;
+  font-size: 15px;
+  margin: 0;
 }
 
-.phone {
-  color: #6C757D;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
 }
 
-.default-badge {
-  background: #DCFCE7;
-  color: #15803D;
-  font-size: 12px;
-  padding: 2px 10px;
-  border-radius: 9999px;
-}
-
-/* Form Inputs */
-.manual-form input,
-.manual-form textarea,
 .new-address-form input {
   width: 100%;
-  padding: 16px;
+  padding: 13px 16px;
   border: 1px solid #E3E3E3;
-  border-radius: 12px;
-  font-size: 16px;
-  margin-bottom: 16px;
+  border-radius: 10px;
+  font-size: 15px;
   font-family: 'Nunito', sans-serif;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
 
   &:focus {
     outline: none;
     border-color: #F86D72;
-    box-shadow: 0 0 0 3px rgba(248, 109, 114, 0.1);
+    box-shadow: 0 0 0 3px rgba(248,109,114,0.1);
   }
 }
 
-/* Payment Methods */
-.payment-methods label {
+.confirm-address-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.default-checkbox {
   display: flex;
   align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+
+  input[type="checkbox"] { accent-color: #F86D72; }
+}
+
+.new-addr-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  padding: 16px;
-  border: 2px solid #E3E3E3;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.action-btns {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.btn-cancel {
+  background: none;
+  border: 1px solid #E3E3E3;
+  color: #6C757D;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover { border-color: #aaa; color: #333; }
+}
+
+.btn-save-address,
+.btn-confirm-address {
+  background: #F86D72;
+  color: white;
+  border: none;
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) { background: #e05a5f; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.loading-text,
+.no-address-hint {
+  padding: 16px 24px;
+  color: #6C757D;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* ============ NOTE ============ */
+.note-section {
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 20px 24px;
+
+  .note-label {
+    display: block;
+    font-weight: 600;
+    color: #272727;
+    margin-bottom: 12px;
+    font-size: 15px;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid #E3E3E3;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Nunito', sans-serif;
+    resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #F86D72;
+      box-shadow: 0 0 0 3px rgba(248,109,114,0.1);
+    }
+  }
+}
+
+/* ============ PAYMENT ============ */
+.payment-section {
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 20px 24px;
+
+  h3 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #272727;
+    margin: 0 0 16px;
+  }
+}
+
+/* ============ PAYMENT DROPDOWN ============ */
+.pm-dropdown {
+  position: relative;
+}
+
+/* Trigger — hiển thị lựa chọn hiện tại */
+.pm-trigger {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border: 1.5px solid #E3E3E3;
   border-radius: 12px;
   cursor: pointer;
-  font-size: 16px;
-  margin-bottom: 12px;
-  transition: all 0.2s ease;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  user-select: none;
+
+  &:hover { border-color: #F86D72; }
+
+  .pm-dropdown.open & {
+    border-color: #F86D72;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+  }
 }
 
-.payment-methods label:has(input:checked) {
-  border-color: #F86D72;
-  background: #FFF0F0;
+/* Chevron ↓ */
+.pm-chevron {
+  margin-left: auto;
+  font-size: 20px;
+  color: #9CA3AF;
+  line-height: 1;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+
+  &.rotated { transform: rotate(180deg); }
 }
 
-/* Summary */
+/* Dropdown list */
+.pm-dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1.5px solid #F86D72;
+  border-top: none;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  overflow: hidden;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  animation: dropDown 0.18s ease;
+}
+
+@keyframes dropDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Mỗi option trong dropdown */
+.pm-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 18px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-top: 1px solid #F8F9FA;
+
+  &:first-child { border-top: none; }
+  &:hover { background: #FFF6F6; }
+  &.active { background: #FFF0F0; }
+}
+
+/* Logo wrapper — dùng chung trigger + option */
+.pm-logo-wrap {
+  width: 52px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F8F9FA;
+  border-radius: 8px;
+  flex-shrink: 0;
+  overflow: hidden;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.pm-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cod-icon {
+  font-size: 20px;
+  background: #FFF3E0;
+}
+
+/* Info text */
+.pm-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pm-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #272727;
+}
+
+.pm-number {
+  font-size: 13px;
+  color: #6C757D;
+  font-family: 'Courier New', monospace;
+}
+
+.pm-expiry {
+  font-size: 12px;
+  color: #9CA3AF;
+}
+
+.pm-default-badge {
+  border: 1px solid #F86D72;
+  color: #F86D72;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pm-check {
+  width: 22px;
+  height: 22px;
+  background: #F86D72;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+
+/* ============ SUMMARY ============ */
 .summary {
   background: #FFFFFF;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   height: fit-content;
   position: sticky;
-  top: 100px;
+  top: 20px;
+
+  h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #272727;
+    margin: 0 0 20px;
+  }
 }
+
+.order-items { margin-bottom: 8px; }
 
 .order-item {
   display: flex;
-  gap: 16px;
-  margin-bottom: 20px;
-  padding-bottom: 20px;
+  gap: 14px;
+  padding: 14px 0;
   border-bottom: 1px solid #F1F5F9;
+
+  &:last-child { border-bottom: none; }
 }
 
 .item-image {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.item-detail {
+  flex: 1;
+
+  h4 {
+    font-weight: 600;
+    font-size: 15px;
+    color: #272727;
+    margin: 0 0 4px;
+  }
+
+  .item-shop { font-size: 13px; color: #6C757D; margin: 0 0 6px; }
+  .price { font-size: 15px; font-weight: 600; color: #F86D72; margin: 0; }
+}
+
+hr { border: none; border-top: 1px solid #F1F5F9; margin: 12px 0; }
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  margin-bottom: 4px;
+
+  strong { font-size: 20px; color: #F86D72; font-family: 'Nunito', sans-serif; }
 }
 
 .place-order-btn {
   width: 100%;
-  padding: 18px;
+  padding: 16px;
   background: #F86D72;
   color: white;
   border: none;
-  border-radius: 200px;
+  border-radius: 10px;
   font-family: 'Nunito', sans-serif;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 700;
   cursor: pointer;
   margin-top: 16px;
   transition: all 0.3s ease;
-}
 
-.place-order-btn:hover:not(:disabled) {
-  background: #E55A5F;
-  transform: translateY(-3px);
+  &:hover:not(:disabled) {
+    background: #e05a5f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(248,109,114,0.35);
+  }
+
+  &:disabled { opacity: 0.65; cursor: not-allowed; }
 }

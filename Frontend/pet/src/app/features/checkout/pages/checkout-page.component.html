@@ -1,111 +1,211 @@
 <div class="checkout">
+
+  <!-- HEADER -->
+  <div class="checkout-header">
+    <div class="checkout-logo">
+      <span class="logo-icon">🐾</span>
+      <span class="logo-text">Pet Store</span>
+    </div>
+    <div class="header-divider"></div>
+    <span class="header-title">Checkout</span>
+  </div>
+
+  <!-- DECO LINE -->
+  <div class="deco-line"></div>
+
   <div class="container">
 
     <!-- LEFT: FORM -->
     <div class="form-section">
 
-      <h2>Shipping Information</h2>
-
-      <!-- Saved Addresses -->
-      <div class="address-section">
-        <div class="address-section-header">
-          <span class="address-section-title">Delivery Address</span>
-          <button class="btn-add-address" (click)="toggleNewAddressForm()">
-            {{ showNewAddressForm ? '✕ Cancel' : '+ Add New Address' }}
-          </button>
+      <!-- ===== DELIVERY ADDRESS ===== -->
+      <div class="address-block">
+        <div class="address-block-title">
+          <span class="pin-icon">📍</span>
+          Delivery Address
         </div>
 
+        <!-- Loading -->
         <p *ngIf="isLoadingAddresses" class="loading-text">Loading addresses...</p>
 
-        <!-- Saved Addresses List -->
-        <div *ngIf="!isLoadingAddresses && addresses.length > 0" class="address-list">
-          <label
-            *ngFor="let addr of addresses; trackBy: trackAddress"
-            class="address-card"
-            [class.selected]="selectedAddressId === addr.id"
-            (click)="selectAddress(addr)">
-            <input type="radio" name="savedAddress"
-                   [value]="addr.id"
-                   [checked]="selectedAddressId === addr.id"
-                   (change)="selectAddress(addr)" />
-            <div class="address-info">
-              <div class="address-name-row">
-                <span class="receiver-name">{{ addr.receiverName }}</span>
-                <span class="phone">{{ addr.phone }}</span>
-                <span *ngIf="addr.isDefault" class="default-badge">Default</span>
-              </div>
-              <div class="address-text">{{ addr.address }}</div>
+        <!-- Compact display row -->
+        <div *ngIf="!isLoadingAddresses && !showChangeAddress" class="address-display-row">
+          <ng-container *ngIf="selectedAddress; else noAddress">
+            <div class="address-display-info">
+              <span class="addr-name">{{ selectedAddress.receiverName }}</span>
+              <span class="addr-phone">(+84) {{ selectedAddress.phone }}</span>
+              <span class="addr-text">{{ selectedAddress.address }}</span>
+              <span *ngIf="selectedAddress.isDefault" class="default-badge">Default</span>
             </div>
-          </label>
+            <button class="btn-change" (click)="showChangeAddress = true">Change</button>
+          </ng-container>
+
+          <ng-template #noAddress>
+            <p class="no-address-hint">You have no saved addresses. Please add a delivery address.</p>
+            <button class="btn-change" (click)="showChangeAddress = true">Add Address</button>
+          </ng-template>
         </div>
 
-        <p *ngIf="!isLoadingAddresses && addresses.length === 0 && !showNewAddressForm"
-           class="no-address-hint">
-          You don't have any addresses yet. Please add a delivery address.
-        </p>
+        <!-- Change / Add address panel -->
+        <div *ngIf="!isLoadingAddresses && showChangeAddress" class="address-change-panel">
 
-        <!-- New Address Form -->
-        <div *ngIf="showNewAddressForm" class="new-address-form">
-          <h4>New Address</h4>
-          <input placeholder="Receiver's Full Name *" [(ngModel)]="newAddress.receiverName" />
-          <input placeholder="Phone Number *" [(ngModel)]="newAddress.phone" />
-          <input placeholder="Full Delivery Address *" [(ngModel)]="newAddress.address" />
-          <label class="default-checkbox">
-            <input type="checkbox" [(ngModel)]="newAddress.isDefault" />
-            Set as default address
-          </label>
-          <button class="btn-save-address" (click)="saveNewAddress()" [disabled]="isSavingAddress">
-            {{ isSavingAddress ? 'Saving...' : 'Save Address' }}
-          </button>
+          <!-- Saved address list -->
+          <div *ngIf="addresses.length > 0" class="address-list">
+            <label
+              *ngFor="let addr of addresses; trackBy: trackAddress"
+              class="address-card"
+              [class.selected]="selectedAddressId === addr.id"
+              (click)="selectAddress(addr)">
+              <input type="radio" name="savedAddress"
+                     [value]="addr.id"
+                     [checked]="selectedAddressId === addr.id"
+                     (change)="selectAddress(addr)" />
+              <div class="address-info">
+                <div class="address-name-row">
+                  <span class="receiver-name">{{ addr.receiverName }}</span>
+                  <span class="phone">{{ addr.phone }}</span>
+                  <span *ngIf="addr.isDefault" class="default-badge">Default</span>
+                </div>
+                <div class="address-text">{{ addr.address }}</div>
+              </div>
+            </label>
+          </div>
+
+          <!-- Add new address form -->
+          <div class="new-address-form" [class.has-top-border]="addresses.length > 0">
+            <p class="new-addr-label">+ Add new address</p>
+            <div class="form-row">
+              <input placeholder="Receiver's Full Name *" [(ngModel)]="newAddress.receiverName" />
+              <input placeholder="Phone Number *" [(ngModel)]="newAddress.phone" />
+            </div>
+            <input placeholder="Full Delivery Address *" [(ngModel)]="newAddress.address" />
+
+            <!-- Default checkbox + Cancel/Save on same row -->
+            <div class="new-addr-actions">
+              <label class="default-checkbox">
+                <input type="checkbox" [(ngModel)]="newAddress.isDefault" />
+                Set as default address
+              </label>
+              <div class="action-btns">
+                <button class="btn-cancel" (click)="cancelChangeAddress()">Cancel</button>
+                <!-- If new address fields filled → Save; else just Confirm selection -->
+                <button
+                  *ngIf="newAddress.receiverName || newAddress.phone || newAddress.address"
+                  class="btn-save-address"
+                  (click)="saveNewAddress()"
+                  [disabled]="isSavingAddress">
+                  {{ isSavingAddress ? 'Saving...' : 'Save Address' }}
+                </button>
+                <button
+                  *ngIf="!newAddress.receiverName && !newAddress.phone && !newAddress.address"
+                  class="btn-confirm-address"
+                  (click)="confirmAddressSelection()">
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Manual Form -->
-      <div class="manual-form">
-        <input placeholder="Full Name *" [(ngModel)]="form.customerName" required />
-        <input placeholder="Phone Number *" [(ngModel)]="form.phone" required />
-        <input placeholder="Delivery Address *" [(ngModel)]="form.address" required />
-        <textarea placeholder="Note for seller (optional)" [(ngModel)]="form.note" rows="3"></textarea>
+      <!-- ===== NOTE ===== -->
+      <div class="note-section">
+        <label class="note-label">Note for seller</label>
+        <textarea placeholder="Add a note (optional)" [(ngModel)]="form.note" rows="3"></textarea>
       </div>
 
-      <!-- Payment Methods -->
-      <h3>Payment Method</h3>
-      <div class="payment-methods">
-        <label>
-          <input type="radio" name="paymentMethod" value="COD" [(ngModel)]="form.paymentMethod" />
-          Cash on Delivery (COD)
-        </label>
-        <label>
-          <input type="radio" name="paymentMethod" value="VNPAY" [(ngModel)]="form.paymentMethod" />
-          VNPAY / Internet Banking
-        </label>
+      <!-- ===== PAYMENT METHOD ===== -->
+      <div class="payment-section">
+        <h3>Payment Method</h3>
+
+        <div class="pm-dropdown" [class.open]="paymentDropdownOpen">
+
+          <!-- TRIGGER -->
+          <div class="pm-trigger" (click)="paymentDropdownOpen = !paymentDropdownOpen">
+
+            <ng-container *ngIf="selectedPaymentId === 0">
+              <div class="pm-logo-wrap cod-icon">💵</div>
+              <div class="pm-info">
+                <span class="pm-name">Cash on Delivery (COD)</span>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="selectedPaymentId !== 0 && selectedPaymentMethod">
+              <div class="pm-logo-wrap">
+                <img [src]="selectedPaymentMethod.icon" [alt]="selectedPaymentMethod.name" class="pm-logo" />
+              </div>
+              <div class="pm-info">
+                <span class="pm-name">{{ selectedPaymentMethod.name }}</span>
+                <span class="pm-number">{{ selectedPaymentMethod.number }}</span>
+              </div>
+            </ng-container>
+
+            <span class="pm-chevron" [class.rotated]="paymentDropdownOpen">&#8964;</span>
+          </div>
+
+          <!-- DROPDOWN LIST -->
+          <div class="pm-dropdown-list" *ngIf="paymentDropdownOpen">
+            <div
+              *ngFor="let method of paymentMethods()"
+              class="pm-option"
+              [class.active]="selectedPaymentId === method.id"
+              (click)="selectPayment(method)">
+              <div class="pm-logo-wrap">
+                <img [src]="method.icon" [alt]="method.name" class="pm-logo" />
+              </div>
+              <div class="pm-info">
+                <span class="pm-name">{{ method.name }}</span>
+                <span class="pm-number">{{ method.number }}</span>
+                <span *ngIf="method.expiry" class="pm-expiry">Expires {{ method.expiry }}</span>
+              </div>
+              <span *ngIf="method.isDefault" class="pm-default-badge">Default</span>
+              <span *ngIf="selectedPaymentId === method.id" class="pm-check">✓</span>
+            </div>
+
+            <div
+              class="pm-option"
+              [class.active]="selectedPaymentId === 0"
+              (click)="selectPayment(null)">
+              <div class="pm-logo-wrap cod-icon">💵</div>
+              <div class="pm-info">
+                <span class="pm-name">Cash on Delivery</span>
+                <span class="pm-number">COD — Pay when you receive</span>
+              </div>
+              <span *ngIf="selectedPaymentId === 0" class="pm-check">✓</span>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
 
     <!-- RIGHT: ORDER SUMMARY -->
     <div class="summary">
-      <h2>Your Order ({{ selectedItems.length }} items)</h2>
+      <h2>Your Order ({{ selectedItems.length }} item{{ selectedItems.length !== 1 ? 's' : '' }})</h2>
 
       <div class="order-items">
         <div *ngFor="let item of selectedItems" class="order-item">
-          <img [src]="item.image" [alt]="item.name" class="item-image">
+          <img [src]="item.image || 'assets/images/placeholder-pet.png'"
+               [alt]="item.name"
+               class="item-image"
+               (error)="onImageError($event)">
           <div class="item-detail">
             <h4>{{ item.name }}</h4>
-            <p>{{ item.shopName }}</p>
-            <p class="price">{{ item.price | number }} ₫</p>
+            <p class="item-shop">{{ item.shopName }}</p>
+            <p class="price">{{ item.price | number:'1.0-0' }} ₫</p>
           </div>
         </div>
       </div>
 
       <hr />
 
-      <div class="total">
-        <span>Total Payment</span>
-        <strong>{{ total() | number }} ₫</strong>
+      <div class="total-row">
+        <span>Total</span>
+        <strong>{{ total() | number:'1.0-0' }} ₫</strong>
       </div>
 
       <button class="place-order-btn" (click)="placeOrder()" [disabled]="isSubmitting">
-        {{ isSubmitting ? 'Processing...' : 'Place Order & Pay' }}
+        {{ isSubmitting ? 'Processing...' : 'Place Order' }}
       </button>
     </div>
 
