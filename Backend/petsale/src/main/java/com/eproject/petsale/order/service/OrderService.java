@@ -9,6 +9,8 @@ import com.eproject.petsale.common.mapper.OrderEventMapper;
 import com.eproject.petsale.order.dto.CheckoutRequest;
 import com.eproject.petsale.order.dto.OrderItemResponse;
 import com.eproject.petsale.order.dto.OrderResponse;
+import com.eproject.petsale.order.dto.ShopReconciliationDTO;
+import com.eproject.petsale.pet.entity.Pet;
 import com.eproject.petsale.order.entity.Order;
 import com.eproject.petsale.order.entity.OrderEvent;
 import com.eproject.petsale.order.entity.OrderEventRepository;
@@ -111,8 +113,8 @@ public class OrderService {
             order.setNote(request.getNote());
             order.setPaymentStatus("PENDING");
             order.setPaymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "COD");
-            order.setFulfillmentStatus("WAITING_VERIFY");
-            order.setStatus("CREATED");
+            order.setFulfillmentStatus("PROCESSING");
+            order.setStatus("CONFIRMED");
             order.setCreatedAt(LocalDateTime.now());
             order.setUpdatedAt(LocalDateTime.now());
 
@@ -353,6 +355,50 @@ public class OrderService {
 
         return order.getStatus();
     }
+    @Transactional(readOnly = true)
+    public ShopReconciliationDTO getShopReconciliation(Long shopId) {
+        List<Pet> allPets = petRepository.findByUserId(shopId);
+        long soldCount = allPets.stream().filter(p -> "SOLD".equals(p.getStatus())).count();
+        long unsoldCount = allPets.size() - soldCount;
+        BigDecimal totalListedAmount = allPets.stream()
+                .map(p -> p.getPrice() != null ? p.getPrice() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<Order> deliveredOrders = orderRepository.findByShopIdAndFulfillmentStatus(shopId, "DELIVERED");
+        BigDecimal grossRevenue = deliveredOrders.stream()
+                .map(o -> o.getTotalAmount() != null ? o.getTotalAmount() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal platformFee = grossRevenue.multiply(BigDecimal.valueOf(0.10)).setScale(0, java.math.RoundingMode.HALF_UP);
+        BigDecimal netRevenue = grossRevenue.subtract(platformFee);
+
+        List<ShopReconciliationDTO.DeliveredOrderItem> items = deliveredOrders.stream()
+                .map(o -> {
+                    BigDecimal amount = o.getTotalAmount() != null ? o.getTotalAmount() : BigDecimal.ZERO;
+                    BigDecimal fee = amount.multiply(BigDecimal.valueOf(0.10)).setScale(0, java.math.RoundingMode.HALF_UP);
+                    return ShopReconciliationDTO.DeliveredOrderItem.builder()
+                            .orderId(o.getId())
+                            .orderCode(o.getOrderCode())
+                            .customerName(o.getCustomerName())
+                            .deliveredAt(o.getUpdatedAt())
+                            .orderAmount(amount)
+                            .fee(fee)
+                            .netAmount(amount.subtract(fee))
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return ShopReconciliationDTO.builder()
+                .totalListedAmount(totalListedAmount)
+                .totalPets(allPets.size())
+                .soldCount(soldCount)
+                .unsoldCount(unsoldCount)
+                .grossRevenue(grossRevenue)
+                .platformFee(platformFee)
+                .netRevenue(netRevenue)
+                .deliveredOrders(items)
+                .build();
+    }
+
     private String generateOrderCode() {
         return "ORD-" + java.util.UUID.randomUUID().toString().substring(0, 8);
     }

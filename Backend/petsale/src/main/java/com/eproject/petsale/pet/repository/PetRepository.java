@@ -7,6 +7,7 @@ import java.util.List;
 @Repository
 public  interface PetRepository extends JpaRepository<Pet,Long> {
     List<Pet> findByUserEmail(String email);
+    List<Pet> findByUserId(Long userId);
     boolean existsByPetCode(String petCode);
     List<Pet> findByIsVerifiedTrueOrderByCreatedAtDesc();
     List<Pet> findByIsVerifiedTrueAndStatusOrderByCreatedAtDesc(String status);

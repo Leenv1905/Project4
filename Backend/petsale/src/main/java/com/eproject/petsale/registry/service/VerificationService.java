@@ -1,6 +1,8 @@
 package com.eproject.petsale.registry.service;
 
 import com.eproject.petsale.common.service.R2StorageService;
+import com.eproject.petsale.notifiEmail.dto.EmailNotificationRequest;
+import com.eproject.petsale.notifiEmail.service.MailService;
 import com.eproject.petsale.order.entity.Order;
 import com.eproject.petsale.order.repository.OrderRepository;
 import com.eproject.petsale.pet.entity.Pet;
@@ -37,18 +39,29 @@ public class VerificationService {
     private final R2StorageService r2StorageService;
     private final OrderRepository orderRepository;
     private final RegistryClientService registryClientService;
+    private final MailService mailService;
 
     @Transactional
     public void assignTask(Long petId, Long operatorId) {
-        // Kiểm tra xem thú cưng này đã có nhiệm vụ nào đang xử lý chưa
         if (taskRepository.existsByPetIdAndStatusIn(petId, List.of("PENDING", "SUBMITTED"))) {
             throw new RuntimeException("Thú cưng này đã được giao việc hoặc đang chờ duyệt, không thể giao thêm.");
         }
 
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new RuntimeException("Pet not found"));
-        User operator = userRepository.findById(operatorId)
-                .orElseThrow(() -> new RuntimeException("Operator not found"));
+
+        User operator;
+        if (operatorId != null) {
+            operator = userRepository.findById(operatorId)
+                    .orElseThrow(() -> new RuntimeException("Operator not found"));
+        } else {
+            List<User> operators = userRepository.findByRoles_Name("OPERATOR");
+            if (operators.isEmpty()) throw new RuntimeException("Không có operator nào trong hệ thống.");
+            operator = operators.stream()
+                    .min(Comparator.comparingLong(op ->
+                            taskRepository.countByOperatorIdAndStatusIn(op.getId(), List.of("PENDING", "SUBMITTED"))))
+                    .orElse(operators.get(0));
+        }
 
         VerificationTask task = new VerificationTask();
         task.setPet(pet);
@@ -56,6 +69,26 @@ public class VerificationService {
         task.setStatus("PENDING");
         task.setAssignedAt(LocalDateTime.now());
         taskRepository.save(task);
+
+        sendTaskAssignedEmail(operator, pet);
+    }
+
+    private void sendTaskAssignedEmail(User operator, Pet pet) {
+        EmailNotificationRequest email = new EmailNotificationRequest();
+        email.setToEmail(operator.getEmail());
+        email.setUsername(operator.getName());
+        email.setMessage(String.format(
+                "Bạn vừa được giao nhiệm vụ xác minh thú cưng mới.\n\n" +
+                "Thông tin thú cưng:\n" +
+                "- Tên: %s\n" +
+                "- Mã thú cưng: %s\n" +
+                "- Giống: %s\n\n" +
+                "Vui lòng đăng nhập hệ thống GuPet để xử lý nhiệm vụ.",
+                pet.getName(),
+                pet.getPetCode() != null ? pet.getPetCode() : "Chưa có mã",
+                pet.getBreed() != null ? pet.getBreed() : "Không rõ"
+        ));
+        mailService.sendNotificationEmail(email);
     }
 
     public List<VerificationTaskResponse> getMyTasks() {
@@ -85,6 +118,8 @@ public class VerificationService {
         task.setStatus("PENDING");
         task.setAssignedAt(LocalDateTime.now());
         taskRepository.save(task);
+
+        sendTaskAssignedEmail(assigned, pet);
     }
 
     public String uploadChipImage(Long taskId, MultipartFile file) {
@@ -138,44 +173,10 @@ public class VerificationService {
 
         if (chipMatches) {
             task.setStatus("APPROVED");
-            pet.setIsVerified(true);
-            pet.setTrustScore(95);
-            pet.setStatus("AVAILABLE");
-            petRepository.save(pet);
-
-            // Chỉ CONFIRMED khi TẤT CẢ pet trong đơn đã được xác minh
-            List<Order> orders = orderRepository.findByOrderItems_Pet_Id(pet.getId());
-            for (Order order : orders) {
-                if ("CREATED".equals(order.getStatus())) {
-                    boolean allVerified = order.getOrderItems().stream()
-                            .filter(item -> item.getPet() != null)
-                            .allMatch(item -> {
-                                // Pet vừa verify (cùng id) → coi như đã verified dù JPA cache chưa flush
-                                if (item.getPet().getId().equals(pet.getId())) return true;
-                                return Boolean.TRUE.equals(item.getPet().getIsVerified());
-                            });
-
-                    if (allVerified) {
-                        order.setStatus("CONFIRMED");
-                        order.setFulfillmentStatus("VERIFIED");
-                        order.setUpdatedAt(LocalDateTime.now());
-                        orderRepository.save(order);
-                    }
-                    // Nếu còn pet khác chưa verify → order giữ nguyên CREATED, chờ xác minh tiếp
-                }
-            }
+            updateOrdersOnVerification(pet, true);
         } else {
             task.setStatus("REJECTED");
-            // Bất kỳ pet nào bị từ chối → huỷ toàn bộ đơn ngay lập tức
-            List<Order> orders = orderRepository.findByOrderItems_Pet_Id(pet.getId());
-            for (Order order : orders) {
-                if ("CREATED".equals(order.getStatus())) {
-                    order.setStatus("CANCELLED");
-                    order.setFulfillmentStatus("FAILED");
-                    order.setUpdatedAt(LocalDateTime.now());
-                    orderRepository.save(order);
-                }
-            }
+            updateOrdersOnVerification(pet, false);
         }
 
         taskRepository.save(task);
@@ -191,49 +192,33 @@ public class VerificationService {
         task.setCompletedAt(LocalDateTime.now());
         taskRepository.save(task);
 
-        List<Order> orders = orderRepository.findByOrderItems_Pet_Id(task.getPet().getId());
-        for (Order order : orders) {
-            if ("CREATED".equals(order.getStatus())) {
-                order.setStatus("CANCELLED");
-                order.setFulfillmentStatus("FAILED");
-                order.setUpdatedAt(LocalDateTime.now());
-                orderRepository.save(order);
-            }
-        }
+        updateOrdersOnVerification(task.getPet(), false);
     }
 
     @Transactional
     public void approveVerification(Long taskId, String feedback) {
         VerificationTask task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
-        
+
         task.setStatus("APPROVED");
         task.setAdminFeedback(feedback);
         taskRepository.save(task);
 
-        Pet pet = task.getPet();
-        pet.setIsVerified(true);
-        pet.setTrustScore(95);
-        pet.setStatus("AVAILABLE");
-        petRepository.save(pet);
+        updateOrdersOnVerification(task.getPet(), true);
+    }
 
-        // Kiểm tra nếu tất cả pet trong đơn đã xác minh → cập nhật order
+    private void updateOrdersOnVerification(Pet pet, boolean approved) {
         List<Order> orders = orderRepository.findByOrderItems_Pet_Id(pet.getId());
         for (Order order : orders) {
-            if ("CREATED".equals(order.getStatus())) {
-                boolean allVerified = order.getOrderItems().stream()
-                        .filter(item -> item.getPet() != null)
-                        .allMatch(item -> {
-                            if (item.getPet().getId().equals(pet.getId())) return true;
-                            return Boolean.TRUE.equals(item.getPet().getIsVerified());
-                        });
-
-                if (allVerified) {
-                    order.setStatus("CONFIRMED");
+            if ("CONFIRMED".equals(order.getStatus())) {
+                if (approved) {
                     order.setFulfillmentStatus("VERIFIED");
-                    order.setUpdatedAt(LocalDateTime.now());
-                    orderRepository.save(order);
+                } else {
+                    order.setStatus("CANCELLED");
+                    order.setFulfillmentStatus("FAILED");
                 }
+                order.setUpdatedAt(LocalDateTime.now());
+                orderRepository.save(order);
             }
         }
     }
@@ -249,7 +234,7 @@ public class VerificationService {
     }
 
     public List<OrderVerificationResponse> getUnassignedPetsWithOrderContext() {
-        List<Order> waitingOrders = orderRepository.findByStatusAndFulfillmentStatus("CREATED", "WAITING_VERIFY");
+        List<Order> waitingOrders = orderRepository.findByStatusAndFulfillmentStatus("CONFIRMED", "PROCESSING");
 
         return waitingOrders.stream()
                 .map(order -> {
@@ -282,6 +267,37 @@ public class VerificationService {
                 .stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    @Transactional
+    public void completeDelivery(Long taskId, MultipartFile photo) {
+        VerificationTask task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (!"APPROVED".equals(task.getStatus())) {
+            throw new RuntimeException("Chỉ được xác nhận giao hàng sau khi xác minh thành công.");
+        }
+
+        try {
+            R2StorageService.PetImageUploadResult result =
+                    r2StorageService.uploadToFolder(photo, "delivery/" + taskId);
+            task.setDeliveryImageUrl(result.imageUrl);
+        } catch (IOException e) {
+            throw new RuntimeException("Tải ảnh xác nhận thất bại", e);
+        }
+
+        task.setStatus("DELIVERED");
+        task.setCompletedAt(LocalDateTime.now());
+        taskRepository.save(task);
+
+        List<Order> orders = orderRepository.findByOrderItems_Pet_Id(task.getPet().getId());
+        for (Order order : orders) {
+            if ("CONFIRMED".equals(order.getStatus())) {
+                order.setFulfillmentStatus("DELIVERED");
+                order.setUpdatedAt(LocalDateTime.now());
+                orderRepository.save(order);
+            }
+        }
+    }
+
     private VerificationTaskResponse mapToResponse(VerificationTask task) {
         return VerificationTaskResponse.builder()
                 .id(task.getId())
@@ -293,6 +309,7 @@ public class VerificationService {
                 .locationGps(task.getLocationGps())
                 .healthNote(task.getHealthNote())
                 .adminFeedback(task.getAdminFeedback())
+                .deliveryImageUrl(task.getDeliveryImageUrl())
                 .pet(VerificationTaskResponse.PetInfo.builder()
                         .id(task.getPet().getId())
                         .name(task.getPet().getName())

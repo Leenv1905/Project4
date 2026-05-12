@@ -1,6 +1,7 @@
 package com.eproject.petsale.order.controller;
 
 import com.eproject.petsale.order.dto.OrderResponse;
+import com.eproject.petsale.order.dto.ShopReconciliationDTO;
 import com.eproject.petsale.order.service.OrderService;
 import com.eproject.petsale.user.entity.User;
 import com.eproject.petsale.user.repository.UserRepository;
@@ -26,6 +27,14 @@ public class ShopOrderController {
         User shop = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Shop not found"));
         return ResponseEntity.ok(orderService.getShopOrders(shop.getId()));
+    }
+
+    @GetMapping("/reconciliation")
+    public ResponseEntity<ShopReconciliationDTO> getReconciliation(Authentication authentication) {
+        String email = authentication.getName();
+        User shop = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Shop not found"));
+        return ResponseEntity.ok(orderService.getShopReconciliation(shop.getId()));
     }
 
     @PutMapping("/{id}/status")

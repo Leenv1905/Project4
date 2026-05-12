@@ -107,4 +107,10 @@ export class VerificationService {
   approveVerification(taskId: number, feedback: string): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${taskId}/approve`, { feedback }, { withCredentials: true });
   }
+
+  completeDelivery(taskId: number, photo: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('photo', photo);
+    return this.http.post<any>(`${this.apiUrl}/${taskId}/complete-delivery`, formData, { withCredentials: true });
+  }
 }

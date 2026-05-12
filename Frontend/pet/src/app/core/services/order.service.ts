@@ -127,6 +127,10 @@ export class OrderService {
     this.save();
   }
 
+  getShopReconciliation(): Observable<any> {
+    return this.http.get<any>(`${environment.apiBaseUrl}/api/v1/shop/orders/reconciliation`, { withCredentials: true });
+  }
+
   clear() {
     this._orders.set([]);
     localStorage.removeItem('orders');

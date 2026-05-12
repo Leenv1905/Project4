@@ -111,16 +111,88 @@
               <span class="status-badge" [ngClass]="getStatusClass(task.status)">
                 {{ getStatusLabel(task.status) }}
               </span>
-          </td>
-          <td class="text-right">
-            <button class="btn-action" (click)="goToDetail(task)">
-              {{ task.status === 'PENDING' ? 'Verify Now' : 'View Detail' }}
-            </button>
-          </td>
-        </tr>
+            </td>
+            <td class="p-3 text-right space-x-2">
+              <button
+                *ngIf="task.status === 'PENDING'"
+                class="bg-blue-700 text-white px-3 py-1.5 rounded text-sm"
+                (click)="goToDetail(task)">
+                Xác minh
+              </button>
+              <button
+                *ngIf="task.status !== 'PENDING'"
+                class="bg-gray-200 text-gray-600 px-3 py-1.5 rounded text-sm"
+                (click)="goToDetail(task)">
+                Chi tiết
+              </button>
+              <button
+                class="px-3 py-1.5 rounded text-sm font-medium"
+                [class.bg-green-600]="task.status === 'APPROVED'"
+                [class.text-white]="task.status === 'APPROVED'"
+                [class.bg-gray-100]="task.status !== 'APPROVED'"
+                [class.text-gray-400]="task.status !== 'APPROVED'"
+                [disabled]="task.status !== 'APPROVED'"
+                (click)="task.status === 'APPROVED' && openDeliveryModal(task)">
+                🚚 Giao hàng
+              </button>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
 
   </main>
+</div>
+
+<!-- DELIVERY CONFIRMATION MODAL -->
+<div *ngIf="deliveryModalTask" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-bold">Xác nhận giao hàng</h3>
+      <button class="text-gray-400 hover:text-gray-600 text-xl" (click)="closeDeliveryModal()">✕</button>
+    </div>
+
+    <p class="text-sm text-gray-500 mb-1">
+      Thú cưng: <strong>{{ deliveryModalTask.pet?.name }}</strong>
+      ({{ deliveryModalTask.pet?.petCode }})
+    </p>
+    <p class="text-sm text-gray-500 mb-4">
+      Chủ: <strong>{{ deliveryModalTask.pet?.ownerName }}</strong>
+    </p>
+
+    <label class="block text-sm font-medium text-gray-700 mb-2">
+      Ảnh xác nhận người nhận <span class="text-red-500">*</span>
+    </label>
+
+    <label class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-green-500 p-4 mb-3"
+           [class.border-green-500]="deliveryPhotoPreview">
+      <input type="file" accept="image/*" class="hidden" (change)="onPhotoSelected($event)">
+      <ng-container *ngIf="!deliveryPhotoPreview">
+        <span class="text-3xl mb-1">📷</span>
+        <span class="text-sm text-gray-400">Nhấn để chọn ảnh</span>
+      </ng-container>
+      <img *ngIf="deliveryPhotoPreview" [src]="deliveryPhotoPreview"
+           class="max-h-48 rounded object-contain" alt="preview">
+    </label>
+
+    <p *ngIf="deliveryError" class="text-red-500 text-sm mb-3">{{ deliveryError }}</p>
+
+    <div class="flex justify-end gap-3 mt-4">
+      <button class="px-4 py-2 rounded bg-gray-100 text-gray-600 text-sm" (click)="closeDeliveryModal()">
+        Huỷ
+      </button>
+      <button
+        class="px-4 py-2 rounded text-sm font-medium"
+        [class.bg-green-600]="deliveryPhoto && !isSubmittingDelivery"
+        [class.text-white]="deliveryPhoto && !isSubmittingDelivery"
+        [class.bg-gray-200]="!deliveryPhoto || isSubmittingDelivery"
+        [class.text-gray-400]="!deliveryPhoto || isSubmittingDelivery"
+        [disabled]="!deliveryPhoto || isSubmittingDelivery"
+        (click)="submitDelivery()">
+        {{ isSubmittingDelivery ? 'Đang gửi...' : '✅ Xác nhận đã giao' }}
+      </button>
+    </div>
+
+  </div>
 </div>

@@ -29,6 +29,7 @@ export class OrderDetailComponent {
     this.route.params.subscribe(params => {
       this.orderId.set(Number(params['id']));
     });
+    this.orderService.loadMyOrders().subscribe();
   }
 
   order = computed(() => {
@@ -70,26 +71,25 @@ export class OrderDetailComponent {
     }
   }
 
-  // Bước: 1=Chờ xác minh, 2=Đã xác minh (CONFIRMED+VERIFIED), 3=Đang giao (SHIPPING), 4=Hoàn tất
+  // Bước: 1=Chờ xác minh (CONFIRMED+PROCESSING), 2=Xác minh thành công, 3=Đang giao, 4=Hoàn tất
   getTimelineStep(order: { status: string; fulfillmentStatus?: string }): number {
     const s = (order.status || '').toLowerCase();
     const f = (order.fulfillmentStatus || '').toLowerCase();
 
-    if (['delivery_completed', 'customer_confirmed', 'completed'].includes(s)) return 4;
-    if (['delivery_started'].includes(s) || f === 'shipping') return 3;
-    if (['confirmed', 'shop_confirmed', 'warehouse_received',
-         'inspection_passed', 'delivery_failed'].includes(s) || f === 'verified') return 2;
-    // CREATED + waiting_verify = step 1 (default stop)
+    if (['delivery_completed', 'customer_confirmed', 'completed'].includes(s) || f === 'delivered') return 4;
+    // verified → bỏ qua dừng ở "xác minh thành công", nhảy thẳng sang đang giao hàng
+    if (f === 'verified') return 3;
     return 1;
   }
 
-  isCancelled(order: { status: string }): boolean {
+  isCancelled(order: { status: string; fulfillmentStatus?: string }): boolean {
     const s = (order.status || '').toLowerCase();
-    return ['cancelled', 'inspection_failed'].includes(s);
+    const f = (order.fulfillmentStatus || '').toLowerCase();
+    return s === 'cancelled' || f === 'failed';
   }
-  isVerificationFailed(order: { status: string }): boolean {
-    const s = (order.status || '').toLowerCase();
-    return ['inspection_failed'].includes(s);
+
+  isVerificationFailed(order: { status: string; fulfillmentStatus?: string }): boolean {
+    return (order.fulfillmentStatus || '').toLowerCase() === 'failed';
   }
 }
 

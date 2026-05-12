@@ -127,3 +127,36 @@ td {
   background: #FEF3C7;
   color: #D97706;
 }
+
+.stat-card.info .value { color: #3B82F6; }
+.stat-card.pending .value { color: #D97706; }
+.stat-card.matched .value { color: #22C55E; }
+
+.stat-card .sub {
+  display: block;
+  font-size: 13px;
+  color: #9CA3AF;
+  margin-top: 4px;
+}
+
+.amount.negative { color: #EF4444; }
+.amount.positive { color: #22C55E; }
+
+.refresh-btn {
+  padding: 8px 18px;
+  border: 1px solid #E3E3E3;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  &:hover { background: #F8F9FA; }
+}
+
+.loading-state, .error-state, .empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #9CA3AF;
+  font-size: 15px;
+}
+
+.error-state { color: #EF4444; }

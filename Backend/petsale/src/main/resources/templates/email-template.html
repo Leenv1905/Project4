@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        .container { font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; }
+        .header { color: #007bff; font-size: 20px; font-weight: bold; }
+        .footer { margin-top: 20px; font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">Thông Báo Hệ Thống</div>
+    <p>Xin chào <span th:text="${username}">User</span>,</p>
+    <p th:text="${content}">Nội dung thông báo ở đây...</p>
+    <p>Đây là email tự động, vui lòng không phản hồi.</p>
+    <div class="footer">
+        &copy; 2024 System XYZ. All rights reserved.
+    </div>
+</div>
+</body>
+</html>

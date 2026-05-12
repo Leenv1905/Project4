@@ -184,8 +184,10 @@ export class AuthService {
       return;
     }
 
-    if (this.canAccessAdmin()) {
+    if (this.isAdmin()) {
       this.router.navigate(['/admin']);
+    } else if (this.isOperator()) {
+      this.router.navigate(['/operator/tasks/verify']);
     } else {
       this.router.navigate(['/']);
     }

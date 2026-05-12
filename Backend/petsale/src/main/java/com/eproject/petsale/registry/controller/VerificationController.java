@@ -50,6 +50,15 @@ public class VerificationController {
         return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Verification complete", result));
     }
 
+    @PostMapping(value = "/{taskId}/complete-delivery", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('OPERATOR')")
+    public ResponseEntity<ApiSuccessResponse<String>> completeDelivery(
+            @PathVariable Long taskId,
+            @RequestParam("photo") MultipartFile photo) {
+        verificationService.completeDelivery(taskId, photo);
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Giao hàng thành công", "SUCCESS"));
+    }
+
     @PostMapping("/{taskId}/cancel-order")
     @PreAuthorize("hasRole('OPERATOR')")
     public ResponseEntity<ApiSuccessResponse<String>> cancelOrder(@PathVariable Long taskId) {

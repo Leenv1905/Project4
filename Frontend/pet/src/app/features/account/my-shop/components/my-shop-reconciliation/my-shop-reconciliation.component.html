@@ -1,65 +1,84 @@
 <div class="reconciliation-page">
 
   <div class="header">
-    <h2>Reconciliation Report</h2>
-    <div class="filter">
-      <select>
-        <option value="this-month">This Month (April 2026)</option>
-        <option value="last-7-days">Last 7 Days</option>
-        <option value="last-30-days">Last 30 Days</option>
-      </select>
-    </div>
+    <h2>Báo cáo doanh thu & đối soát</h2>
+    <button class="refresh-btn" (click)="load()">↻ Làm mới</button>
   </div>
 
-  <!-- Overview Stats -->
-  <div class="stats-grid">
-    <div class="stat-card total">
-      <span class="label">Total Order Revenue</span>
-      <span class="value">{{ stats().totalOrder | number }} ₫</span>
-    </div>
-    <div class="stat-card received">
-      <span class="label">Total Received (Bills)</span>
-      <span class="value">{{ stats().totalReceived | number }} ₫</span>
-    </div>
-    <div class="stat-card diff" [class.positive]="stats().difference === 0" [class.negative]="stats().difference > 0">
-      <span class="label">Difference (Not Received)</span>
-      <span class="value">{{ stats().difference | number }} ₫</span>
-    </div>
-    <div class="stat-card matched">
-      <span class="label">Successfully Reconciled</span>
-      <span class="value">{{ stats().matchedCount }} / {{ stats().totalItems }}</span>
-    </div>
-  </div>
+  <!-- Loading -->
+  <div *ngIf="isLoading()" class="loading-state">Đang tải dữ liệu...</div>
 
-  <!-- Reconciliation Table -->
-  <div class="table-container">
-    <table>
-      <thead>
-      <tr>
-        <th>Order ID</th>
-        <th>Customer</th>
-        <th>Date</th>
-        <th>Order Amount</th>
-        <th>Actual Received</th>
-        <th>Status</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let item of reconciliationData()">
-        <td><strong>#{{ item.orderId }}</strong></td>
-        <td>{{ item.customerName }}</td>
-        <td>{{ item.date }}</td>
-        <td class="amount">{{ item.orderAmount | number }} ₫</td>
-        <td class="amount">{{ item.billAmount | number }} ₫</td>
-        <td>
-            <span class="status-badge"
-                  [class.received]="item.status === 'received'"
-                  [class.pending]="item.status === 'pending'">
-              {{ item.status === 'received' ? 'Received' : 'Not Received' }}
-            </span>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+  <!-- Error -->
+  <div *ngIf="error()" class="error-state">{{ error() }}</div>
+
+  <ng-container *ngIf="!isLoading() && !error() && data() as d">
+
+    <!-- Thống kê pet đăng bán -->
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <span class="label">Tổng giá trị niêm yết</span>
+        <span class="value">{{ d.totalListedAmount | number }} ₫</span>
+        <span class="sub">{{ d.totalPets }} thú cưng đăng bán</span>
+      </div>
+      <div class="stat-card info">
+        <span class="label">Đã bán</span>
+        <span class="value">{{ d.soldCount }}</span>
+        <span class="sub">/ {{ d.totalPets }} thú cưng</span>
+      </div>
+      <div class="stat-card pending">
+        <span class="label">Chưa bán</span>
+        <span class="value">{{ d.unsoldCount }}</span>
+        <span class="sub">đang hiển thị</span>
+      </div>
+    </div>
+
+    <!-- Thống kê doanh thu -->
+    <div class="stats-grid" style="margin-top: 16px;">
+      <div class="stat-card received">
+        <span class="label">Doanh thu giao thành công</span>
+        <span class="value">{{ d.grossRevenue | number }} ₫</span>
+      </div>
+      <div class="stat-card diff negative">
+        <span class="label">Phí nền tảng (10%)</span>
+        <span class="value">- {{ d.platformFee | number }} ₫</span>
+      </div>
+      <div class="stat-card matched">
+        <span class="label">Thực nhận (sau phí)</span>
+        <span class="value">{{ d.netRevenue | number }} ₫</span>
+      </div>
+    </div>
+
+    <!-- Bảng đơn hàng đã giao -->
+    <div class="table-container" style="margin-top: 24px;">
+      <h3 style="margin-bottom: 12px; font-weight: 600;">Đơn hàng đã giao thành công</h3>
+
+      <div *ngIf="d.deliveredOrders.length === 0" class="empty-state">
+        Chưa có đơn hàng nào được giao thành công.
+      </div>
+
+      <table *ngIf="d.deliveredOrders.length > 0">
+        <thead>
+          <tr>
+            <th>Mã đơn</th>
+            <th>Khách hàng</th>
+            <th>Ngày giao</th>
+            <th>Giá trị đơn</th>
+            <th>Phí 10%</th>
+            <th>Thực nhận</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of d.deliveredOrders">
+            <td><strong>{{ item.orderCode }}</strong></td>
+            <td>{{ item.customerName }}</td>
+            <td>{{ item.deliveredAt | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="amount">{{ item.orderAmount | number }} ₫</td>
+            <td class="amount negative">- {{ item.fee | number }} ₫</td>
+            <td class="amount positive">{{ item.netAmount | number }} ₫</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </ng-container>
 </div>

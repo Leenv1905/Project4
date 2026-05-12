@@ -137,6 +137,11 @@ export class AddProductComponent {
       return;
     }
 
+    if (!this.product.price || Number(this.product.price) <= 0) {
+      this.showModal('Lỗi', 'Vui lòng nhập giá bán hợp lệ (lớn hơn 0) trước khi đăng bán.', 'error');
+      return;
+    }
+
     const payload = {
       ...this.product,
       isVaccinated: this.product.vaccinated,

@@ -52,4 +52,7 @@ public class VerificationTask {
 
     @Column(name = "admin_feedback", columnDefinition = "TEXT")
     private String adminFeedback;
+
+    @Column(name = "delivery_image_url")
+    private String deliveryImageUrl;
 }

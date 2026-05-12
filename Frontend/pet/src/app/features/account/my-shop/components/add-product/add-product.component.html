@@ -117,7 +117,9 @@
         <h3>Pricing</h3>
         <div class="form-group">
           <label>Price (VND) <span class="required">*</span></label>
-          <input type="number" placeholder="e.g. 2500000" [(ngModel)]="product.price" />
+          <input type="number" placeholder="e.g. 2500000" [(ngModel)]="product.price" min="1"
+                 [style.border-color]="product.price <= 0 ? '#ef4444' : ''" />
+          <small *ngIf="product.price <= 0" style="color:#ef4444;">Vui lòng nhập giá bán hợp lệ</small>
         </div>
       </div>
 

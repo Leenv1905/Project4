@@ -18,6 +18,7 @@ public class VerificationTaskResponse {
     private String locationGps;
     private String healthNote;
     private String adminFeedback;
+    private String deliveryImageUrl;
 
     @Data
     @Builder

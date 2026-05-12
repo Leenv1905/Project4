@@ -92,6 +92,16 @@
 			<scope>runtime</scope>
 		</dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <!-- Nếu dùng giao diện HTML đẹp cho mail -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
 		<!-- LOMBOK (giảm code getter setter) -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
