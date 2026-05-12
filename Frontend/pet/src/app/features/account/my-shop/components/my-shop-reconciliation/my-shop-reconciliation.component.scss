@@ -113,15 +113,15 @@ td {
   font-weight: 500;
 }
 
-.status-badge.matched {
+.status-badge.received {
   background: #DCFCE7;
   color: #15803D;
 }
 
-.status-badge.mismatched {
-  background: #FEE2E2;
-  color: #EF4444;
-}
+//.status-badge.mismatched {
+//  background: #FEE2E2;
+//  color: #EF4444;
+//}
 
 .status-badge.pending {
   background: #FEF3C7;

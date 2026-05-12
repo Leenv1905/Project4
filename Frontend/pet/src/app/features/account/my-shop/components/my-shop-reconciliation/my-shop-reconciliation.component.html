@@ -19,14 +19,14 @@
     </div>
     <div class="stat-card received">
       <span class="label">Total Received (Bills)</span>
-      <span class="value">{{ stats().totalBill | number }} ₫</span>
+      <span class="value">{{ stats().totalReceived | number }} ₫</span>
     </div>
-    <div class="stat-card diff" [class.positive]="stats().difference >= 0" [class.negative]="stats().difference < 0">
-      <span class="label">Difference</span>
+    <div class="stat-card diff" [class.positive]="stats().difference === 0" [class.negative]="stats().difference > 0">
+      <span class="label">Difference (Not Received)</span>
       <span class="value">{{ stats().difference | number }} ₫</span>
     </div>
     <div class="stat-card matched">
-      <span class="label">Successfully Matched</span>
+      <span class="label">Successfully Reconciled</span>
       <span class="value">{{ stats().matchedCount }} / {{ stats().totalItems }}</span>
     </div>
   </div>
@@ -40,7 +40,7 @@
         <th>Customer</th>
         <th>Date</th>
         <th>Order Amount</th>
-        <th>Bill Amount</th>
+        <th>Actual Received</th>
         <th>Status</th>
       </tr>
       </thead>
@@ -50,14 +50,12 @@
         <td>{{ item.customerName }}</td>
         <td>{{ item.date }}</td>
         <td class="amount">{{ item.orderAmount | number }} ₫</td>
-        <td class="amount">{{ item.billAmount ? (item.billAmount | number) + ' ₫' : '—' }}</td>
+        <td class="amount">{{ item.billAmount | number }} ₫</td>
         <td>
             <span class="status-badge"
-                  [class.matched]="item.status === 'matched'"
-                  [class.mismatched]="item.status === 'mismatched'"
+                  [class.received]="item.status === 'received'"
                   [class.pending]="item.status === 'pending'">
-              {{ item.status === 'matched' ? 'Matched' :
-              item.status === 'mismatched' ? 'Mismatched' : 'Pending' }}
+              {{ item.status === 'received' ? 'Received' : 'Not Received' }}
             </span>
         </td>
       </tr>
