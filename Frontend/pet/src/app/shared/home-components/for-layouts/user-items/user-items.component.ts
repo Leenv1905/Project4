@@ -9,7 +9,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { CartDropdownComponent } from '../cart-dropdown/cart-dropdown.component';
-import { WishlistDropdownComponent } from '../wishlist-dropdown/wishlist-dropdown.component';
+// import { WishlistDropdownComponent } from '../wishlist-dropdown/wishlist-dropdown.component';
 import { UserModalComponent } from '../user-modal/user-modal.component';
 
 @Component({
@@ -21,7 +21,7 @@ import { UserModalComponent } from '../user-modal/user-modal.component';
     MatMenuModule,
     MatDividerModule,
     CartDropdownComponent,
-    WishlistDropdownComponent,
+    // WishlistDropdownComponent,
     UserModalComponent,
     MatSnackBarModule
   ],
