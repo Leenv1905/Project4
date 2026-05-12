@@ -1,21 +1,21 @@
 <div class="sidebar">
 
-  <!-- Loài -->
+  <!-- Species -->
   <div class="filter-group">
-    <h4>Loài</h4>
+    <h4>Species</h4>
     <ul>
       <li
         *ngFor="let species of speciesList"
         (click)="selectSpecies(species)"
-        [class.active]="shopService.filters().species === species">
+        [class.active]="shopService.filters().species === speciesMap[species]">
         {{ species }}
       </li>
     </ul>
   </div>
 
-  <!-- Giống -->
+  <!-- Breed -->
   <div class="filter-group">
-    <h4>Giống</h4>
+    <h4>Breed</h4>
     <ul>
       <li
         *ngFor="let breed of breeds"
@@ -26,9 +26,9 @@
     </ul>
   </div>
 
-  <!-- Màu lông -->
+  <!-- Color -->
   <div class="filter-group">
-    <h4>Màu lông</h4>
+    <h4>Color</h4>
     <ul>
       <li
         *ngFor="let color of colors"
@@ -39,9 +39,9 @@
     </ul>
   </div>
 
-  <!-- Giới tính -->
+  <!-- Gender -->
   <div class="filter-group">
-    <h4>Giới tính</h4>
+    <h4>Gender</h4>
     <ul>
       <li
         *ngFor="let g of genders"
@@ -52,9 +52,9 @@
     </ul>
   </div>
 
-  <!-- Cân nặng -->
+  <!-- Weight -->
   <div class="filter-group">
-    <h4>Cân nặng</h4>
+    <h4>Weight</h4>
     <ul>
       <li
         *ngFor="let range of weightRanges"
@@ -65,9 +65,9 @@
     </ul>
   </div>
 
-  <!-- Giá -->
+  <!-- Price -->
   <div class="filter-group">
-    <h4>Giá</h4>
+    <h4>Price</h4>
     <ul>
       <li
         *ngFor="let price of priceRanges"
@@ -78,10 +78,10 @@
     </ul>
   </div>
 
-  <!-- Xóa bộ lọc -->
+  <!-- Clear Filters -->
   <div class="clear-filter">
     <button (click)="clearFilters()">
-      Xóa tất cả bộ lọc
+      Clear All Filters
     </button>
   </div>
 
